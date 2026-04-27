@@ -65,6 +65,9 @@ function SalaryFormDialog({
   const isEditing = !!salary;
   const { t } = useLanguage();
 
+  const currentWalletId = isEditing ? salary?.walletId : form.walletId;
+  const selectedWalletCurrency = wallets.find((w) => w.id === currentWalletId)?.currency ?? 'BRL';
+
   const handleSubmit = () => {
     if (isEditing && salary) {
       const data: UpdateSalaryRequest = { id: salary.id, ...form };
@@ -90,7 +93,7 @@ function SalaryFormDialog({
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>{isEditing ? t.salary.editSalary : t.salary.newSalary}</DialogTitle>
       <DialogContent>
-        {!isEditing && (
+        {!isEditing ? (
           <FormControl fullWidth margin="normal">
             <InputLabel>{t.common.wallet}</InputLabel>
             <Select
@@ -105,10 +108,18 @@ function SalaryFormDialog({
               ))}
             </Select>
           </FormControl>
+        ) : (
+          <TextField
+            fullWidth
+            label={t.common.wallet}
+            margin="normal"
+            value={`${wallets.find((w) => w.id === salary?.walletId)?.name ?? '-'} (${selectedWalletCurrency})`}
+            slotProps={{ input: { readOnly: true } }}
+          />
         )}
         <TextField
           fullWidth
-          label={t.common.amount}
+          label={`${t.common.amount} (${selectedWalletCurrency})`}
           type="number"
           margin="normal"
           value={form.amount || ''}
