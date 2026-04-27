@@ -14,6 +14,10 @@ import {
   TextField,
   CircularProgress,
   Box,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -23,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import { useWallets, useCreateWallet, useUpdateWallet, useDeleteWallet } from '@/hooks/useWallets';
 import type { Wallet, CreateWalletRequest, UpdateWalletRequest } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { formatCurrency, CURRENCIES } from '@/utils/currency';
 
 function WalletFormDialog({
   open,
@@ -35,6 +40,7 @@ function WalletFormDialog({
 }) {
   const [name, setName] = useState(wallet?.name ?? '');
   const [description, setDescription] = useState(wallet?.description ?? '');
+  const [currency, setCurrency] = useState(wallet?.currency ?? 'BRL');
   const createMutation = useCreateWallet();
   const updateMutation = useUpdateWallet();
   const { t } = useLanguage();
@@ -47,12 +53,13 @@ function WalletFormDialog({
         id: wallet.id,
         name,
         description,
+        currency,
       };
       updateMutation.mutate(data, {
         onSuccess: onClose,
       });
     } else {
-      const data: CreateWalletRequest = { name, description };
+      const data: CreateWalletRequest = { name, description, currency };
       createMutation.mutate(data, {
         onSuccess: onClose,
       });
@@ -62,6 +69,7 @@ function WalletFormDialog({
   const handleClose = () => {
     setName('');
     setDescription('');
+    setCurrency('BRL');
     onClose();
   };
 
@@ -85,6 +93,20 @@ function WalletFormDialog({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+        <FormControl fullWidth margin="normal">
+          <InputLabel>{t.wallet.currency}</InputLabel>
+          <Select
+            value={currency}
+            label={t.wallet.currency}
+            onChange={(e) => setCurrency(e.target.value)}
+          >
+            {CURRENCIES.map((c) => (
+              <MenuItem key={c.code} value={c.code}>
+                {c.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>{t.common.cancel}</Button>
@@ -126,12 +148,6 @@ export default function WalletListPage() {
     });
   };
 
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -169,7 +185,7 @@ export default function WalletListPage() {
                   </Typography>
                 )}
                 <Typography variant="h5" sx={{ fontWeight: 700 }} color="primary">
-                  {formatCurrency(wallet.balance)}
+                  {formatCurrency(wallet.balance, wallet.currency)}
                 </Typography>
               </CardContent>
               <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>

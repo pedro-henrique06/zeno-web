@@ -68,18 +68,21 @@ export interface Wallet {
   description: string;
   balance: number;
   userId: string;
+  currency: string;
   createdAt: string;
 }
 
 export interface CreateWalletRequest {
   name: string;
   description: string;
+  currency: string;
 }
 
 export interface UpdateWalletRequest {
   id: string;
   name: string;
   description: string;
+  currency: string;
 }
 
 export interface Entry {

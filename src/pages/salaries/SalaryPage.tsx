@@ -31,6 +31,7 @@ import { useWallets } from '@/hooks/useWallets';
 import { useSalaries, useCreateSalary, useUpdateSalary, useDeleteSalary } from '@/hooks/useSalaries';
 import type { Salary, CreateSalaryRequest, UpdateSalaryRequest, Wallet } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { formatCurrency } from '@/utils/currency';
 
 interface SalaryFormData {
   walletId: string;
@@ -171,12 +172,6 @@ export default function SalaryPage() {
   const walletId = wallets?.[0]?.id ?? '';
   const { data: salaries, isLoading } = useSalaries(walletId);
   const deleteMutation = useDeleteSalary();
-
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
 
   const handleDelete = (id: string, wid: string) => {
     deleteMutation.mutate(

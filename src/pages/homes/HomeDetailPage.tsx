@@ -54,6 +54,7 @@ import { useWallets } from '@/hooks/useWallets';
 import type { Category, HomeRole } from '@/types';
 import { CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { formatCurrency } from '@/utils/currency';
 
 function TabPanel({
   children,
@@ -109,12 +110,6 @@ export default function HomeDetailPage() {
     value: 0,
     category: 0 as Category,
   });
-
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
 
   const linkedWalletIds = new Set(homeWallets?.map((hw) => hw.walletId) ?? []);
   const unlinkedWallets = myWallets?.filter(

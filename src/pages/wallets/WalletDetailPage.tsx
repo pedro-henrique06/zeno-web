@@ -32,6 +32,7 @@ import { useEntries, useCreateEntry, useUpdateEntry, useDeleteEntry } from '@/ho
 import type { Entry, CreateEntryRequest, UpdateEntryRequest } from '@/types';
 import { EntryType, Category, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { formatCurrency } from '@/utils/currency';
 
 const entryTypeColors: Record<EntryType, 'success' | 'error'> = {
   [EntryType.Credit]: 'success',
@@ -195,12 +196,6 @@ export default function WalletDetailPage() {
   );
   const deleteMutation = useDeleteEntry();
 
-  const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-
   const handleDelete = (entryId: string) => {
     deleteMutation.mutate(
       { id: entryId, walletId: id ?? '' },
@@ -233,7 +228,7 @@ export default function WalletDetailPage() {
           )}
         </Box>
         <Typography variant="h5" sx={{ fontWeight: 700 }} color="primary">
-          {formatCurrency(wallet?.balance ?? 0)}
+          {formatCurrency(wallet?.balance ?? 0, wallet?.currency)}
         </Typography>
       </Box>
 
@@ -292,7 +287,7 @@ export default function WalletDetailPage() {
                     color={entry.type === EntryType.Credit ? 'success.main' : 'error.main'}
                   >
                     {entry.type === EntryType.Credit ? '+' : '-'}
-                    {formatCurrency(entry.value)}
+                    {formatCurrency(entry.value, wallet?.currency)}
                   </Typography>
                 </TableCell>
                 <TableCell align="right">
