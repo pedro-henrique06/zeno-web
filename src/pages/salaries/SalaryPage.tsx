@@ -100,7 +100,7 @@ function SalaryFormDialog({
             >
               {wallets.map((w) => (
                 <MenuItem key={w.id} value={w.id}>
-                  {w.name}
+                  {w.name} ({w.currency})
                 </MenuItem>
               ))}
             </Select>
@@ -228,12 +228,12 @@ export default function SalaryPage() {
                 </TableRow>
               )}
               {salaries?.map((salary) => {
-                const walletName =
-                  wallets?.find((w) => w.id === salary.walletId)?.name ?? '-';
+                const wallet =
+                  wallets?.find((w) => w.id === salary.walletId);
                 return (
                   <TableRow key={salary.id}>
-                    <TableCell>{walletName}</TableCell>
-                    <TableCell>{formatCurrency(salary.amount)}</TableCell>
+                    <TableCell>{wallet?.name ?? '-'} ({wallet?.currency ?? 'BRL'})</TableCell>
+                    <TableCell>{formatCurrency(salary.amount, wallet?.currency)}</TableCell>
                     <TableCell>{salary.dayOfMonth}</TableCell>
                     <TableCell>{salary.description}</TableCell>
                     <TableCell>
