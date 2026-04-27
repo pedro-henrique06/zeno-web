@@ -38,7 +38,7 @@ export async function getHomeMembers(homeId: string): Promise<HomeMember[]> {
   const response = await apiClient.get<HomeMember[]>(`/home/${homeId}/members`);
   return response.data;
 }
-
+3
 export async function addMember(
   homeId: string,
   memberUserId: string,
