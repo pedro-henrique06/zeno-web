@@ -20,7 +20,6 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import {
   useHomes,
@@ -168,7 +167,10 @@ export default function HomeListPage() {
       <Grid container spacing={2}>
         {homes?.map((home) => (
           <Grid size={{ xs: 12, sm: 6, md: 4 }} key={home.id}>
-            <Card>
+            <Card
+              sx={{ cursor: 'pointer', '&:hover': { opacity: 0.9 } }}
+              onClick={() => navigate(`/homes/${home.id}`)}
+            >
               <CardContent>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {home.name}
@@ -185,19 +187,13 @@ export default function HomeListPage() {
                 />
               </CardContent>
               <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
-                <IconButton
-                  size="small"
-                  onClick={() => navigate(`/homes/${home.id}`)}
-                >
-                  <VisibilityIcon />
-                </IconButton>
-                <IconButton size="small" onClick={() => handleEdit(home)}>
+                <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(home); }}>
                   <EditIcon />
                 </IconButton>
                 <IconButton
                   size="small"
                   color="error"
-                  onClick={() => setDeleteConfirm(home.id)}
+                  onClick={(e) => { e.stopPropagation(); setDeleteConfirm(home.id); }}
                 >
                   <DeleteIcon />
                 </IconButton>
