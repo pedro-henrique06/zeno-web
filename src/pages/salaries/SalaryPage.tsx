@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Typography,
   Button,
@@ -30,7 +30,7 @@ import { useWallets } from '@/hooks/useWallets';
 import { useSalaries, useCreateSalary, useUpdateSalary, useDeleteSalary } from '@/hooks/useSalaries';
 import type { Salary, CreateSalaryRequest, UpdateSalaryRequest, Wallet } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency, formatDateTime, getLocaleFromLanguage } from '@/utils/currency';
+import { formatCurrency, formatDateTime, getCurrentLocale } from '@/utils/currency';
 
 interface SalaryFormData {
   walletId: string;
@@ -176,11 +176,17 @@ export default function SalaryPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSalary, setEditingSalary] = useState<Salary | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; walletId: string } | null>(null);
-  const { t, locale } = useLanguage();
+  const [selectedWalletId, setSelectedWalletId] = useState<string>('');
+  const { t } = useLanguage();
 
   const { data: wallets } = useWallets();
-  const walletId = wallets?.[0]?.id ?? '';
-  const { data: salaries, isLoading } = useSalaries(walletId);
+  const { data: salaries, isLoading } = useSalaries(selectedWalletId || (wallets?.[0]?.id ?? ''));
+
+  useEffect(() => {
+    if (!selectedWalletId && wallets?.length) {
+      setSelectedWalletId(wallets[0].id);
+    }
+  }, [wallets, selectedWalletId]);
   const deleteMutation = useDeleteSalary();
 
   const handleDelete = (id: string, wid: string) => {
@@ -196,6 +202,20 @@ export default function SalaryPage() {
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
           {t.salary.title}
         </Typography>
+        <FormControl sx={{ minWidth: 200 }}>
+          <InputLabel>{t.common.wallet}</InputLabel>
+          <Select
+            value={selectedWalletId || (wallets?.[0]?.id ?? '')}
+            label={t.common.wallet}
+            onChange={(e) => setSelectedWalletId(e.target.value)}
+          >
+            {wallets?.map((w) => (
+              <MenuItem key={w.id} value={w.id}>
+                {w.name} ({w.currency})
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -255,7 +275,7 @@ export default function SalaryPage() {
                     </TableCell>
                     <TableCell>
                       {salary.lastProcessedAt
-                        ? formatDateTime(salary.lastProcessedAt, getLocaleFromLanguage(locale))
+                        ? formatDateTime(salary.lastProcessedAt, getCurrentLocale())
                         : '-'}
                     </TableCell>
                     <TableCell align="right">

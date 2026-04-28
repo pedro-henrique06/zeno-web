@@ -32,7 +32,7 @@ import { useEntries, useCreateEntry, useUpdateEntry, useDeleteEntry } from '@/ho
 import type { Entry, CreateEntryRequest, UpdateEntryRequest } from '@/types';
 import { EntryType, Category, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency, formatDate, formatMonthYear, getCurrentLocale } from '@/utils/currency';
+import { formatCurrency, formatDate, formatMonthYear } from '@/utils/currency';
 
 const entryTypeColors: Record<EntryType, 'success' | 'error'> = {
   [EntryType.Credit]: 'success',
@@ -184,9 +184,9 @@ export default function WalletDetailPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const { t } = useLanguage();
 
-  const now = dayjs();
-  const month = now.month() + 1;
-  const year = now.year();
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
 
   const { data: wallet, isLoading: walletLoading } = useWallet(id ?? '');
   const { data: entries, isLoading: entriesLoading } = useEntries(
@@ -234,7 +234,7 @@ export default function WalletDetailPage() {
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Typography variant="h6">
-          {t.wallet.entries} - {formatMonthYear(now.toDate(), getCurrentLocale())}
+          {t.wallet.entries} - {formatMonthYear(now)}
         </Typography>
         <Button
           variant="contained"

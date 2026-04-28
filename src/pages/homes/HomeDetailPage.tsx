@@ -35,7 +35,6 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import LinkIcon from '@mui/icons-material/Link';
 import DeleteIcon from '@mui/icons-material/Delete';
-import dayjs from 'dayjs';
 import {
   useHome,
   useHomeMembers,
@@ -54,7 +53,7 @@ import { useWallets } from '@/hooks/useWallets';
 import type { Category, HomeRole } from '@/types';
 import { CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency, formatMonthYear, getCurrentLocale } from '@/utils/currency';
+import { formatCurrency, formatMonthYear } from '@/utils/currency';
 
 function TabPanel({
   children,
@@ -83,9 +82,9 @@ export default function HomeDetailPage() {
     [1]: t.home.member,
   };
 
-  const now = dayjs();
-  const month = now.month() + 1;
-  const year = now.year();
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
 
   const { data: home, isLoading } = useHome(id ?? '');
   const { data: members } = useHomeMembers(id ?? '');
@@ -297,7 +296,7 @@ export default function HomeDetailPage() {
       <TabPanel value={tab} index={1}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
           <Typography variant="h6">
-            {t.home.tabExpenses} - {formatMonthYear(now.toDate(), getCurrentLocale())}
+            {t.home.tabExpenses} - {formatMonthYear(now)}
           </Typography>
           <Button
             variant="contained"
@@ -454,7 +453,7 @@ export default function HomeDetailPage() {
 
       <TabPanel value={tab} index={2}>
         <Typography variant="h6" gutterBottom>
-          {t.home.expenseSplit} - {formatMonthYear(now.toDate(), getCurrentLocale())}
+          {t.home.expenseSplit} - {formatMonthYear(now)}
         </Typography>
         <TableContainer component={Paper}>
           <Table>
@@ -503,7 +502,7 @@ export default function HomeDetailPage() {
 
       <TabPanel value={tab} index={3}>
         <Typography variant="h6" gutterBottom>
-          {t.home.budgetTitle} - {formatMonthYear(now.toDate(), getCurrentLocale())}
+          {t.home.budgetTitle} - {formatMonthYear(now)}
         </Typography>
         {budgetAlert && (
           <Paper sx={{ p: 3 }}>

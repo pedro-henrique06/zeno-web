@@ -1,4 +1,4 @@
-const LOCALE_STORAGE_KEY = 'zeno-locale';
+const LOCALE_STORAGE_KEY = 'locale';
 
 export const LOCALE_MAP: Record<string, string> = {
   BRL: 'pt-BR',
@@ -15,7 +15,10 @@ export const LOCALE_MAP: Record<string, string> = {
 
 function getStoredLocale(): string {
   if (typeof window === 'undefined') return 'pt-BR';
-  return localStorage.getItem(LOCALE_STORAGE_KEY) || 'pt-BR';
+  const saved = localStorage.getItem(LOCALE_STORAGE_KEY);
+  if (saved === 'pt') return 'pt-BR';
+  if (saved === 'en') return 'en-US';
+  return saved || 'pt-BR';
 }
 
 export function getCurrentLocale(): string {
