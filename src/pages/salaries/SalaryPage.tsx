@@ -26,12 +26,11 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import dayjs from 'dayjs';
 import { useWallets } from '@/hooks/useWallets';
 import { useSalaries, useCreateSalary, useUpdateSalary, useDeleteSalary } from '@/hooks/useSalaries';
 import type { Salary, CreateSalaryRequest, UpdateSalaryRequest, Wallet } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency } from '@/utils/currency';
+import { formatCurrency, formatDateTime, getLocaleFromLanguage } from '@/utils/currency';
 
 interface SalaryFormData {
   walletId: string;
@@ -177,7 +176,7 @@ export default function SalaryPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSalary, setEditingSalary] = useState<Salary | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; walletId: string } | null>(null);
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   const { data: wallets } = useWallets();
   const walletId = wallets?.[0]?.id ?? '';
@@ -256,7 +255,7 @@ export default function SalaryPage() {
                     </TableCell>
                     <TableCell>
                       {salary.lastProcessedAt
-                        ? dayjs(salary.lastProcessedAt).format('MM/DD/YYYY HH:mm')
+                        ? formatDateTime(salary.lastProcessedAt, getLocaleFromLanguage(locale))
                         : '-'}
                     </TableCell>
                     <TableCell align="right">

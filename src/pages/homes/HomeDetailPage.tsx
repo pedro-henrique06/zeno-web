@@ -54,7 +54,7 @@ import { useWallets } from '@/hooks/useWallets';
 import type { Category, HomeRole } from '@/types';
 import { CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency } from '@/utils/currency';
+import { formatCurrency, formatMonthYear, getCurrentLocale } from '@/utils/currency';
 
 function TabPanel({
   children,
@@ -297,7 +297,7 @@ export default function HomeDetailPage() {
       <TabPanel value={tab} index={1}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
           <Typography variant="h6">
-            {t.home.tabExpenses} - {now.format('MMMM YYYY')}
+            {t.home.tabExpenses} - {formatMonthYear(now.toDate(), getCurrentLocale())}
           </Typography>
           <Button
             variant="contained"
@@ -454,7 +454,7 @@ export default function HomeDetailPage() {
 
       <TabPanel value={tab} index={2}>
         <Typography variant="h6" gutterBottom>
-          {t.home.expenseSplit} - {now.format('MMMM YYYY')}
+          {t.home.expenseSplit} - {formatMonthYear(now.toDate(), getCurrentLocale())}
         </Typography>
         <TableContainer component={Paper}>
           <Table>
@@ -503,7 +503,7 @@ export default function HomeDetailPage() {
 
       <TabPanel value={tab} index={3}>
         <Typography variant="h6" gutterBottom>
-          {t.home.budgetTitle} - {now.format('MMMM YYYY')}
+          {t.home.budgetTitle} - {formatMonthYear(now.toDate(), getCurrentLocale())}
         </Typography>
         {budgetAlert && (
           <Paper sx={{ p: 3 }}>

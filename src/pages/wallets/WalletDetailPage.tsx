@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import dayjs from 'dayjs';
 import {
   Typography,
   Button,
@@ -25,14 +26,13 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '@/hooks/useWallets';
 import { useEntries, useCreateEntry, useUpdateEntry, useDeleteEntry } from '@/hooks/useEntries';
 import type { Entry, CreateEntryRequest, UpdateEntryRequest } from '@/types';
 import { EntryType, Category, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency } from '@/utils/currency';
+import { formatCurrency, formatDate, formatMonthYear, getCurrentLocale } from '@/utils/currency';
 
 const entryTypeColors: Record<EntryType, 'success' | 'error'> = {
   [EntryType.Credit]: 'success',
@@ -234,7 +234,7 @@ export default function WalletDetailPage() {
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Typography variant="h6">
-          {t.wallet.entries} - {now.format('MMMM YYYY')}
+          {t.wallet.entries} - {formatMonthYear(now.toDate(), getCurrentLocale())}
         </Typography>
         <Button
           variant="contained"
@@ -264,7 +264,7 @@ export default function WalletDetailPage() {
             {entries?.map((entry) => (
               <TableRow key={entry.id}>
                 <TableCell>
-                  {dayjs(entry.date).format('MM/DD/YYYY')}
+                  {formatDate(entry.date)}
                 </TableCell>
                 <TableCell>{entry.title}</TableCell>
                 <TableCell>
