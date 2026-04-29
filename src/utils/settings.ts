@@ -49,7 +49,7 @@ export function formatCurrency(value: number, currency: string = 'BRL'): string 
   return formatted;
 }
 
-export function formatDate(date: string | Date, locale?: string): string {
+export function formatDate(date: string | Date): string {
   const d = new Date(date);
   if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
@@ -59,7 +59,7 @@ export function formatDate(date: string | Date, locale?: string): string {
   }).format(d);
 }
 
-export function formatDateTime(date: string | Date, locale?: string): string {
+export function formatDateTime(date: string | Date): string {
   const d = new Date(date);
   if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', {
@@ -71,7 +71,7 @@ export function formatDateTime(date: string | Date, locale?: string): string {
   }).format(d);
 }
 
-export function formatMonthYear(date: Date, locale?: string): string {
+export function formatMonthYear(date: Date): string {
   return new Intl.DateTimeFormat('pt-BR', {
     month: 'long',
     year: 'numeric',
