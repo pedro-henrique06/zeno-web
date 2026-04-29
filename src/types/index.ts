@@ -114,6 +114,46 @@ export interface UpdateWalletRequest {
   currency: string;
 }
 
+export interface Account {
+  id: string;
+  name: string;
+  bank: string;
+  type: string;
+  balance: number;
+  walletId: string;
+  createdAt: string;
+}
+
+export interface CreateAccountRequest {
+  name: string;
+  bank: string;
+  type: string;
+  walletId: string;
+}
+
+export interface UpdateAccountRequest {
+  id: string;
+  name: string;
+  bank: string;
+  type: string;
+}
+
+export const AccountTypes = {
+  Checking: 'checking',
+  Savings: 'savings',
+  Investment: 'investment',
+  Credit: 'credit',
+  Other: 'other',
+} as const;
+
+export const AccountTypeLabels: Record<string, string> = {
+  checking: 'Conta Corrente',
+  savings: 'Poupança',
+  investment: 'Investimento',
+  credit: 'Cartão de Crédito',
+  other: 'Outros',
+};
+
 export interface Entry {
   id: string;
   title: string;

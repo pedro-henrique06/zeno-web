@@ -355,6 +355,7 @@ en: {
       title: 'Carteiras',
       newWallet: 'Nova Carteira',
       editWallet: 'Editar Carteira',
+      newAccount: 'Nova Conta',
       currency: 'Moeda',
       noWallets: 'Nenhuma carteira ainda. Crie sua primeira carteira para começar.',
       deleteWallet: 'Excluir Carteira',

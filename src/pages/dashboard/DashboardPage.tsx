@@ -15,6 +15,7 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import AddIcon from '@mui/icons-material/Add';
 import { useWallets } from '@/hooks/useWallets';
+import { useAccounts } from '@/hooks/useAccounts';
 import { useHomes } from '@/hooks/useHomes';
 import { useEntries } from '@/hooks/useEntries';
 import { useLanguage } from '@/i18n/LanguageContext';
@@ -120,6 +121,7 @@ export default function DashboardPage() {
   const { t } = useLanguage();
   const { user } = useAuth();
   const { data: wallets, isLoading: walletsLoading } = useWallets();
+  const { data: accounts, isLoading: accountsLoading } = useAccounts();
   const { data: homes, isLoading: homesLoading } = useHomes();
 
   const now = new Date();
@@ -130,7 +132,7 @@ export default function DashboardPage() {
   const walletIds = wallets?.map(w => w.id) ?? [];
   const { data: entries } = useEntries(currentMonth, currentYear, walletIds[0] ?? '');
 
-  const totalBalance = wallets?.reduce((sum, w) => sum + w.balance, 0) ?? 0;
+  const totalBalance = accounts?.reduce((sum, acc) => sum + acc.balance, 0) ?? 0;
 
   const totalIncome = entries?.filter(e => e.type === EntryType.Credit).reduce((sum, e) => sum + e.value, 0) ?? 0;
   const totalExpense = entries?.filter(e => e.type === EntryType.Debit).reduce((sum, e) => sum + e.value, 0) ?? 0;
@@ -167,7 +169,7 @@ export default function DashboardPage() {
   ];
   monthlyData[5] = { month: 'Jun', receitas: totalIncome, despesas: totalExpense };
 
-  if (walletsLoading || homesLoading) {
+  if (walletsLoading || accountsLoading || homesLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
         <CircularProgress />

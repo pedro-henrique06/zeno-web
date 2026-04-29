@@ -17,93 +17,81 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Collapse,
+  Divider,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useNavigate } from 'react-router-dom';
-import { useWallets, useCreateWallet, useUpdateWallet, useDeleteWallet } from '@/hooks/useWallets';
-import type { Wallet, CreateWalletRequest, UpdateWalletRequest } from '@/types';
+import { useWallets } from '@/hooks/useWallets';
+import { useAccounts, useCreateAccount, useDeleteAccount } from '@/hooks/useAccounts';
+import type { Wallet, Account, CreateAccountRequest } from '@/types';
+import { AccountTypeLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency, CURRENCIES } from '@/utils/currency';
 
-function WalletFormDialog({
-  open,
-  onClose,
-  wallet,
-}: {
+interface AccountFormDialogProps {
   open: boolean;
   onClose: () => void;
-  wallet?: Wallet | null;
-}) {
-  const [name, setName] = useState(wallet?.name ?? '');
-  const [description, setDescription] = useState(wallet?.description ?? '');
-  const [currency, setCurrency] = useState(wallet?.currency ?? 'BRL');
-  const createMutation = useCreateWallet();
-  const updateMutation = useUpdateWallet();
+  walletId: string;
+  account?: Account | null;
+}
+
+function AccountFormDialog({ open, onClose, walletId, account }: AccountFormDialogProps) {
+  const [name, setName] = useState(account?.name ?? '');
+  const [bank, setBank] = useState(account?.bank ?? '');
+  const [type, setType] = useState(account?.type ?? 'checking');
+  const createMutation = useCreateAccount();
   const { t } = useLanguage();
 
-  const isEditing = !!wallet;
-
   const handleSubmit = () => {
-    if (isEditing) {
-      const data: UpdateWalletRequest = {
-        id: wallet.id,
-        name,
-        description,
-        currency,
-      };
-      updateMutation.mutate(data, {
-        onSuccess: onClose,
-      });
-    } else {
-      const data: CreateWalletRequest = { name, description, currency };
-      createMutation.mutate(data, {
-        onSuccess: onClose,
-      });
-    }
+    const data: CreateAccountRequest = { name, bank, type, walletId };
+    createMutation.mutate(data, { onSuccess: onClose });
   };
 
   const handleClose = () => {
     setName('');
-    setDescription('');
-    setCurrency('BRL');
+    setBank('');
+    setType('checking');
     onClose();
   };
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{isEditing ? t.wallet.editWallet : t.wallet.newWallet}</DialogTitle>
+      <DialogTitle>Nova Conta</DialogTitle>
       <DialogContent>
         <TextField
           fullWidth
-          label={t.wallet.name}
+          label="Nome da conta"
           margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          placeholder="Ex: Conta Corrente Nubank"
         />
         <TextField
           fullWidth
-          label={t.wallet.description}
+          label="Banco"
           margin="normal"
-          multiline
-          rows={2}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={bank}
+          onChange={(e) => setBank(e.target.value)}
+          placeholder="Ex: Nubank, Inter, CEF"
         />
         <FormControl fullWidth margin="normal">
-          <InputLabel>{t.wallet.currency}</InputLabel>
+          <InputLabel>Tipo</InputLabel>
           <Select
-            value={currency}
-            label={t.wallet.currency}
-            onChange={(e) => setCurrency(e.target.value)}
+            value={type}
+            label="Tipo"
+            onChange={(e) => setType(e.target.value)}
           >
-            {CURRENCIES.map((c) => (
-              <MenuItem key={c.code} value={c.code}>
-                {c.label}
-              </MenuItem>
-            ))}
+            <MenuItem value="checking">Conta Corrente</MenuItem>
+            <MenuItem value="savings">Poupança</MenuItem>
+            <MenuItem value="investment">Investimento</MenuItem>
+            <MenuItem value="credit">Cartão de Crédito</MenuItem>
+            <MenuItem value="other">Outros</MenuItem>
           </Select>
         </FormControl>
       </DialogContent>
@@ -112,136 +100,157 @@ function WalletFormDialog({
         <Button
           onClick={handleSubmit}
           variant="contained"
-          disabled={!name || createMutation.isPending || updateMutation.isPending}
+          disabled={!name || createMutation.isPending}
         >
-          {isEditing ? t.common.save : t.common.create}
+          {t.common.create}
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
 
-interface WalletCardProps {
+interface WalletGroupProps {
   wallet: Wallet;
-  onEdit: () => void;
-  onDelete: () => void;
-  onClick: () => void;
+  accounts: Account[];
+  onAddAccount: () => void;
+  onDeleteAccount: (id: string) => void;
 }
 
-function WalletCard({ wallet, onEdit, onDelete, onClick }: WalletCardProps) {
-  const [menuOpen, setMenuOpen] = useState(false);
+function WalletGroup({ wallet, accounts, onAddAccount, onDeleteAccount }: WalletGroupProps) {
+  const [expanded, setExpanded] = useState(false);
   const { t } = useLanguage();
 
+  const totalBalance = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+
   return (
-    <Card
-      sx={{
-        cursor: 'pointer',
-        '&:hover': { bgcolor: 'action.hover' },
-        position: 'relative',
-      }}
-      onClick={onClick}
-    >
+    <Card sx={{ mb: 2 }}>
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-          <Box>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              {wallet.name}
-            </Typography>
-            {wallet.description && (
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                {wallet.description}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }} onClick={() => setExpanded(!expanded)}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <AccountBalanceIcon color="primary" />
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                {wallet.name}
               </Typography>
-            )}
+              {wallet.description && (
+                <Typography variant="body2" color="text.secondary">
+                  {wallet.description}
+                </Typography>
+              )}
+            </Box>
           </Box>
-          <IconButton
-            size="small"
-            onClick={(e) => {
-              e.stopPropagation();
-              setMenuOpen(!menuOpen);
-            }}
-          >
-            <MoreVertIcon />
-          </IconButton>
-          {menuOpen && (
-            <Box
-              sx={{
-                position: 'absolute',
-                top: 40,
-                right: 8,
-                bgcolor: 'background.paper',
-                borderRadius: 2,
-                boxShadow: 3,
-                zIndex: 10,
-                overflow: 'hidden',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1.5, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
-                onClick={() => { onEdit(); setMenuOpen(false); }}
-              >
-                <EditIcon fontSize="small" />
-                <Typography variant="body2">{t.common.edit}</Typography>
-              </Box>
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1.5, cursor: 'pointer', color: 'error.main', '&:hover': { bgcolor: 'action.hover' } }}
-                onClick={() => { onDelete(); setMenuOpen(false); }}
-              >
-                <DeleteIcon fontSize="small" />
-                <Typography variant="body2">{t.common.delete}</Typography>
-              </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ textAlign: 'right' }}>
+              <Typography variant="caption" color="text.secondary">
+                {t.wallet.currentBalance}
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 700 }} color="primary.main">
+                {formatCurrency(totalBalance, wallet.currency)}
+              </Typography>
+            </Box>
+            <IconButton size="small">
+              {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </IconButton>
+          </Box>
+        </Box>
+
+        <Collapse in={expanded}>
+          <Divider sx={{ my: 2 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+            <Typography variant="subtitle2" color="text.secondary">
+              {accounts.length} conta(s)
+            </Typography>
+            <Button size="small" startIcon={<AddIcon />} onClick={(e) => { e.stopPropagation(); onAddAccount(); }}>
+              Nova Conta
+            </Button>
+          </Box>
+
+          {accounts.length > 0 ? (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {accounts.map((account) => (
+                <Box
+                  key={account.id}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    p: 2,
+                    bgcolor: 'background.default',
+                    borderRadius: 2,
+                  }}
+                >
+                  <Box>
+                    <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                      {account.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {account.bank || 'Banco não informado'} • {AccountTypeLabels[account.type] || account.type}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="body1" sx={{ fontWeight: 600 }} color="primary.main">
+                      {formatCurrency(account.balance, wallet.currency)}
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={() => onDeleteAccount(account.id)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          ) : (
+            <Box sx={{ textAlign: 'center', py: 3, bgcolor: 'background.default', borderRadius: 2 }}>
+              <Typography color="text.secondary" sx={{ mb: 2 }}>
+                Nenhuma conta nesta carteira
+              </Typography>
+              <Button size="small" variant="outlined" startIcon={<AddIcon />} onClick={onAddAccount}>
+                Adicionar conta
+              </Button>
             </Box>
           )}
-        </Box>
-        <Box sx={{ mt: 2 }}>
-          <Typography variant="caption" color="text.secondary">
-            {t.wallet.currentBalance}
-          </Typography>
-          <Typography variant="h5" sx={{ fontWeight: 700 }} color="primary.main">
-            {formatCurrency(wallet.balance, wallet.currency)}
-          </Typography>
-        </Box>
-        <Button
-          fullWidth
-          variant="outlined"
-          size="small"
-          sx={{ mt: 2 }}
-          onClick={(e) => { e.stopPropagation(); onClick(); }}
-        >
-          {t.common.viewDetails}
-        </Button>
+        </Collapse>
       </CardContent>
     </Card>
   );
 }
 
 export default function WalletListPage() {
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+  const [selectedWalletId, setSelectedWalletId] = useState<string>('');
+  const [deleteAccountConfirm, setDeleteAccountConfirm] = useState<string | null>(null);
   const navigate = useNavigate();
   const { t } = useLanguage();
 
-  const { data: wallets, isLoading } = useWallets();
-  const deleteMutation = useDeleteWallet();
+  const { data: wallets, isLoading: walletsLoading } = useWallets();
+  const { data: allAccounts } = useAccounts();
+  const deleteAccountMutation = useDeleteAccount();
 
-  const handleEdit = (wallet: Wallet) => {
-    setEditingWallet(wallet);
-    setDialogOpen(true);
+  const getAccountsByWallet = (walletId: string) => {
+    return allAccounts?.filter(acc => acc.walletId === walletId) ?? [];
   };
 
-  const handleCreate = () => {
-    setEditingWallet(null);
-    setDialogOpen(true);
+  const handleAddAccount = (walletId: string) => {
+    setSelectedWalletId(walletId);
+    setAccountDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    deleteMutation.mutate(id, {
-      onSuccess: () => setDeleteConfirm(null),
-    });
+  const handleDeleteAccount = (accountId: string) => {
+    setDeleteAccountConfirm(accountId);
   };
 
-  if (isLoading) {
+  const confirmDeleteAccount = () => {
+    if (deleteAccountConfirm) {
+      deleteAccountMutation.mutate(deleteAccountConfirm, {
+        onSuccess: () => setDeleteAccountConfirm(null),
+      });
+    }
+  };
+
+  if (walletsLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
@@ -258,73 +267,69 @@ export default function WalletListPage() {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={handleCreate}
+          onClick={() => navigate('/wallets')}
         >
           {t.wallet.newWallet}
         </Button>
       </Box>
 
-      <Grid container spacing={3}>
-        {wallets?.map((wallet) => (
-          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={wallet.id}>
-            <WalletCard
-              wallet={wallet}
-              onEdit={() => handleEdit(wallet)}
-              onDelete={() => setDeleteConfirm(wallet.id)}
-              onClick={() => navigate(`/wallets/${wallet.id}`)}
-            />
-          </Grid>
-        ))}
-        {wallets?.length === 0 && (
-          <Grid size={{ xs: 12 }}>
-            <Box
-              sx={{
-                textAlign: 'center',
-                py: 6,
-                px: 3,
-                bgcolor: 'background.paper',
-                borderRadius: 3,
-                border: '1px dashed',
-                borderColor: 'divider',
-              }}
-            >
-              <Typography variant="h6" sx={{ mb: 1 }}>
-                Você ainda não criou nenhuma carteira
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Crie sua primeira carteira para começar a organizar seu dinheiro.
-              </Typography>
-              <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate}>
-                {t.wallet.newWallet}
-              </Button>
-            </Box>
-          </Grid>
-        )}
-      </Grid>
+      {wallets && wallets.length > 0 ? (
+        wallets.map((wallet) => (
+          <WalletGroup
+            key={wallet.id}
+            wallet={wallet}
+            accounts={getAccountsByWallet(wallet.id)}
+            onAddAccount={() => handleAddAccount(wallet.id)}
+            onDeleteAccount={handleDeleteAccount}
+          />
+        ))
+      ) : (
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 6,
+            px: 3,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            border: '1px dashed',
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            Você ainda não criou nenhuma carteira
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Crie sua primeira carteira para começar a organizar suas contas.
+          </Typography>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/wallets')}>
+            {t.wallet.newWallet}
+          </Button>
+        </Box>
+      )}
 
-      <WalletFormDialog
-        open={dialogOpen}
+      <AccountFormDialog
+        open={accountDialogOpen}
         onClose={() => {
-          setDialogOpen(false);
-          setEditingWallet(null);
+          setAccountDialogOpen(false);
+          setSelectedWalletId('');
         }}
-        wallet={editingWallet}
+        walletId={selectedWalletId}
       />
 
-      <Dialog open={!!deleteConfirm} onClose={() => setDeleteConfirm(null)}>
-        <DialogTitle>{t.wallet.deleteWallet}</DialogTitle>
+      <Dialog open={!!deleteAccountConfirm} onClose={() => setDeleteAccountConfirm(null)}>
+        <DialogTitle>Excluir Conta</DialogTitle>
         <DialogContent>
           <Typography>
-            {t.wallet.deleteWalletMsg}
+            Tem certeza que deseja excluir esta conta? Esta ação não pode ser desfeita.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteConfirm(null)}>{t.common.cancel}</Button>
+          <Button onClick={() => setDeleteAccountConfirm(null)}>{t.common.cancel}</Button>
           <Button
-            onClick={() => deleteConfirm && handleDelete(deleteConfirm)}
+            onClick={confirmDeleteAccount}
             color="error"
             variant="contained"
-            disabled={deleteMutation.isPending}
+            disabled={deleteAccountMutation.isPending}
           >
             {t.common.delete}
           </Button>
