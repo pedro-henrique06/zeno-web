@@ -32,7 +32,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import CategoryIcon from '@mui/icons-material/Category';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import PersonIcon from '@mui/icons-material/Person';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLogout } from '@/hooks/useAuth';

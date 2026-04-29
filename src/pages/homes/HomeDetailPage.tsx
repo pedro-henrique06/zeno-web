@@ -34,8 +34,7 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import LinkIcon from '@mui/icons-material/Link';
 import DeleteIcon from '@mui/icons-material/Delete';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import Alert from '@mui/material/Alert';
 import {
   useHome,
   useHomeMembers,
@@ -51,8 +50,8 @@ import {
   useBudgetAlert,
 } from '@/hooks/useHomes';
 import { useWallets } from '@/hooks/useWallets';
-import type { Category, HomeRole } from '@/types';
-import { CategoryLabels } from '@/types';
+import type { HomeRole } from '@/types';
+import { Category, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
 

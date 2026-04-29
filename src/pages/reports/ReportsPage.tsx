@@ -5,16 +5,11 @@ import {
   CardContent,
   Grid,
   CircularProgress,
-  Button,
 } from '@mui/material';
-import { BarChart } from '@mui/x-charts/BarChart';
-import { PieChart } from '@mui/x-charts/PieChart';
 import { useWallets } from '@/hooks/useWallets';
-import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
 
 export default function ReportsPage() {
-  const { t } = useLanguage();
   const { data: wallets, isLoading } = useWallets();
 
   if (isLoading) {

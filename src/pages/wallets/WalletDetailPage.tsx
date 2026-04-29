@@ -38,11 +38,6 @@ import { EntryType, Category, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
 
-const entryTypeColors: Record<EntryType, 'success' | 'error'> = {
-  [EntryType.Credit]: 'success',
-  [EntryType.Debit]: 'error',
-};
-
 interface EntryFormData {
   title: string;
   value: number;

@@ -130,6 +130,7 @@ interface WalletCardProps {
 
 function WalletCard({ wallet, onEdit, onDelete, onClick }: WalletCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <Card

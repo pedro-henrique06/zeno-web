@@ -2,13 +2,6 @@ import { useState, useEffect } from 'react';
 import {
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Chip,
   Dialog,
   DialogTitle,
@@ -67,9 +60,6 @@ function SalaryFormDialog({
   const updateMutation = useUpdateSalary();
   const isEditing = !!salary;
   const { t } = useLanguage();
-
-  const currentWalletId = isEditing ? salary?.walletId : form.walletId;
-  const selectedWalletCurrency = wallets.find((w) => w.id === currentWalletId)?.currency ?? 'BRL';
 
   const handleSubmit = () => {
     if (isEditing && salary) {

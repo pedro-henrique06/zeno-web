@@ -12,7 +12,6 @@ import {
   Chip,
   Box,
   CircularProgress,
-  IconButton,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -28,15 +27,14 @@ import { formatCurrency } from '@/utils/currency';
 export default function EntriesPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [selectedWalletId, setSelectedWalletId] = useState<string>('');
   const { data: wallets } = useWallets();
+  const [walletId, setWalletId] = useState<string>('');
 
   const now = new Date();
-  const { data: entries, isLoading } = useEntries(
-    now.getMonth() + 1,
-    now.getFullYear(),
-    selectedWalletId,
-  );
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+
+  const { data: entries, isLoading } = useEntries(month, year, walletId);
 
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
