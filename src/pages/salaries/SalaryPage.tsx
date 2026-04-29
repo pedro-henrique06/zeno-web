@@ -22,15 +22,19 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Card,
+  CardContent,
+  Grid,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useWallets } from '@/hooks/useWallets';
 import { useSalaries, useCreateSalary, useUpdateSalary, useDeleteSalary } from '@/hooks/useSalaries';
 import type { Salary, CreateSalaryRequest, UpdateSalaryRequest, Wallet } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency, formatDateTime, getCurrentLocale } from '@/utils/currency';
+import { formatCurrency, formatDate } from '@/utils/currency';
 
 interface SalaryFormData {
   walletId: string;
@@ -102,7 +106,7 @@ function SalaryFormDialog({
             >
               {wallets.map((w) => (
                 <MenuItem key={w.id} value={w.id}>
-                  {w.name} ({w.currency})
+                  {w.name}
                 </MenuItem>
               ))}
             </Select>
@@ -112,17 +116,18 @@ function SalaryFormDialog({
             fullWidth
             label={t.common.wallet}
             margin="normal"
-            value={`${wallets.find((w) => w.id === salary?.walletId)?.name ?? '-'} (${selectedWalletCurrency})`}
+            value={`${wallets.find((w) => w.id === salary?.walletId)?.name ?? '-'}`}
             slotProps={{ input: { readOnly: true } }}
           />
         )}
         <TextField
           fullWidth
-          label={`${t.common.amount} (${selectedWalletCurrency})`}
+          label={t.common.value}
           type="number"
           margin="normal"
           value={form.amount || ''}
           onChange={(e) => setForm({ ...form, amount: Number(e.target.value) })}
+          slotProps={{ htmlInput: { min: 0 } }}
         />
         <TextField
           fullWidth
@@ -172,6 +177,100 @@ function SalaryFormDialog({
   );
 }
 
+interface SalaryCardProps {
+  salary: Salary;
+  wallet: Wallet | undefined;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+function SalaryCard({ salary, wallet, onEdit, onDelete }: SalaryCardProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useLanguage();
+
+  return (
+    <Card sx={{ position: 'relative' }}>
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+          <Box>
+            <Typography variant="subtitle2" color="text.secondary">
+              {salary.description || t.salary.recurringIncome}
+            </Typography>
+            <Typography variant="h5" sx={{ fontWeight: 700 }} color="success.main">
+              {formatCurrency(salary.amount, wallet?.currency)}
+            </Typography>
+          </Box>
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuOpen(!menuOpen);
+            }}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          {menuOpen && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 40,
+                right: 8,
+                bgcolor: 'background.paper',
+                borderRadius: 2,
+                boxShadow: 3,
+                zIndex: 10,
+                overflow: 'hidden',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1.5, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
+                onClick={() => { onEdit(); setMenuOpen(false); }}
+              >
+                <EditIcon fontSize="small" />
+                <Typography variant="body2">{t.common.edit}</Typography>
+              </Box>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1.5, cursor: 'pointer', color: 'error.main', '&:hover': { bgcolor: 'action.hover' } }}
+                onClick={() => { onDelete(); setMenuOpen(false); }}
+              >
+                <DeleteIcon fontSize="small" />
+                <Typography variant="body2">{t.common.delete}</Typography>
+              </Box>
+            </Box>
+          )}
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Chip
+              label={`Todo dia ${salary.dayOfMonth}`}
+              size="small"
+              variant="outlined"
+            />
+            <Chip
+              label={salary.active ? t.common.active : t.common.inactive}
+              size="small"
+              color={salary.active ? 'success' : 'default'}
+            />
+          </Box>
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="caption" color="text.secondary">
+            {t.common.wallet}: {wallet?.name ?? '-'}
+          </Typography>
+        </Box>
+        {salary.lastProcessedAt && (
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="caption" color="text.secondary">
+              {t.salary.lastEntry}: {formatDate(salary.lastProcessedAt)}
+            </Typography>
+          </Box>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function SalaryPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSalary, setEditingSalary] = useState<Salary | null>(null);
@@ -196,26 +295,20 @@ export default function SalaryPage() {
     );
   };
 
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
           {t.salary.title}
         </Typography>
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>{t.common.wallet}</InputLabel>
-          <Select
-            value={selectedWalletId || (wallets?.[0]?.id ?? '')}
-            label={t.common.wallet}
-            onChange={(e) => setSelectedWalletId(e.target.value)}
-          >
-            {wallets?.map((w) => (
-              <MenuItem key={w.id} value={w.id}>
-                {w.name} ({w.currency})
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -230,92 +323,86 @@ export default function SalaryPage() {
       </Box>
 
       {!wallets?.length && (
-        <Typography color="text.secondary">
-          {t.salary.noWalletsMsg}
-        </Typography>
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 6,
+            px: 3,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            border: '1px dashed',
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            {t.salary.noWalletsMsg}
+          </Typography>
+        </Box>
       )}
 
       {(wallets?.length ?? 0) > 0 && (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t.common.wallet}</TableCell>
-                <TableCell>{t.common.amount}</TableCell>
-                <TableCell>{t.common.day}</TableCell>
-                <TableCell>{t.common.description}</TableCell>
-                <TableCell>{t.common.status}</TableCell>
-                <TableCell>{t.common.lastProcessed}</TableCell>
-                <TableCell align="right">{t.common.actions}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isLoading && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <CircularProgress size={24} />
-                  </TableCell>
-                </TableRow>
-              )}
-              {salaries?.map((salary) => {
-                const wallet =
-                  wallets?.find((w) => w.id === salary.walletId);
+        <>
+          <Box sx={{ mb: 3 }}>
+            <FormControl sx={{ minWidth: 300 }}>
+              <InputLabel>{t.common.wallet}</InputLabel>
+              <Select
+                value={selectedWalletId || (wallets?.[0]?.id ?? '')}
+                label={t.common.wallet}
+                onChange={(e) => setSelectedWalletId(e.target.value)}
+              >
+                {wallets?.map((w) => (
+                  <MenuItem key={w.id} value={w.id}>
+                    {w.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {salaries && salaries.length > 0 ? (
+            <Grid container spacing={3}>
+              {salaries.map((salary) => {
+                const wallet = wallets?.find((w) => w.id === salary.walletId);
                 return (
-                  <TableRow key={salary.id}>
-                    <TableCell>{wallet?.name ?? '-'} ({wallet?.currency ?? 'BRL'})</TableCell>
-                    <TableCell>{formatCurrency(salary.amount, wallet?.currency)}</TableCell>
-                    <TableCell>{salary.dayOfMonth}</TableCell>
-                    <TableCell>{salary.description}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={salary.active ? t.common.active : t.common.inactive}
-                        color={salary.active ? 'success' : 'default'}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      {salary.lastProcessedAt
-                        ? formatDateTime(salary.lastProcessedAt, getCurrentLocale())
-                        : '-'}
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        size="small"
-                        onClick={() => {
-                          setEditingSalary(salary);
-                          setDialogOpen(true);
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() =>
-                          setDeleteConfirm({
-                            id: salary.id,
-                            walletId: salary.walletId,
-                          })
-                        }
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={salary.id}>
+                    <SalaryCard
+                      salary={salary}
+                      wallet={wallet}
+                      onEdit={() => { setEditingSalary(salary); setDialogOpen(true); }}
+                      onDelete={() => setDeleteConfirm({ id: salary.id, walletId: salary.walletId })}
+                    />
+                  </Grid>
                 );
               })}
-              {salaries?.length === 0 && !isLoading && (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <Typography color="text.secondary" sx={{ py: 3 }}>
-                      {t.salary.noSalaries}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+            </Grid>
+          ) : (
+            <Box
+              sx={{
+                textAlign: 'center',
+                py: 6,
+                px: 3,
+                bgcolor: 'background.paper',
+                borderRadius: 3,
+                border: '1px dashed',
+                borderColor: 'divider',
+              }}
+            >
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                {t.salary.noSalaries}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                {t.salary.createFirstSalary}
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => { setEditingSalary(null); setDialogOpen(true); }}
+              >
+                {t.salary.newSalary}
+              </Button>
+            </Box>
+          )}
+        </>
       )}
 
       <SalaryFormDialog

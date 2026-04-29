@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   CardContent,
-  CardActions,
   Grid,
   IconButton,
   Dialog,
@@ -22,6 +21,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 import { useWallets, useCreateWallet, useUpdateWallet, useDeleteWallet } from '@/hooks/useWallets';
 import type { Wallet, CreateWalletRequest, UpdateWalletRequest } from '@/types';
@@ -121,6 +121,99 @@ function WalletFormDialog({
   );
 }
 
+interface WalletCardProps {
+  wallet: Wallet;
+  onEdit: () => void;
+  onDelete: () => void;
+  onClick: () => void;
+}
+
+function WalletCard({ wallet, onEdit, onDelete, onClick }: WalletCardProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <Card
+      sx={{
+        cursor: 'pointer',
+        '&:hover': { bgcolor: 'action.hover' },
+        position: 'relative',
+      }}
+      onClick={onClick}
+    >
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              {wallet.name}
+            </Typography>
+            {wallet.description && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                {wallet.description}
+              </Typography>
+            )}
+          </Box>
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuOpen(!menuOpen);
+            }}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          {menuOpen && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 40,
+                right: 8,
+                bgcolor: 'background.paper',
+                borderRadius: 2,
+                boxShadow: 3,
+                zIndex: 10,
+                overflow: 'hidden',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1.5, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
+                onClick={() => { onEdit(); setMenuOpen(false); }}
+              >
+                <EditIcon fontSize="small" />
+                <Typography variant="body2">{t.common.edit}</Typography>
+              </Box>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1.5, cursor: 'pointer', color: 'error.main', '&:hover': { bgcolor: 'action.hover' } }}
+                onClick={() => { onDelete(); setMenuOpen(false); }}
+              >
+                <DeleteIcon fontSize="small" />
+                <Typography variant="body2">{t.common.delete}</Typography>
+              </Box>
+            </Box>
+          )}
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="caption" color="text.secondary">
+            {t.wallet.currentBalance}
+          </Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }} color="primary.main">
+            {formatCurrency(wallet.balance, wallet.currency)}
+          </Typography>
+        </Box>
+        <Button
+          fullWidth
+          variant="outlined"
+          size="small"
+          sx={{ mt: 2 }}
+          onClick={(e) => { e.stopPropagation(); onClick(); }}
+        >
+          {t.common.viewDetails}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function WalletListPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingWallet, setEditingWallet] = useState<Wallet | null>(null);
@@ -170,46 +263,40 @@ export default function WalletListPage() {
         </Button>
       </Box>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         {wallets?.map((wallet) => (
           <Grid size={{ xs: 12, sm: 6, md: 4 }} key={wallet.id}>
-            <Card
-              sx={{ cursor: 'pointer', '&:hover': { opacity: 0.9 } }}
+            <WalletCard
+              wallet={wallet}
+              onEdit={() => handleEdit(wallet)}
+              onDelete={() => setDeleteConfirm(wallet.id)}
               onClick={() => navigate(`/wallets/${wallet.id}`)}
-            >
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  {wallet.name}
-                </Typography>
-                {wallet.description && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    {wallet.description}
-                  </Typography>
-                )}
-                <Typography variant="h5" sx={{ fontWeight: 700 }} color="primary">
-                  {formatCurrency(wallet.balance, wallet.currency)}
-                </Typography>
-              </CardContent>
-              <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
-                <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(wallet); }}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  color="error"
-                  onClick={(e) => { e.stopPropagation(); setDeleteConfirm(wallet.id); }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </CardActions>
-            </Card>
+            />
           </Grid>
         ))}
         {wallets?.length === 0 && (
           <Grid size={{ xs: 12 }}>
-            <Typography color="text.secondary" align="center" sx={{ mt: 4 }}>
-              {t.wallet.noWallets}
-            </Typography>
+            <Box
+              sx={{
+                textAlign: 'center',
+                py: 6,
+                px: 3,
+                bgcolor: 'background.paper',
+                borderRadius: 3,
+                border: '1px dashed',
+                borderColor: 'divider',
+              }}
+            >
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Você ainda não criou nenhuma carteira
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Crie sua primeira carteira para começar a organizar seu dinheiro.
+              </Typography>
+              <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreate}>
+                {t.wallet.newWallet}
+              </Button>
+            </Box>
           </Grid>
         )}
       </Grid>

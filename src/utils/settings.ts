@@ -38,35 +38,43 @@ export function getLocaleFromLanguage(lang: string): string {
 }
 
 export function formatCurrency(value: number, currency: string = 'BRL'): string {
-  const locale = getLocaleFromCurrency(currency);
-  return new Intl.NumberFormat(locale, {
+  const locale = 'pt-BR';
+  const formatted = new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
   }).format(value);
+  if (value < 0) {
+    return formatted.replace('-', '-R$').replace('R$', '-R$');
+  }
+  return formatted;
 }
 
 export function formatDate(date: string | Date, locale?: string): string {
   const dateLocale = locale || getCurrentLocale();
-  return new Intl.DateTimeFormat(dateLocale, {
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '-';
+  return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
-  }).format(new Date(date));
+  }).format(d);
 }
 
 export function formatDateTime(date: string | Date, locale?: string): string {
   const dateLocale = locale || getCurrentLocale();
-  return new Intl.DateTimeFormat(dateLocale, {
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '-';
+  return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  }).format(new Date(date));
+  }).format(d);
 }
 
 export function formatMonthYear(date: Date, locale?: string): string {
-  const dateLocale = locale || getCurrentLocale();
+  const dateLocale = 'pt-BR';
   return new Intl.DateTimeFormat(dateLocale, {
     month: 'long',
     year: 'numeric',

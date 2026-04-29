@@ -21,18 +21,22 @@ import {
   MenuItem,
   CircularProgress,
   Box,
+  ToggleButtonGroup,
+  ToggleButton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '@/hooks/useWallets';
 import { useEntries, useCreateEntry, useUpdateEntry, useDeleteEntry } from '@/hooks/useEntries';
 import type { Entry, CreateEntryRequest, UpdateEntryRequest } from '@/types';
 import { EntryType, Category, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency, formatDate, formatMonthYear } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 const entryTypeColors: Record<EntryType, 'success' | 'error'> = {
   [EntryType.Credit]: 'success',
@@ -95,17 +99,41 @@ function EntryFormDialog({
     onClose();
   };
 
+  const handleTypeChange = (_: React.MouseEvent<HTMLElement>, newType: EntryType | null) => {
+    if (newType !== null) {
+      setForm({ ...form, type: newType });
+    }
+  };
+
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>{isEditing ? t.wallet.editEntry : t.wallet.newEntry}</DialogTitle>
       <DialogContent>
-        <TextField
-          fullWidth
-          label={t.common.title}
-          margin="normal"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-        />
+        <Box sx={{ mb: 2, mt: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            {t.common.type}
+          </Typography>
+          <ToggleButtonGroup
+            value={form.type}
+            exclusive
+            onChange={handleTypeChange}
+            fullWidth
+            sx={{
+              '& .MuiToggleButton-root': {
+                py: 1.5,
+                textTransform: 'none',
+                fontWeight: 600,
+              },
+            }}
+          >
+            <ToggleButton value={EntryType.Credit} color="success">
+              {t.common.credit}
+            </ToggleButton>
+            <ToggleButton value={EntryType.Debit} color="error">
+              {t.common.debit}
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
         <TextField
           fullWidth
           label={t.common.value}
@@ -113,18 +141,15 @@ function EntryFormDialog({
           margin="normal"
           value={form.value || ''}
           onChange={(e) => setForm({ ...form, value: Number(e.target.value) })}
+          slotProps={{ htmlInput: { min: 0 } }}
         />
         <TextField
           fullWidth
-          select
-          label={t.common.type}
+          label={t.common.title}
           margin="normal"
-          value={form.type}
-          onChange={(e) => setForm({ ...form, type: Number(e.target.value) as EntryType })}
-        >
-          <MenuItem value={EntryType.Credit}>{t.common.credit}</MenuItem>
-          <MenuItem value={EntryType.Debit}>{t.common.debit}</MenuItem>
-        </TextField>
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
         <TextField
           fullWidth
           select
@@ -135,11 +160,14 @@ function EntryFormDialog({
             setForm({ ...form, category: Number(e.target.value) as Category })
           }
         >
-          {Object.entries(CategoryLabels).map(([value, label]) => (
-            <MenuItem key={value} value={Number(value)}>
-              {label}
-            </MenuItem>
-          ))}
+          <MenuItem value={Category.None}>{t.category.selectCategory}</MenuItem>
+          {Object.entries(CategoryLabels)
+            .filter(([key]) => key !== '0')
+            .map(([value, label]) => (
+              <MenuItem key={value} value={Number(value)}>
+                {label}
+              </MenuItem>
+            ))}
         </TextField>
         <TextField
           fullWidth
@@ -166,7 +194,7 @@ function EntryFormDialog({
           onClick={handleSubmit}
           variant="contained"
           disabled={
-            !form.title || createMutation.isPending || updateMutation.isPending
+            !form.title || !form.value || createMutation.isPending || updateMutation.isPending
           }
         >
           {isEditing ? t.common.save : t.common.create}
@@ -185,13 +213,11 @@ export default function WalletDetailPage() {
   const { t } = useLanguage();
 
   const now = new Date();
-  const month = now.getMonth() + 1;
-  const year = now.getFullYear();
 
   const { data: wallet, isLoading: walletLoading } = useWallet(id ?? '');
   const { data: entries, isLoading: entriesLoading } = useEntries(
-    month,
-    year,
+    now.getMonth() + 1,
+    now.getFullYear(),
     id ?? '',
   );
   const deleteMutation = useDeleteEntry();
@@ -203,6 +229,12 @@ export default function WalletDetailPage() {
     );
   };
 
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '-';
+    return d.toLocaleDateString('pt-BR');
+  };
+
   if (walletLoading || entriesLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -210,6 +242,12 @@ export default function WalletDetailPage() {
       </Box>
     );
   }
+
+  const monthResult = (entries ?? []).reduce((acc, entry) => {
+    return entry.type === EntryType.Credit
+      ? acc + entry.value
+      : acc - entry.value;
+  }, 0);
 
   return (
     <Box>
@@ -227,14 +265,62 @@ export default function WalletDetailPage() {
             </Typography>
           )}
         </Box>
-        <Typography variant="h5" sx={{ fontWeight: 700 }} color="primary">
-          {formatCurrency(wallet?.balance ?? 0, wallet?.currency)}
-        </Typography>
+      </Box>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 2, mb: 4 }}>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            {t.wallet.currentBalance}
+          </Typography>
+          <Typography variant="h5" sx={{ fontWeight: 700 }} color="primary.main">
+            {formatCurrency(wallet?.balance ?? 0, wallet?.currency)}
+          </Typography>
+        </Paper>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            {t.wallet.incomeThisMonth}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TrendingUpIcon color="success" fontSize="small" />
+            <Typography variant="h5" sx={{ fontWeight: 700 }} color="success.main">
+              {formatCurrency(
+                (entries ?? []).filter((e) => e.type === EntryType.Credit).reduce((s, e) => s + e.value, 0),
+                wallet?.currency
+              )}
+            </Typography>
+          </Box>
+        </Paper>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            {t.wallet.expensesThisMonth}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TrendingDownIcon color="error" fontSize="small" />
+            <Typography variant="h5" sx={{ fontWeight: 700 }} color="error.main">
+              {formatCurrency(
+                (entries ?? []).filter((e) => e.type === EntryType.Debit).reduce((s, e) => s + e.value, 0),
+                wallet?.currency
+              )}
+            </Typography>
+          </Box>
+        </Paper>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="body2" color="text.secondary">
+            {t.wallet.monthResult}
+          </Typography>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 700 }}
+            color={monthResult >= 0 ? 'success.main' : 'error.main'}
+          >
+            {monthResult >= 0 ? '+' : ''}{formatCurrency(monthResult, wallet?.currency)}
+          </Typography>
+        </Paper>
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
         <Typography variant="h6">
-          {t.wallet.entries} - {formatMonthYear(now)}
+          {t.wallet.entries}
         </Typography>
         <Button
           variant="contained"
@@ -255,30 +341,29 @@ export default function WalletDetailPage() {
               <TableCell>{t.common.date}</TableCell>
               <TableCell>{t.common.title}</TableCell>
               <TableCell>{t.common.category}</TableCell>
-              <TableCell>{t.common.type}</TableCell>
               <TableCell align="right">{t.common.value}</TableCell>
               <TableCell align="right">{t.common.actions}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {entries?.map((entry) => (
+            {(entries ?? []).map((entry) => (
               <TableRow key={entry.id}>
+                <TableCell>{formatDate(entry.date)}</TableCell>
                 <TableCell>
-                  {formatDate(entry.date)}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {entry.type === EntryType.Credit ? (
+                      <TrendingUpIcon fontSize="small" color="success" />
+                    ) : (
+                      <TrendingDownIcon fontSize="small" color="error" />
+                    )}
+                    {entry.title}
+                  </Box>
                 </TableCell>
-                <TableCell>{entry.title}</TableCell>
                 <TableCell>
                   <Chip
                     label={CategoryLabels[entry.category]}
                     size="small"
                     variant="outlined"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={entry.type === EntryType.Credit ? t.common.credit : t.common.debit}
-                    size="small"
-                    color={entryTypeColors[entry.type]}
                   />
                 </TableCell>
                 <TableCell align="right">
@@ -298,24 +383,39 @@ export default function WalletDetailPage() {
                       setDialogOpen(true);
                     }}
                   >
-                    <EditIcon />
+                    <EditIcon fontSize="small" />
                   </IconButton>
                   <IconButton
                     size="small"
                     color="error"
                     onClick={() => setDeleteConfirm(entry.id)}
                   >
-                    <DeleteIcon />
+                    <DeleteIcon fontSize="small" />
                   </IconButton>
                 </TableCell>
               </TableRow>
             ))}
             {entries?.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} align="center">
-                  <Typography color="text.secondary" sx={{ py: 3 }}>
-                    {t.wallet.noEntries}
-                  </Typography>
+                <TableCell colSpan={5} align="center">
+                  <Box sx={{ py: 4 }}>
+                    <Typography variant="h6" sx={{ mb: 1 }}>
+                      {t.wallet.noEntriesYet}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      {t.wallet.createFirstEntry}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      startIcon={<AddIcon />}
+                      onClick={() => {
+                        setEditingEntry(null);
+                        setDialogOpen(true);
+                      }}
+                    >
+                      {t.wallet.newEntry}
+                    </Button>
+                  </Box>
                 </TableCell>
               </TableRow>
             )}

@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   CardContent,
-  CardActions,
   Grid,
   IconButton,
   Dialog,
@@ -20,6 +19,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
 import {
   useHomes,
@@ -122,6 +122,99 @@ function HomeFormDialog({
   );
 }
 
+interface HomeCardProps {
+  home: Home;
+  onEdit: () => void;
+  onDelete: () => void;
+  onClick: () => void;
+}
+
+function HomeCard({ home, onEdit, onDelete, onClick }: HomeCardProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useLanguage();
+
+  return (
+    <Card
+      sx={{
+        cursor: 'pointer',
+        '&:hover': { bgcolor: 'action.hover' },
+        position: 'relative',
+      }}
+      onClick={onClick}
+    >
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              {home.name}
+            </Typography>
+            {home.description && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                {home.description}
+              </Typography>
+            )}
+          </Box>
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuOpen(!menuOpen);
+            }}
+          >
+            <MoreVertIcon />
+          </IconButton>
+          {menuOpen && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 40,
+                right: 8,
+                bgcolor: 'background.paper',
+                borderRadius: 2,
+                boxShadow: 3,
+                zIndex: 10,
+                overflow: 'hidden',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1.5, cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
+                onClick={() => { onEdit(); setMenuOpen(false); }}
+              >
+                <EditIcon fontSize="small" />
+                <Typography variant="body2">{t.common.edit}</Typography>
+              </Box>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1.5, cursor: 'pointer', color: 'error.main', '&:hover': { bgcolor: 'action.hover' } }}
+                onClick={() => { onDelete(); setMenuOpen(false); }}
+              >
+                <DeleteIcon fontSize="small" />
+                <Typography variant="body2">{t.common.delete}</Typography>
+              </Box>
+            </Box>
+          )}
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          <Chip
+            label={SplitModeLabels[home.splitMode]}
+            size="small"
+            variant="outlined"
+          />
+        </Box>
+        <Button
+          fullWidth
+          variant="outlined"
+          size="small"
+          sx={{ mt: 2 }}
+          onClick={(e) => { e.stopPropagation(); onClick(); }}
+        >
+          {t.common.viewDetails}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function HomeListPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingHome, setEditingHome] = useState<Home | null>(null);
@@ -164,48 +257,44 @@ export default function HomeListPage() {
         </Button>
       </Box>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         {homes?.map((home) => (
           <Grid size={{ xs: 12, sm: 6, md: 4 }} key={home.id}>
-            <Card
-              sx={{ cursor: 'pointer', '&:hover': { opacity: 0.9 } }}
+            <HomeCard
+              home={home}
+              onEdit={() => { setEditingHome(home); setDialogOpen(true); }}
+              onDelete={() => setDeleteConfirm(home.id)}
               onClick={() => navigate(`/homes/${home.id}`)}
-            >
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  {home.name}
-                </Typography>
-                {home.description && (
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    {home.description}
-                  </Typography>
-                )}
-                <Chip
-                  label={SplitModeLabels[home.splitMode]}
-                  size="small"
-                  variant="outlined"
-                />
-              </CardContent>
-              <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
-                <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleEdit(home); }}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  color="error"
-                  onClick={(e) => { e.stopPropagation(); setDeleteConfirm(home.id); }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </CardActions>
-            </Card>
+            />
           </Grid>
         ))}
         {homes?.length === 0 && (
           <Grid size={{ xs: 12 }}>
-            <Typography color="text.secondary" align="center" sx={{ mt: 4 }}>
-              {t.home.noHomes}
-            </Typography>
+            <Box
+              sx={{
+                textAlign: 'center',
+                py: 6,
+                px: 3,
+                bgcolor: 'background.paper',
+                borderRadius: 3,
+                border: '1px dashed',
+                borderColor: 'divider',
+              }}
+            >
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                {t.home.noHomes}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Crie uma casa para compartilhar despesas com sua família.
+              </Typography>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => { setEditingHome(null); setDialogOpen(true); }}
+              >
+                {t.home.newHome}
+              </Button>
+            </Box>
           </Grid>
         )}
       </Grid>
@@ -240,9 +329,4 @@ export default function HomeListPage() {
       </Dialog>
     </Box>
   );
-
-  function handleEdit(home: Home) {
-    setEditingHome(home);
-    setDialogOpen(true);
-  }
 }

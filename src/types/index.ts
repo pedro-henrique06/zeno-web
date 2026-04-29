@@ -1,7 +1,7 @@
 export type EntryType = 0 | 1;
 export const EntryType = { Credit: 0, Debit: 1 } as const;
 
-export type Category = 0 | 1 | 2 | 3 | 4 | 5;
+export type Category = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
 export const Category = {
   None: 0,
   Restaurant: 1,
@@ -9,6 +9,14 @@ export const Category = {
   Entertainment: 3,
   Utilities: 4,
   Transportation: 5,
+  Health: 6,
+  Education: 7,
+  Shopping: 8,
+  Housing: 9,
+  Salary: 10,
+  Gift: 11,
+  Investment: 12,
+  Other: 13,
 } as const;
 
 export const CategoryKeys: Record<Category, string> = {
@@ -18,27 +26,48 @@ export const CategoryKeys: Record<Category, string> = {
   [3]: 'entertainment',
   [4]: 'utilities',
   [5]: 'transportation',
+  [6]: 'health',
+  [7]: 'education',
+  [8]: 'shopping',
+  [9]: 'housing',
+  [10]: 'salary',
+  [11]: 'gift',
+  [12]: 'investment',
+  [13]: 'other',
 };
 
 export const CategoryLabels: Record<Category, string> = {
-  [0]: 'None',
-  [1]: 'Restaurant',
-  [2]: 'Grocery',
-  [3]: 'Entertainment',
-  [4]: 'Utilities',
-  [5]: 'Transportation',
+  [0]: 'Nenhuma',
+  [1]: 'Restaurante',
+  [2]: 'Mercado',
+  [3]: 'Entretenimento',
+  [4]: 'Serviços',
+  [5]: 'Transporte',
+  [6]: 'Saúde',
+  [7]: 'Educação',
+  [8]: 'Compras',
+  [9]: 'Moradia',
+  [10]: 'Salário',
+  [11]: 'Presente',
+  [12]: 'Investimento',
+  [13]: 'Outros',
 };
 
 export type SplitMode = 0 | 1;
 export const SplitMode = { ByTotalBalance: 0, ByIndividualAccounts: 1 } as const;
 
 export const SplitModeLabels: Record<SplitMode, string> = {
-  [0]: 'By Total Balance',
-  [1]: 'By Individual Accounts',
+  [0]: 'Por Saldo Total',
+  [1]: 'Por Contas Individuais',
 };
 
 export type HomeRole = 0 | 1;
 export const HomeRole = { Admin: 0, Member: 1 } as const;
+
+export const HomeRoleKeys: Record<HomeRole, string> = {
+  [0]: 'admin',
+  [1]: 'member',
+};
 
 export interface User {
   id: string;
@@ -120,6 +149,7 @@ export interface UpdateEntryRequest {
 export interface Salary {
   id: string;
   walletId: string;
+  userId: string;
   amount: number;
   description: string;
   dayOfMonth: number;
@@ -133,6 +163,7 @@ export interface CreateSalaryRequest {
   amount: number;
   description: string;
   dayOfMonth: number;
+  active: boolean;
 }
 
 export interface UpdateSalaryRequest {

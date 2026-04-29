@@ -22,7 +22,6 @@ import {
   DialogActions,
   TextField,
   MenuItem,
-  Alert,
   Card,
   CardContent,
   Grid,
@@ -35,6 +34,8 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import LinkIcon from '@mui/icons-material/Link';
 import DeleteIcon from '@mui/icons-material/Delete';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import {
   useHome,
   useHomeMembers,
@@ -53,7 +54,7 @@ import { useWallets } from '@/hooks/useWallets';
 import type { Category, HomeRole } from '@/types';
 import { CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency, formatMonthYear } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 function TabPanel({
   children,
@@ -101,7 +102,7 @@ export default function HomeDetailPage() {
   const createExpenseMutation = useCreateExpense();
   const deleteExpenseMutation = useDeleteExpense(id ?? '');
 
-  const [addMemberId, setAddMemberId] = useState('');
+  const [memberEmail, setMemberEmail] = useState('');
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [deleteExpenseConfirm, setDeleteExpenseConfirm] = useState<string | null>(null);
   const [expenseForm, setExpenseForm] = useState({
@@ -123,6 +124,8 @@ export default function HomeDetailPage() {
     );
   }
 
+  const monthName = now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
   return (
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 2 }}>
@@ -141,7 +144,7 @@ export default function HomeDetailPage() {
         </Box>
       </Box>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)}>
+      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 0 }}>
         <Tab label={t.home.tabMembers} />
         <Tab label={t.home.tabExpenses} />
         <Tab label={t.home.tabSplit} />
@@ -151,84 +154,107 @@ export default function HomeDetailPage() {
       <TabPanel value={tab} index={0}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper sx={{ p: 2 }}>
+            <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
                 {t.home.members}
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+              <Box sx={{ display: 'flex', gap: 1, mb: 3 }}>
                 <TextField
                   size="small"
-                  label={t.home.userId}
-                  value={addMemberId}
-                  onChange={(e) => setAddMemberId(e.target.value)}
+                  label={t.home.inviteMember}
+                  placeholder={t.home.inviteMemberHint}
+                  value={memberEmail}
+                  onChange={(e) => setMemberEmail(e.target.value)}
                   sx={{ flexGrow: 1 }}
+                  type="email"
                 />
                 <Button
                   variant="contained"
                   startIcon={<PersonAddIcon />}
-                  disabled={!addMemberId || addMemberMutation.isPending}
+                  disabled={!memberEmail || addMemberMutation.isPending}
                   onClick={() =>
-                    addMemberMutation.mutate(addMemberId, {
-                      onSuccess: () => setAddMemberId(''),
+                    addMemberMutation.mutate(memberEmail, {
+                      onSuccess: () => setMemberEmail(''),
                     })
                   }
                 >
                   {t.home.add}
                 </Button>
               </Box>
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t.home.user}</TableCell>
-                      <TableCell>{t.home.role}</TableCell>
-                      <TableCell align="right">{t.common.actions}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {members?.map((member) => (
-                      <TableRow key={member.userId}>
-                        <TableCell>
-                          {member.userName ?? t.common.unknownUser}
-                        </TableCell>
-                        <TableCell>
-                           <Chip
-                            label={HomeRoleLabels[member.role]}
-                            color={
-                              member.role === 0 ? 'primary' : 'default'
-                            }
-                            size="small"
-                          />
-                        </TableCell>
-                        <TableCell align="right">
-                          {member.role === 0 && (
-                            <IconButton
-                              size="small"
-                              color="error"
-                              disabled={removeMemberMutation.isPending}
-                              onClick={() =>
-                                removeMemberMutation.mutate(member.userId)
-                              }
-                            >
-                              <PersonRemoveIcon />
-                            </IconButton>
-                          )}
-                        </TableCell>
+              {members && members.length > 0 ? (
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>{t.home.user}</TableCell>
+                        <TableCell>{t.home.role}</TableCell>
+                        <TableCell align="right">{t.common.actions}</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                      {members.map((member) => (
+                        <TableRow key={member.userId}>
+                          <TableCell>
+                            <Box>
+                              <Typography variant="body2">
+                                {member.userName ?? t.common.unknownUser}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {member.userEmail}
+                              </Typography>
+                            </Box>
+                          </TableCell>
+                          <TableCell>
+                           <Chip
+                             label={HomeRoleLabels[member.role]}
+                             color={
+                               member.role === 0 ? 'primary' : 'default'
+                             }
+                             size="small"
+                           />
+                          </TableCell>
+                          <TableCell align="right">
+                            {member.role === 0 && (
+                              <IconButton
+                                size="small"
+                                color="error"
+                                disabled={removeMemberMutation.isPending}
+                                onClick={() =>
+                                  removeMemberMutation.mutate(member.userId)
+                                }
+                              >
+                                <PersonRemoveIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    {t.home.noMembersYet}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {t.home.noMembersHint}
+                  </Typography>
+                </Box>
+              )}
             </Paper>
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper sx={{ p: 2 }}>
+            <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
                 {t.home.linkedWallets}
               </Typography>
               {unlinkedWallets.length > 0 && (
                 <Box sx={{ mb: 2 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                    {t.home.noWalletsLinkedHint}
+                  </Typography>
                   {unlinkedWallets.map((w) => (
                     <Box
                       key={w.id}
@@ -252,104 +278,150 @@ export default function HomeDetailPage() {
                   ))}
                 </Box>
               )}
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t.common.wallet}</TableCell>
-                      <TableCell align="right">{t.common.actions}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {homeWallets?.map((hw) => {
-                      const wallet = myWallets?.find(
-                        (w) => w.id === hw.walletId,
-                      );
-                      return (
-                        <TableRow key={hw.walletId}>
-                          <TableCell>
-                            {wallet?.name ?? hw.walletId}
-                          </TableCell>
-                          <TableCell align="right">
-                            <IconButton
-                              size="small"
-                              color="error"
-                              disabled={unlinkWalletMutation.isPending}
-                              onClick={() =>
-                                unlinkWalletMutation.mutate(hw.walletId)
-                              }
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              {homeWallets && homeWallets.length > 0 ? (
+                <TableContainer>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>{t.common.wallet}</TableCell>
+                        <TableCell align="right">{t.common.actions}</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {homeWallets.map((hw) => {
+                        const wallet = myWallets?.find(
+                          (w) => w.id === hw.walletId,
+                        );
+                        return (
+                          <TableRow key={hw.walletId}>
+                            <TableCell>
+                              <Typography variant="body2">
+                                {wallet?.name ?? hw.walletId}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                {formatCurrency(wallet?.balance ?? 0, wallet?.currency)}
+                              </Typography>
+                            </TableCell>
+                            <TableCell align="right">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                disabled={unlinkWalletMutation.isPending}
+                                onClick={() =>
+                                  unlinkWalletMutation.mutate(hw.walletId)
+                                }
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {t.home.noWalletsLinked}
+                  </Typography>
+                </Box>
+              )}
             </Paper>
           </Grid>
         </Grid>
       </TabPanel>
 
       <TabPanel value={tab} index={1}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="h6">
-            {t.home.tabExpenses} - {formatMonthYear(now)}
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            {t.home.tabExpenses} - {monthName}
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setExpenseDialogOpen(true)}
-          >
-            {t.home.newExpense}
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box>
+              <Typography variant="body2" color="text.secondary">
+                {t.home.totalExpenses}
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 700 }} color="error.main">
+                {formatCurrency(
+                  expenses?.reduce((sum, e) => sum + e.value, 0) ?? 0,
+                )}
+              </Typography>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setExpenseDialogOpen(true)}
+            >
+              {t.home.newExpense}
+            </Button>
+          </Box>
         </Box>
 
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t.common.title}</TableCell>
-                <TableCell>{t.common.category}</TableCell>
-                <TableCell align="right">{t.common.value}</TableCell>
-                <TableCell align="right">{t.common.actions}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {expenses?.map((exp) => (
-                <TableRow key={exp.id}>
-                  <TableCell>{exp.title}</TableCell>
-                  <TableCell>
-                    <Chip label={CategoryLabels[exp.category]} size="small" variant="outlined" />
-                  </TableCell>
-                  <TableCell align="right">
-                    {formatCurrency(exp.value)}
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      size="small"
-                      color="error"
-                      onClick={() => setDeleteExpenseConfirm(exp.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {expenses?.length === 0 && (
+        {expenses && expenses.length > 0 ? (
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    <Typography color="text.secondary" sx={{ py: 3 }}>
-                      {t.home.noExpenses}
-                    </Typography>
-                  </TableCell>
+                  <TableCell>{t.common.title}</TableCell>
+                  <TableCell>{t.common.category}</TableCell>
+                  <TableCell align="right">{t.common.value}</TableCell>
+                  <TableCell align="right">{t.common.actions}</TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {expenses.map((exp) => (
+                  <TableRow key={exp.id}>
+                    <TableCell>{exp.title}</TableCell>
+                    <TableCell>
+                      <Chip label={CategoryLabels[exp.category]} size="small" variant="outlined" />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography color="error.main" sx={{ fontWeight: 600 }}>
+                        {formatCurrency(exp.value)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => setDeleteExpenseConfirm(exp.id)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        ) : (
+          <Box
+            sx={{
+              textAlign: 'center',
+              py: 6,
+              px: 3,
+              bgcolor: 'background.paper',
+              borderRadius: 3,
+              border: '1px dashed',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {t.home.noExpensesYet}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              {t.home.noExpensesHint}
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setExpenseDialogOpen(true)}
+            >
+              {t.home.addExpense}
+            </Button>
+          </Box>
+        )}
 
         <Dialog open={expenseDialogOpen} onClose={() => setExpenseDialogOpen(false)} maxWidth="sm" fullWidth>
           <DialogTitle>{t.home.newExpense}</DialogTitle>
@@ -389,11 +461,14 @@ export default function HomeDetailPage() {
                 })
               }
             >
-              {Object.entries(CategoryLabels).map(([value, label]) => (
-                <MenuItem key={value} value={Number(value)}>
-                  {label}
-                </MenuItem>
-              ))}
+              <MenuItem value={Category.None}>{t.category.selectCategory}</MenuItem>
+              {Object.entries(CategoryLabels)
+                .filter(([key]) => key !== '0')
+                .map(([value, label]) => (
+                  <MenuItem key={value} value={Number(value)}>
+                    {label}
+                  </MenuItem>
+                ))}
             </TextField>
           </DialogContent>
           <DialogActions>
@@ -409,12 +484,15 @@ export default function HomeDetailPage() {
                     month,
                     year,
                   },
-                  { onSuccess: () => setExpenseDialogOpen(false) },
+                  { onSuccess: () => {
+                    setExpenseDialogOpen(false);
+                    setExpenseForm({ title: '', value: 0, category: 0 });
+                  }},
                 );
               }}
               variant="contained"
               disabled={
-                !expenseForm.title || createExpenseMutation.isPending
+                !expenseForm.title || !expenseForm.value || createExpenseMutation.isPending
               }
             >
               {t.common.create}
@@ -453,71 +531,79 @@ export default function HomeDetailPage() {
 
       <TabPanel value={tab} index={2}>
         <Typography variant="h6" gutterBottom>
-          {t.home.expenseSplit} - {formatMonthYear(now)}
+          {t.home.expenseSplit} - {monthName}
         </Typography>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t.home.splitMember}</TableCell>
-                <TableCell>{t.home.splitWallet}</TableCell>
-                <TableCell align="right">{t.home.splitIncome}</TableCell>
-                <TableCell align="right">{t.home.splitWeight}</TableCell>
-                <TableCell align="right">{t.home.splitPercent}</TableCell>
-                <TableCell align="right">{t.home.splitAmountToPay}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {split?.map((s) => (
-                <TableRow key={s.walletId}>
-                  <TableCell>{s.userName}</TableCell>
-                  <TableCell>{s.walletName}</TableCell>
-                  <TableCell align="right">
-                    {formatCurrency(s.walletIncome)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {formatCurrency(s.salaryWeight)}
-                  </TableCell>
-                  <TableCell align="right">{s.percentage.toFixed(1)}%</TableCell>
-                  <TableCell align="right">
-                    <Typography sx={{ fontWeight: 600 }}>
-                      {formatCurrency(s.amountToPay)}
+        {split && split.length > 0 ? (
+          <Grid container spacing={2}>
+            {split.map((s) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={s.walletId}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      {s.userName}
                     </Typography>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {split?.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    <Typography color="text.secondary" sx={{ py: 3 }}>
-                      {t.home.noSplitData}
+                    <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                      {s.walletName}
                     </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">
+                          {t.home.splitPercent}
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }}>
+                          {s.percentage.toFixed(1)}%
+                        </Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">
+                          {t.home.splitAmountToPay}
+                        </Typography>
+                        <Typography variant="body1" sx={{ fontWeight: 600 }} color="error.main">
+                          {formatCurrency(s.amountToPay)}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        ) : (
+          <Box
+            sx={{
+              textAlign: 'center',
+              py: 6,
+              px: 3,
+              bgcolor: 'background.paper',
+              borderRadius: 3,
+              border: '1px dashed',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {t.home.noSplitData}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              {t.home.noSplitDataHint}
+            </Typography>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setTab(1)}
+            >
+              {t.home.addExpense}
+            </Button>
+          </Box>
+        )}
       </TabPanel>
 
       <TabPanel value={tab} index={3}>
         <Typography variant="h6" gutterBottom>
-          {t.home.budgetTitle} - {formatMonthYear(now)}
+          {t.home.budgetTitle}
         </Typography>
-        {budgetAlert && (
+        {budgetAlert ? (
           <Paper sx={{ p: 3 }}>
-            {budgetAlert.isOverBudget && (
-              <Alert severity="warning" sx={{ mb: 2 }}>
-                {budgetAlert.alertMessage}
-              </Alert>
-            )}
-            {!budgetAlert.isOverBudget && (
-              <Alert severity="success" sx={{ mb: 2 }}>
-                {t.home.withinBudget}
-              </Alert>
-            )}
-
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
               <Grid size={{ xs: 12, sm: 4 }}>
                 <Card variant="outlined">
                   <CardContent>
@@ -539,9 +625,7 @@ export default function HomeDetailPage() {
                     <Typography
                       variant="h5"
                       sx={{ fontWeight: 700 }}
-                      color={
-                        budgetAlert.isOverBudget ? 'error.main' : 'success.main'
-                      }
+                      color={budgetAlert.isOverBudget ? 'error.main' : 'success.main'}
                     >
                       {formatCurrency(budgetAlert.totalExpenses)}
                     </Typography>
@@ -554,18 +638,15 @@ export default function HomeDetailPage() {
                     <Typography variant="body2" color="text.secondary">
                       {t.home.needsUsage}
                     </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                      {budgetAlert.needsUsagePercentage.toFixed(1)}%
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                        {budgetAlert.needsUsagePercentage.toFixed(0)}%
+                      </Typography>
+                    </Box>
                     <LinearProgress
                       variant="determinate"
-                      value={Math.min(
-                        budgetAlert.needsUsagePercentage,
-                        100,
-                      )}
-                      color={
-                        budgetAlert.isOverBudget ? 'error' : 'success'
-                      }
+                      value={Math.min(budgetAlert.needsUsagePercentage, 100)}
+                      color={budgetAlert.isOverBudget ? 'error' : 'success'}
                       sx={{ mt: 1 }}
                     />
                   </CardContent>
@@ -573,7 +654,17 @@ export default function HomeDetailPage() {
               </Grid>
             </Grid>
 
-            <Divider sx={{ my: 2 }} />
+            <Divider sx={{ my: 3 }} />
+
+            {budgetAlert.isOverBudget ? (
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                {budgetAlert.alertMessage}
+              </Alert>
+            ) : (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                {t.home.withinBudget}
+              </Alert>
+            )}
 
             <Grid container spacing={2}>
               <Grid size={{ xs: 4 }}>
@@ -602,6 +693,25 @@ export default function HomeDetailPage() {
               </Grid>
             </Grid>
           </Paper>
+        ) : (
+          <Box
+            sx={{
+              textAlign: 'center',
+              py: 6,
+              px: 3,
+              bgcolor: 'background.paper',
+              borderRadius: 3,
+              border: '1px dashed',
+              borderColor: 'divider',
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              {t.home.budgetAlert}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              {t.home.budgetHint}
+            </Typography>
+          </Box>
         )}
       </TabPanel>
     </Box>
