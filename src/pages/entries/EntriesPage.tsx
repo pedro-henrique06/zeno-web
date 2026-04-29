@@ -18,8 +18,6 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useNavigate } from 'react-router-dom';
 import { useEntries } from '@/hooks/useEntries';
-import { useWallets } from '@/hooks/useWallets';
-import type { Entry } from '@/types';
 import { EntryType, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
@@ -27,8 +25,7 @@ import { formatCurrency } from '@/utils/currency';
 export default function EntriesPage() {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { data: wallets } = useWallets();
-  const [walletId, setWalletId] = useState<string>('');
+  const [walletId] = useState<string>('');
 
   const now = new Date();
   const month = now.getMonth() + 1;
