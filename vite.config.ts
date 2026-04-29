@@ -19,6 +19,8 @@ export default defineConfig({
         orientation: 'portrait',
         scope: '/',
         start_url: '/',
+        categories: ['finance', 'productivity'],
+        prefer_related_applications: false,
         icons: [
           {
             src: 'pwa/icon-192.svg',
