@@ -21,7 +21,6 @@ import {
   Divider,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -32,7 +31,7 @@ import { useAccounts, useCreateAccount, useDeleteAccount } from '@/hooks/useAcco
 import type { Wallet, Account, CreateAccountRequest } from '@/types';
 import { AccountTypeLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency, CURRENCIES } from '@/utils/currency';
+import { formatCurrency } from '@/utils/currency';
 
 interface AccountFormDialogProps {
   open: boolean;
