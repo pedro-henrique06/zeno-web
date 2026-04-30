@@ -38,7 +38,7 @@ export default function RegisterPage() {
 
   const handleGoogleRegister = () => {
     // Usar URL absoluta sem passar pelo axios para evitar interceptadores
-    window.location.assign('/api/auth/google');
+    window.location.assign('/api/auth/oauth/google');
   };
 
   const handleSubmit = (e: React.FormEvent) => {

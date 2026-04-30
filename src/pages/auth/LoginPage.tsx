@@ -49,7 +49,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = () => {
     // Usar URL absoluta sem passar pelo axios para evitar interceptadores
-    window.location.assign('/api/auth/google');
+    window.location.assign('/api/auth/oauth/google');
   };
 
   return (
