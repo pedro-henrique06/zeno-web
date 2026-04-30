@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useSearchParams } from 'react-router-dom';
 import AppLayout from '@/components/layout/AppLayout';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
@@ -12,6 +12,22 @@ import EntriesPage from '@/pages/entries/EntriesPage';
 import CategoriesPage from '@/pages/categories/CategoriesPage';
 import ReportsPage from '@/pages/reports/ReportsPage';
 import { useAuth } from '@/contexts/AuthContext';
+import { useEffect } from 'react';
+
+function OAuthCallback() {
+  const [searchParams] = useSearchParams();
+  const { login } = useAuth();
+  const token = searchParams.get('token');
+
+  useEffect(() => {
+    if (token) {
+      login(token);
+      window.location.href = '/';
+    }
+  }, [token, login]);
+
+  return null;
+}
 
 function ProtectedLayout() {
   const { isAuthenticated } = useAuth();
@@ -33,6 +49,7 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
         <Route element={<ProtectedLayout />}>
           <Route index element={<DashboardPage />} />
           <Route path="wallets" element={<WalletListPage />} />

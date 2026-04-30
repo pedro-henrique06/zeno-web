@@ -14,6 +14,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import GoogleIcon from '@mui/icons-material/Google';
 import { useRegister } from '@/hooks/useAuth';
 import { useLanguage } from '@/i18n/LanguageContext';
 import type { RegisterRequest } from '@/types';
@@ -34,6 +35,10 @@ export default function RegisterPage() {
   const navigate = useNavigate();
 
   const registerMutation = useRegister();
+
+  const handleGoogleRegister = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL || '/api'}/auth/google`;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,11 +184,21 @@ export default function RegisterPage() {
             />
             <Button
               fullWidth
+              variant="outlined"
+              size="large"
+              onClick={handleGoogleRegister}
+              startIcon={<GoogleIcon />}
+              sx={{ mt: 3, mb: 2, py: 1.5 }}
+            >
+              {t.auth.signInWithGoogle || 'Sign up with Google'}
+            </Button>
+            <Button
+              fullWidth
               type="submit"
               variant="contained"
               size="large"
               disabled={registerMutation.isPending}
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
+              sx={{ mb: 2, py: 1.5 }}
             >
               {registerMutation.isPending ? t.auth.creatingAccount : t.auth.createAccount}
             </Button>
