@@ -54,6 +54,7 @@ export default function RegisterPage() {
       name: form.name,
       email: form.email,
       password: form.password,
+      confirmPassword: form.confirmPassword,
       phone: form.phone || undefined,
       document: form.document || undefined,
       birthDate: form.birthDate ? new Date(form.birthDate).toISOString() : undefined,
@@ -64,9 +65,12 @@ export default function RegisterPage() {
         navigate('/login');
       },
       onError: (err) => {
-        setError(
-          (err as any).response?.data?.message || t.auth.registerError,
-        );
+        const errorData = (err as any).response?.data;
+        if (Array.isArray(errorData)) {
+          setError(errorData.map((e: any) => e.error).join(', '));
+        } else {
+          setError(errorData?.message || errorData?.error || t.auth.registerError);
+        }
       },
     });
   };
