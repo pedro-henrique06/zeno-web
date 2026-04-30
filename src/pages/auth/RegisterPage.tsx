@@ -135,7 +135,9 @@ export default function RegisterPage() {
               label={t.auth.birthDate || 'Data de Nascimento'}
               type="date"
               margin="normal"
-              InputLabelProps={{ shrink: true }}
+              slotProps={{
+                inputLabel: { shrink: true }
+              }}
               value={form.birthDate}
               onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
             />
