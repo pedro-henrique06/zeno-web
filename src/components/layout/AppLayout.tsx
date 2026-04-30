@@ -171,17 +171,17 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 >
                   {item.icon}
                 </ListItemIcon>
-                {!collapsed && !isMobile && (
-                  <ListItemText
-                    primary={item.label}
-                    sx={{
-                      '& .MuiTypography-root': {
-                        fontSize: '0.9rem',
-                        fontWeight: active ? 600 : 400,
-                      },
-                    }}
-                  />
-                )}
+{!collapsed && (
+                    <ListItemText
+                      primary={item.label}
+                      sx={{
+                        '& .MuiTypography-root': {
+                          fontSize: '0.9rem',
+                          fontWeight: active ? 600 : 400,
+                        },
+                      }}
+                    />
+                  )}
               </ListItemButton>
             </Tooltip>
           );

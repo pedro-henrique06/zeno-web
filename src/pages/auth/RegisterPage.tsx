@@ -23,6 +23,10 @@ export default function RegisterPage() {
     name: '',
     email: '',
     password: '',
+    confirmPassword: '',
+    phone: '',
+    document: '',
+    birthDate: '',
   });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +38,22 @@ export default function RegisterPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    registerMutation.mutate(form, {
+
+    if (form.password !== form.confirmPassword) {
+      setError(t.auth.passwordMismatch || 'As senhas não conferem');
+      return;
+    }
+
+    const submitData = {
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      phone: form.phone || undefined,
+      document: form.document || undefined,
+      birthDate: form.birthDate ? new Date(form.birthDate).toISOString() : undefined,
+    };
+
+    registerMutation.mutate(submitData, {
       onSuccess: () => {
         navigate('/login');
       },
@@ -99,6 +118,29 @@ export default function RegisterPage() {
             />
             <TextField
               fullWidth
+              label={t.auth.phone || 'Telefone'}
+              margin="normal"
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            />
+            <TextField
+              fullWidth
+              label={t.auth.document || 'CPF/CNPJ'}
+              margin="normal"
+              value={form.document}
+              onChange={(e) => setForm({ ...form, document: e.target.value })}
+            />
+            <TextField
+              fullWidth
+              label={t.auth.birthDate || 'Data de Nascimento'}
+              type="date"
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+              value={form.birthDate}
+              onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
+            />
+            <TextField
+              fullWidth
               label={t.auth.password}
               type={showPassword ? 'text' : 'password'}
               margin="normal"
@@ -122,6 +164,16 @@ export default function RegisterPage() {
                   ),
                 },
               }}
+            />
+            <TextField
+              fullWidth
+              label={t.auth.confirmPassword || 'Confirmar Senha'}
+              type={showPassword ? 'text' : 'password'}
+              margin="normal"
+              required
+              autoComplete="new-password"
+              value={form.confirmPassword}
+              onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
             />
             <Button
               fullWidth

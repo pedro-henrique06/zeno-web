@@ -10,10 +10,12 @@ import {
   Link as MuiLink,
   InputAdornment,
   IconButton,
+  Divider,
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import GoogleIcon from '@mui/icons-material/Google';
 import { useLogin } from '@/hooks/useAuth';
 import { useLanguage } from '@/i18n/LanguageContext';
 import type { LoginRequest } from '@/types';
@@ -43,6 +45,10 @@ export default function LoginPage() {
         );
       },
     });
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL || '/api'}/auth/google`;
   };
 
   return (
@@ -138,7 +144,19 @@ export default function LoginPage() {
             >
               {loginMutation.isPending ? t.auth.signingIn : t.auth.signIn}
             </Button>
-            <Typography variant="body2" align="center">
+            <Divider sx={{ my: 3 }} />
+            <Button
+              fullWidth
+              type="button"
+              variant="outlined"
+              size="large"
+              onClick={handleGoogleLogin}
+              startIcon={<GoogleIcon />}
+              sx={{ py: 1.5, textTransform: 'none', fontWeight: 500 }}
+            >
+              {t.auth.signInWithGoogle || 'Sign in with Google'}
+            </Button>
+            <Typography variant="body2" align="center" sx={{ mt: 3 }}>
               {t.auth.noAccount}{' '}
               <MuiLink component={Link} to="/register" underline="hover">
                 {t.auth.createOne}
