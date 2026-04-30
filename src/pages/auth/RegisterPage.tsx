@@ -37,7 +37,8 @@ export default function RegisterPage() {
   const registerMutation = useRegister();
 
   const handleGoogleRegister = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL || '/api'}/auth/google`;
+    // Usar URL absoluta sem passar pelo axios para evitar interceptadores
+    window.location.assign('/api/auth/google');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
