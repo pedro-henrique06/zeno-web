@@ -54,7 +54,6 @@ export default function RegisterPage() {
       name: form.name,
       email: form.email,
       password: form.password,
-      confirmPassword: form.confirmPassword,
       phone: form.phone || undefined,
       document: form.document || undefined,
       birthDate: form.birthDate ? new Date(form.birthDate).toISOString() : undefined,
