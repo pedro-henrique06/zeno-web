@@ -57,14 +57,18 @@ export default function RegisterPage() {
       confirmPassword: form.confirmPassword,
       phone: form.phone || undefined,
       document: form.document || undefined,
-      birthDate: form.birthDate ? new Date(form.birthDate).toISOString() : undefined,
+      birthDate: form.birthDate || undefined,
     };
 
     registerMutation.mutate(submitData, {
-      onSuccess: () => {
+      onSuccess: (data) => {
+        console.log('Register success:', data);
         navigate('/login');
       },
       onError: (err) => {
+        console.log('Register error:', err);
+        console.log('Register error response:', err?.response);
+        console.log('Register error status:', err?.response?.status);
         const errorData = (err as any).response?.data;
         if (Array.isArray(errorData)) {
           setError(errorData.map((e: any) => e.error).join(', '));
