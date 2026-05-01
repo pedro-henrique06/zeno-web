@@ -61,19 +61,17 @@ export default function RegisterPage() {
     };
 
     registerMutation.mutate(submitData, {
-      onSuccess: (data) => {
-        console.log('Register success:', data);
+      onSuccess: () => {
         navigate('/login');
       },
-      onError: (err) => {
-        console.log('Register error:', err);
-        console.log('Register error response:', err?.response);
-        console.log('Register error status:', err?.response?.status);
-        const errorData = (err as any).response?.data;
+      onError: (err: unknown) => {
+        const axiosError = err as { response?: { data: unknown } };
+        const errorData = axiosError.response?.data;
         if (Array.isArray(errorData)) {
-          setError(errorData.map((e: any) => e.error).join(', '));
+          setError(errorData.map((e: unknown) => (e as { error: string }).error).join(', '));
         } else {
-          setError(errorData?.message || errorData?.error || t.auth.registerError);
+          const msg = errorData as { message?: string; error?: string };
+          setError(msg?.message || msg?.error || t.auth.registerError);
         }
       },
     });
