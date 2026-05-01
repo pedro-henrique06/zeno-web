@@ -36,10 +36,12 @@ export default function RegisterPage() {
 
   const registerMutation = useRegister();
 
-  const handleGoogleRegister = () => {
-    // Usar URL absoluta sem passar pelo axios para evitar interceptadores
-    window.location.assign('/api/auth/oauth/google');
-  };
+  const apiUrl = import.meta.env.VITE_API_URL || '';
+    const googleAuthUrl = apiUrl ? `${apiUrl}/auth/oauth/google` : '/api/auth/oauth/google';
+
+    const handleGoogleRegister = () => {
+      window.location.assign(googleAuthUrl);
+    };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
