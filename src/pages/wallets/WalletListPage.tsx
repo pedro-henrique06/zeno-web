@@ -25,12 +25,82 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useNavigate } from 'react-router-dom';
-import { useWallets } from '@/hooks/useWallets';
+import { useWallets, useCreateWallet } from '@/hooks/useWallets';
 import { useAccounts, useCreateAccount, useDeleteAccount } from '@/hooks/useAccounts';
 import type { Wallet, Account, CreateAccountRequest } from '@/types';
 import { AccountTypeLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
+
+interface WalletFormDialogProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+function WalletFormDialog({ open, onClose }: WalletFormDialogProps) {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [currency, setCurrency] = useState('BRL');
+  const createMutation = useCreateWallet();
+  const { t } = useLanguage();
+
+  const handleSubmit = () => {
+    createMutation.mutate({ name, description, currency }, { onSuccess: onClose });
+  };
+
+  const handleClose = () => {
+    setName('');
+    setDescription('');
+    setCurrency('BRL');
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <DialogTitle>{t.wallet.newWallet}</DialogTitle>
+      <DialogContent>
+        <TextField
+          fullWidth
+          label={t.common.name}
+          margin="normal"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Ex: Minha Carteira Principal"
+        />
+        <TextField
+          fullWidth
+          label={t.common.description}
+          margin="normal"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Ex: Carteira para gastos do dia a dia"
+        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Moeda</InputLabel>
+          <Select
+            value={currency}
+            label="Moeda"
+            onChange={(e) => setCurrency(e.target.value)}
+          >
+            <MenuItem value="BRL">BRL - Real Brasileiro</MenuItem>
+            <MenuItem value="USD">USD - Dólar Americano</MenuItem>
+            <MenuItem value="EUR">EUR - Euro</MenuItem>
+          </Select>
+        </FormControl>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>{t.common.cancel}</Button>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          disabled={!name || createMutation.isPending}
+        >
+          {t.common.create}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
 
 interface AccountFormDialogProps {
   open: boolean;
@@ -217,10 +287,10 @@ function WalletGroup({ wallet, accounts, onAddAccount, onDeleteAccount }: Wallet
 }
 
 export default function WalletListPage() {
+  const [walletDialogOpen, setWalletDialogOpen] = useState(false);
   const [accountDialogOpen, setAccountDialogOpen] = useState(false);
   const [selectedWalletId, setSelectedWalletId] = useState<string>('');
   const [deleteAccountConfirm, setDeleteAccountConfirm] = useState<string | null>(null);
-  const navigate = useNavigate();
   const { t } = useLanguage();
 
   const { data: wallets, isLoading: walletsLoading } = useWallets();
@@ -265,7 +335,7 @@ export default function WalletListPage() {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => navigate('/wallets')}
+          onClick={() => setWalletDialogOpen(true)}
         >
           {t.wallet.newWallet}
         </Button>
@@ -299,11 +369,16 @@ export default function WalletListPage() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Crie sua primeira carteira para começar a organizar suas contas.
           </Typography>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/wallets')}>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setWalletDialogOpen(true)}>
             {t.wallet.newWallet}
           </Button>
         </Box>
       )}
+
+      <WalletFormDialog
+        open={walletDialogOpen}
+        onClose={() => setWalletDialogOpen(false)}
+      />
 
       <AccountFormDialog
         open={accountDialogOpen}
