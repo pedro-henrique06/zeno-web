@@ -24,7 +24,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
-import { useNavigate } from 'react-router-dom';
 import { useWallets, useCreateWallet } from '@/hooks/useWallets';
 import { useAccounts, useCreateAccount, useDeleteAccount } from '@/hooks/useAccounts';
 import type { Wallet, Account, CreateAccountRequest } from '@/types';
@@ -61,7 +60,7 @@ function WalletFormDialog({ open, onClose }: WalletFormDialogProps) {
       <DialogContent>
         <TextField
           fullWidth
-          label={t.common.name}
+          label={t.wallet.name}
           margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -69,7 +68,7 @@ function WalletFormDialog({ open, onClose }: WalletFormDialogProps) {
         />
         <TextField
           fullWidth
-          label={t.common.description}
+          label={t.wallet.description}
           margin="normal"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
