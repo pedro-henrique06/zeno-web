@@ -89,10 +89,10 @@ function SalaryFormDialog({
       <DialogContent>
         {!isEditing ? (
           <FormControl fullWidth margin="normal">
-            <InputLabel>{t.common.account}</InputLabel>
+            <InputLabel>{t.common.wallet}</InputLabel>
             <Select
               value={form.accountId}
-              label={t.common.account}
+              label={t.common.wallet}
               onChange={(e) => setForm({ ...form, accountId: e.target.value })}
             >
               {accounts.map((a: Account) => (
@@ -105,7 +105,7 @@ function SalaryFormDialog({
         ) : (
           <TextField
             fullWidth
-            label={t.common.account}
+            label={t.common.wallet}
             margin="normal"
             value={`${accounts.find((a: Account) => a.id === salary?.accountId)?.name ?? '-'}`}
             slotProps={{ input: { readOnly: true } }}
@@ -330,7 +330,7 @@ export default function SalaryPage() {
           }}
         >
           <Typography variant="h6" sx={{ mb: 1 }}>
-            {t.salary.noAccounts}
+            {t.salary.noWalletsMsg}
           </Typography>
         </Box>
       )}
@@ -339,10 +339,10 @@ export default function SalaryPage() {
         <>
           <Box sx={{ mb: 3 }}>
             <FormControl sx={{ minWidth: 300 }}>
-              <InputLabel>{t.common.account}</InputLabel>
+              <InputLabel>{t.common.wallet}</InputLabel>
               <Select
                 value={selectedAccountId || (accounts?.[0]?.id ?? '')}
-                label={t.common.account}
+                label={t.common.wallet}
                 onChange={(e) => setSelectedAccountId(e.target.value)}
               >
                 {accounts?.map((a: Account) => (
