@@ -31,16 +31,9 @@ export function getCategoryLabel(category: Category): string {
     [3]: 'entertainment',
     [4]: 'utilities',
     [5]: 'transportation',
-    [6]: 'health',
-    [7]: 'education',
-    [8]: 'shopping',
-    [9]: 'housing',
-    [10]: 'salary',
-    [11]: 'gift',
-    [12]: 'investment',
-    [13]: 'other',
+    [6]: 'salary',
   };
-  const key = keyMap[category] ?? 'other';
+  const key = keyMap[category] ?? 'salary';
   return getNestedValue(translations[locale].category, key);
 }
 
