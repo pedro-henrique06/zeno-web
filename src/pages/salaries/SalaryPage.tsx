@@ -24,8 +24,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useWallets } from '@/hooks/useWallets';
-import { useAccounts, useSalaries, useCreateSalary, useUpdateSalary, useDeleteSalary } from '@/hooks/useSalaries';
-import type { Salary, CreateSalaryRequest, UpdateSalaryRequest, Wallet, Account } from '@/types';
+import { useAccounts } from '@/hooks/useAccounts';
+import { useSalaries, useCreateSalary, useUpdateSalary, useDeleteSalary } from '@/hooks/useSalaries';
+import type { Salary, CreateSalaryRequest, UpdateSalaryRequest, Account, Wallet } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency, formatDate } from '@/utils/currency';
 
@@ -94,7 +95,7 @@ function SalaryFormDialog({
               label={t.common.account}
               onChange={(e) => setForm({ ...form, accountId: e.target.value })}
             >
-              {accounts.map((a) => (
+              {accounts.map((a: Account) => (
                 <MenuItem key={a.id} value={a.id}>
                   {a.name} - {a.bank}
                 </MenuItem>
@@ -106,7 +107,7 @@ function SalaryFormDialog({
             fullWidth
             label={t.common.account}
             margin="normal"
-            value={`${accounts.find((a) => a.id === salary?.accountId)?.name ?? '-'}`}
+            value={`${accounts.find((a: Account) => a.id === salary?.accountId)?.name ?? '-'}`}
             slotProps={{ input: { readOnly: true } }}
           />
         )}
@@ -170,13 +171,16 @@ function SalaryFormDialog({
 interface SalaryCardProps {
   salary: Salary;
   account: Account | undefined;
+  wallets: Wallet[];
   onEdit: () => void;
   onDelete: () => void;
 }
 
-function SalaryCard({ salary, account, onEdit, onDelete }: SalaryCardProps) {
+function SalaryCard({ salary, account, wallets, onEdit, onDelete }: SalaryCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useLanguage();
+
+  const wallet = wallets.find((w: Wallet) => w.id === account?.walletId);
 
   return (
     <Card sx={{ position: 'relative' }}>
@@ -187,7 +191,7 @@ function SalaryCard({ salary, account, onEdit, onDelete }: SalaryCardProps) {
               {salary.description || t.salary.recurringIncome}
             </Typography>
             <Typography variant="h5" sx={{ fontWeight: 700 }} color="success.main">
-              {formatCurrency(salary.amount, wallets?.find((w) => w.id === account?.walletId)?.currency)}
+              {formatCurrency(salary.amount, wallet?.currency)}
             </Typography>
           </Box>
           <IconButton
@@ -246,7 +250,7 @@ function SalaryCard({ salary, account, onEdit, onDelete }: SalaryCardProps) {
         </Box>
         <Box sx={{ mt: 2 }}>
           <Typography variant="caption" color="text.secondary">
-            {t.common.wallet}: {wallets?.find((w) => w.id === account?.walletId)?.name ?? '-'}
+            {t.common.wallet}: {wallet?.name ?? '-'}
           </Typography>
         </Box>
         {salary.lastProcessedAt && (
@@ -307,13 +311,13 @@ export default function SalaryPage() {
             setEditingSalary(null);
             setDialogOpen(true);
           }}
-          disabled={!wallets?.length}
+          disabled={!accounts?.length}
         >
           {t.salary.newSalary}
         </Button>
       </Box>
 
-      {!wallets?.length && (
+      {!accounts?.length && (
         <Box
           sx={{
             textAlign: 'center',
@@ -326,12 +330,12 @@ export default function SalaryPage() {
           }}
         >
           <Typography variant="h6" sx={{ mb: 1 }}>
-            {t.salary.noWalletsMsg}
+            {t.salary.noAccounts}
           </Typography>
         </Box>
       )}
 
-      {(wallets?.length ?? 0) > 0 && (
+      {(accounts?.length ?? 0) > 0 && (
         <>
           <Box sx={{ mb: 3 }}>
             <FormControl sx={{ minWidth: 300 }}>
@@ -341,7 +345,7 @@ export default function SalaryPage() {
                 label={t.common.account}
                 onChange={(e) => setSelectedAccountId(e.target.value)}
               >
-                {accounts?.map((a) => (
+                {accounts?.map((a: Account) => (
                   <MenuItem key={a.id} value={a.id}>
                     {a.name} - {a.bank}
                   </MenuItem>
@@ -353,12 +357,13 @@ export default function SalaryPage() {
           {salaries && salaries.length > 0 ? (
             <Grid container spacing={3}>
               {salaries.map((salary) => {
-                const account = accounts?.find((a) => a.id === salary.accountId);
+                const account = accounts?.find((a: Account) => a.id === salary.accountId);
                 return (
                   <Grid size={{ xs: 12, sm: 6, md: 4 }} key={salary.id}>
                     <SalaryCard
                       salary={salary}
                       account={account}
+                      wallets={wallets ?? []}
                       onEdit={() => { setEditingSalary(salary); setDialogOpen(true); }}
                       onDelete={() => setDeleteConfirm({ id: salary.id, accountId: salary.accountId })}
                     />
@@ -402,7 +407,7 @@ export default function SalaryPage() {
           setDialogOpen(false);
           setEditingSalary(null);
         }}
-        wallets={wallets ?? []}
+        accounts={accounts ?? []}
         salary={editingSalary}
       />
 
@@ -418,7 +423,7 @@ export default function SalaryPage() {
           <Button onClick={() => setDeleteConfirm(null)}>{t.common.cancel}</Button>
           <Button
             onClick={() =>
-              deleteConfirm && handleDelete(deleteConfirm.id, deleteConfirm.walletId)
+              deleteConfirm && handleDelete(deleteConfirm.id, deleteConfirm.accountId)
             }
             color="error"
             variant="contained"
