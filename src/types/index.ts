@@ -192,7 +192,7 @@ export interface UpdateEntryRequest {
 
 export interface Salary {
   id: string;
-  walletId: string;
+  accountId: string;
   userId: string;
   amount: number;
   description: string;
@@ -203,7 +203,7 @@ export interface Salary {
 }
 
 export interface CreateSalaryRequest {
-  walletId: string;
+  accountId: string;
   amount: number;
   description: string;
   dayOfMonth: number;
@@ -212,7 +212,7 @@ export interface CreateSalaryRequest {
 
 export interface UpdateSalaryRequest {
   id: string;
-  walletId: string;
+  accountId: string;
   amount: number;
   description: string;
   dayOfMonth: number;

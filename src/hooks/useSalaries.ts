@@ -2,11 +2,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as salaryApi from '@/api/salary';
 import type { CreateSalaryRequest, UpdateSalaryRequest } from '@/types';
 
-export function useSalaries(walletId: string) {
+export function useSalaries(accountId: string) {
   return useQuery({
-    queryKey: ['salaries', walletId],
-    queryFn: () => salaryApi.getSalariesByWallet(walletId),
-    enabled: !!walletId,
+    queryKey: ['salaries', accountId],
+    queryFn: () => salaryApi.getSalariesByWallet(accountId),
+    enabled: !!accountId,
   });
 }
 
@@ -16,7 +16,7 @@ export function useCreateSalary() {
   return useMutation({
     mutationFn: (data: CreateSalaryRequest) => salaryApi.createSalary(data),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['salaries', variables.walletId] });
+      queryClient.invalidateQueries({ queryKey: ['salaries', variables.accountId] });
     },
   });
 }
@@ -36,10 +36,10 @@ export function useDeleteSalary() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (args: { id: string; walletId: string }) =>
+    mutationFn: (args: { id: string; accountId: string }) =>
       salaryApi.deleteSalary(args.id),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['salaries', variables.walletId] });
+      queryClient.invalidateQueries({ queryKey: ['salaries', variables.accountId] });
     },
   });
 }

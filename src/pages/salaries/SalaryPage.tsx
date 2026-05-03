@@ -24,13 +24,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useWallets } from '@/hooks/useWallets';
-import { useSalaries, useCreateSalary, useUpdateSalary, useDeleteSalary } from '@/hooks/useSalaries';
-import type { Salary, CreateSalaryRequest, UpdateSalaryRequest, Wallet } from '@/types';
+import { useAccounts, useSalaries, useCreateSalary, useUpdateSalary, useDeleteSalary } from '@/hooks/useSalaries';
+import type { Salary, CreateSalaryRequest, UpdateSalaryRequest, Wallet, Account } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency, formatDate } from '@/utils/currency';
 
 interface SalaryFormData {
-  walletId: string;
+  accountId: string;
   amount: number;
   description: string;
   dayOfMonth: number;
@@ -40,16 +40,16 @@ interface SalaryFormData {
 function SalaryFormDialog({
   open,
   onClose,
-  wallets,
+  accounts,
   salary,
 }: {
   open: boolean;
   onClose: () => void;
-  wallets: Wallet[];
+  accounts: Account[];
   salary?: Salary | null;
 }) {
   const [form, setForm] = useState<SalaryFormData>({
-    walletId: salary?.walletId ?? wallets[0]?.id ?? '',
+    accountId: salary?.accountId ?? accounts[0]?.id ?? '',
     amount: salary?.amount ?? 0,
     description: salary?.description ?? '',
     dayOfMonth: salary?.dayOfMonth ?? 1,
@@ -73,7 +73,7 @@ function SalaryFormDialog({
 
   const handleClose = () => {
     setForm({
-      walletId: wallets[0]?.id ?? '',
+      accountId: accounts[0]?.id ?? '',
       amount: 0,
       description: '',
       dayOfMonth: 1,
@@ -88,15 +88,15 @@ function SalaryFormDialog({
       <DialogContent>
         {!isEditing ? (
           <FormControl fullWidth margin="normal">
-            <InputLabel>{t.common.wallet}</InputLabel>
+            <InputLabel>{t.common.account}</InputLabel>
             <Select
-              value={form.walletId}
-              label={t.common.wallet}
-              onChange={(e) => setForm({ ...form, walletId: e.target.value })}
+              value={form.accountId}
+              label={t.common.account}
+              onChange={(e) => setForm({ ...form, accountId: e.target.value })}
             >
-              {wallets.map((w) => (
-                <MenuItem key={w.id} value={w.id}>
-                  {w.name}
+              {accounts.map((a) => (
+                <MenuItem key={a.id} value={a.id}>
+                  {a.name} - {a.bank}
                 </MenuItem>
               ))}
             </Select>
@@ -104,9 +104,9 @@ function SalaryFormDialog({
         ) : (
           <TextField
             fullWidth
-            label={t.common.wallet}
+            label={t.common.account}
             margin="normal"
-            value={`${wallets.find((w) => w.id === salary?.walletId)?.name ?? '-'}`}
+            value={`${accounts.find((a) => a.id === salary?.accountId)?.name ?? '-'}`}
             slotProps={{ input: { readOnly: true } }}
           />
         )}
@@ -157,7 +157,7 @@ function SalaryFormDialog({
           onClick={handleSubmit}
           variant="contained"
           disabled={
-            !form.walletId || !form.amount || createMutation.isPending || updateMutation.isPending
+            !form.accountId || !form.amount || createMutation.isPending || updateMutation.isPending
           }
         >
           {isEditing ? t.common.save : t.common.create}
@@ -169,12 +169,12 @@ function SalaryFormDialog({
 
 interface SalaryCardProps {
   salary: Salary;
-  wallet: Wallet | undefined;
+  account: Account | undefined;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-function SalaryCard({ salary, wallet, onEdit, onDelete }: SalaryCardProps) {
+function SalaryCard({ salary, account, onEdit, onDelete }: SalaryCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useLanguage();
 
@@ -187,7 +187,7 @@ function SalaryCard({ salary, wallet, onEdit, onDelete }: SalaryCardProps) {
               {salary.description || t.salary.recurringIncome}
             </Typography>
             <Typography variant="h5" sx={{ fontWeight: 700 }} color="success.main">
-              {formatCurrency(salary.amount, wallet?.currency)}
+              {formatCurrency(salary.amount, wallets?.find((w) => w.id === account?.walletId)?.currency)}
             </Typography>
           </Box>
           <IconButton
@@ -246,7 +246,7 @@ function SalaryCard({ salary, wallet, onEdit, onDelete }: SalaryCardProps) {
         </Box>
         <Box sx={{ mt: 2 }}>
           <Typography variant="caption" color="text.secondary">
-            {t.common.wallet}: {wallet?.name ?? '-'}
+            {t.common.wallet}: {wallets?.find((w) => w.id === account?.walletId)?.name ?? '-'}
           </Typography>
         </Box>
         {salary.lastProcessedAt && (
@@ -264,23 +264,24 @@ function SalaryCard({ salary, wallet, onEdit, onDelete }: SalaryCardProps) {
 export default function SalaryPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingSalary, setEditingSalary] = useState<Salary | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; walletId: string } | null>(null);
-  const [selectedWalletId, setSelectedWalletId] = useState<string>('');
+  const [deleteConfirm, setDeleteConfirm] = useState<{ id: string; accountId: string } | null>(null);
+  const [selectedAccountId, setSelectedAccountId] = useState<string>('');
   const { t } = useLanguage();
 
   const { data: wallets } = useWallets();
-  const { data: salaries, isLoading } = useSalaries(selectedWalletId || (wallets?.[0]?.id ?? ''));
+  const { data: accounts } = useAccounts();
+  const { data: salaries, isLoading } = useSalaries(selectedAccountId);
 
   useEffect(() => {
-    if (!selectedWalletId && wallets?.length) {
-      setSelectedWalletId(wallets[0].id);
+    if (!selectedAccountId && accounts?.length) {
+      setSelectedAccountId(accounts[0].id);
     }
-  }, [wallets, selectedWalletId]);
+  }, [accounts, selectedAccountId]);
   const deleteMutation = useDeleteSalary();
 
-  const handleDelete = (id: string, wid: string) => {
+  const handleDelete = (id: string, aid: string) => {
     deleteMutation.mutate(
-      { id, walletId: wid },
+      { id, accountId: aid },
       { onSuccess: () => setDeleteConfirm(null) },
     );
   };
@@ -334,15 +335,15 @@ export default function SalaryPage() {
         <>
           <Box sx={{ mb: 3 }}>
             <FormControl sx={{ minWidth: 300 }}>
-              <InputLabel>{t.common.wallet}</InputLabel>
+              <InputLabel>{t.common.account}</InputLabel>
               <Select
-                value={selectedWalletId || (wallets?.[0]?.id ?? '')}
-                label={t.common.wallet}
-                onChange={(e) => setSelectedWalletId(e.target.value)}
+                value={selectedAccountId || (accounts?.[0]?.id ?? '')}
+                label={t.common.account}
+                onChange={(e) => setSelectedAccountId(e.target.value)}
               >
-                {wallets?.map((w) => (
-                  <MenuItem key={w.id} value={w.id}>
-                    {w.name}
+                {accounts?.map((a) => (
+                  <MenuItem key={a.id} value={a.id}>
+                    {a.name} - {a.bank}
                   </MenuItem>
                 ))}
               </Select>
@@ -352,14 +353,14 @@ export default function SalaryPage() {
           {salaries && salaries.length > 0 ? (
             <Grid container spacing={3}>
               {salaries.map((salary) => {
-                const wallet = wallets?.find((w) => w.id === salary.walletId);
+                const account = accounts?.find((a) => a.id === salary.accountId);
                 return (
                   <Grid size={{ xs: 12, sm: 6, md: 4 }} key={salary.id}>
                     <SalaryCard
                       salary={salary}
-                      wallet={wallet}
+                      account={account}
                       onEdit={() => { setEditingSalary(salary); setDialogOpen(true); }}
-                      onDelete={() => setDeleteConfirm({ id: salary.id, walletId: salary.walletId })}
+                      onDelete={() => setDeleteConfirm({ id: salary.id, accountId: salary.accountId })}
                     />
                   </Grid>
                 );
