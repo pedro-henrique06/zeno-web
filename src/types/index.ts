@@ -1,7 +1,7 @@
 export type EntryType = 0 | 1;
 export const EntryType = { Credit: 0, Debit: 1 } as const;
 
-export type Category = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
+export type Category = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 export const Category = {
   None: 0,
   Restaurant: 1,
@@ -9,14 +9,7 @@ export const Category = {
   Entertainment: 3,
   Utilities: 4,
   Transportation: 5,
-  Health: 6,
-  Education: 7,
-  Shopping: 8,
-  Housing: 9,
-  Salary: 10,
-  Gift: 11,
-  Investment: 12,
-  Other: 13,
+  Salary: 6,
 } as const;
 
 export const CategoryKeys: Record<Category, string> = {
@@ -26,14 +19,7 @@ export const CategoryKeys: Record<Category, string> = {
   [3]: 'entertainment',
   [4]: 'utilities',
   [5]: 'transportation',
-  [6]: 'health',
-  [7]: 'education',
-  [8]: 'shopping',
-  [9]: 'housing',
-  [10]: 'salary',
-  [11]: 'gift',
-  [12]: 'investment',
-  [13]: 'other',
+  [6]: 'salary',
 };
 
 export const CategoryLabels: Record<Category, string> = {
@@ -43,14 +29,7 @@ export const CategoryLabels: Record<Category, string> = {
   [3]: 'Entretenimento',
   [4]: 'Serviços',
   [5]: 'Transporte',
-  [6]: 'Saúde',
-  [7]: 'Educação',
-  [8]: 'Compras',
-  [9]: 'Moradia',
-  [10]: 'Salário',
-  [11]: 'Presente',
-  [12]: 'Investimento',
-  [13]: 'Outros',
+  [6]: 'Salário',
 };
 
 export type SplitMode = 0 | 1;
