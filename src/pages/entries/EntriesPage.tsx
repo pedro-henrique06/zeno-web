@@ -62,7 +62,7 @@ function EntryFormDialog({
     value: 0,
     type: EntryType.Credit,
     description: '',
-    category: Category.None,
+    category: Category.Salary,
     date: dayjs().format('YYYY-MM-DD'),
   });
 
@@ -80,7 +80,7 @@ function EntryFormDialog({
       value: 0,
       type: EntryType.Credit,
       description: '',
-      category: Category.None,
+      category: Category.Salary,
       date: dayjs().format('YYYY-MM-DD'),
     });
     onClose();
@@ -146,6 +146,22 @@ function EntryFormDialog({
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
         />
+        <FormControl fullWidth margin="normal">
+          <InputLabel>{t.common.category}</InputLabel>
+          <Select
+            value={form.category}
+            label={t.common.category}
+            onChange={(e) => setForm({ ...form, category: Number(e.target.value) as Category })}
+          >
+            {Object.entries(CategoryLabels)
+              .filter(([key]) => key !== '0')
+              .map(([value, label]) => (
+                <MenuItem key={value} value={Number(value)}>
+                  {label}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
         <TextField
           fullWidth
           label={t.common.date}
