@@ -15,10 +15,12 @@ import {
   Menu,
   MenuItem,
   Tooltip,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
@@ -32,6 +34,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import CategoryIcon from '@mui/icons-material/Category';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLogout } from '@/hooks/useAuth';
@@ -42,7 +45,7 @@ const DRAWER_WIDTH = 260;
 const COLLAPSED_WIDTH = 72;
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
@@ -64,9 +67,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     { label: t.nav.reports, path: '/reports', icon: <AssessmentIcon /> },
   ];
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const mainNavItems = navItems.slice(0, 3);
+  const moreNavItems = navItems.slice(3);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -89,6 +91,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
   };
+
+  const activeMainItem = mainNavItems.find((item) => isActive(item.path));
+  const bottomNavValue = activeMainItem?.path ?? 'more';
+  const currentTitle = navItems.find((item) => isActive(item.path))?.label ?? 'Zeno';
 
   const drawerContent = (
     <Box
@@ -144,10 +150,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             >
               <ListItemButton
                 selected={active}
-                onClick={() => {
-                  navigate(item.path);
-                  if (isMobile) setMobileOpen(false);
-                }}
+                onClick={() => navigate(item.path)}
                 sx={{
                   mx: collapsed && !isMobile ? 0 : 1,
                   mb: 0.5,
@@ -254,14 +257,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         }}
       >
         <Toolbar>
-          <IconButton
-            color="inherit"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { md: 'none' }, color: 'text.primary' }}
+          <Typography
+            variant="h6"
+            noWrap
+            sx={{ fontWeight: 700, display: { xs: 'block', md: 'none' } }}
           >
-            <MenuIcon />
-          </IconButton>
+            {currentTitle}
+          </Typography>
           <Box sx={{ flexGrow: 1 }} />
           <Tooltip title={t.nav.language}>
             <IconButton
@@ -348,21 +350,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         }}
       >
         <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: DRAWER_WIDTH,
-            },
-          }}
-        >
-          {drawerContent}
-        </Drawer>
-        <Drawer
           variant="permanent"
           sx={{
             display: { xs: 'none', md: 'block' },
@@ -391,8 +378,95 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         }}
       >
         <Toolbar />
-        <Box sx={{ p: { xs: 2, sm: 3 } }}>{children}</Box>
+        <Box sx={{ p: { xs: 2, sm: 3 }, pb: { xs: 9, sm: 9, md: 3 } }}>{children}</Box>
       </Box>
+
+      <Paper
+        elevation={3}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: theme.zIndex.appBar,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          pb: 'env(safe-area-inset-bottom)',
+        }}
+      >
+        <BottomNavigation
+          showLabels
+          value={bottomNavValue}
+          onChange={(_, newValue) => {
+            if (newValue === 'more') {
+              setMoreOpen(true);
+            } else {
+              navigate(newValue);
+            }
+          }}
+          sx={{ height: 64 }}
+        >
+          {mainNavItems.map((item) => (
+            <BottomNavigationAction
+              key={item.path}
+              label={item.label}
+              value={item.path}
+              icon={item.icon}
+            />
+          ))}
+          <BottomNavigationAction label={t.nav.more} value="more" icon={<MoreHorizIcon />} />
+        </BottomNavigation>
+      </Paper>
+
+      <Drawer
+        anchor="bottom"
+        open={moreOpen}
+        onClose={() => setMoreOpen(false)}
+        slotProps={{
+          paper: {
+            sx: {
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              pb: 'env(safe-area-inset-bottom)',
+            },
+          },
+        }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1.5 }}>
+          <Box sx={{ width: 40, height: 4, borderRadius: 2, bgcolor: 'divider' }} />
+        </Box>
+        <List sx={{ pt: 1, pb: 2 }}>
+          {moreNavItems.map((item) => {
+            const active = isActive(item.path);
+            return (
+              <ListItemButton
+                key={item.path}
+                selected={active}
+                onClick={() => {
+                  navigate(item.path);
+                  setMoreOpen(false);
+                }}
+                sx={{
+                  mx: 2,
+                  mb: 0.5,
+                  borderRadius: 2,
+                  bgcolor: active ? 'primary.main' : 'transparent',
+                  color: active ? 'primary.contrastText' : 'text.primary',
+                  '&:hover': {
+                    bgcolor: active ? 'primary.dark' : 'action.hover',
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ color: active ? 'inherit' : 'text.secondary' }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.label} />
+              </ListItemButton>
+            );
+          })}
+        </List>
+      </Drawer>
     </Box>
   );
 }
