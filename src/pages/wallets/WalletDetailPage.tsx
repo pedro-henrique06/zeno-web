@@ -13,6 +13,9 @@ import {
   TableRow,
   Paper,
   Chip,
+  Card,
+  CardContent,
+  Stack,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -38,6 +41,7 @@ import { EntryType, Category, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
 import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
+import { useIsMobile } from '@/hooks/useIsMobile';
 
 interface EntryFormData {
   title: string;
@@ -201,9 +205,66 @@ function EntryFormDialog({
   );
 }
 
+function EntryCard({
+  entry,
+  currency,
+  onEdit,
+  onDelete,
+  formatDate,
+}: {
+  entry: Entry;
+  currency: string | undefined;
+  onEdit: () => void;
+  onDelete: () => void;
+  formatDate: (dateStr: string) => string;
+}) {
+  return (
+    <Card>
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {entry.type === EntryType.Credit ? (
+                <TrendingUpIcon fontSize="small" color="success" />
+              ) : (
+                <TrendingDownIcon fontSize="small" color="error" />
+              )}
+              <Typography sx={{ fontWeight: 600 }} noWrap>
+                {entry.title}
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              {formatDate(entry.date)}
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <IconButton size="small" onClick={onEdit}>
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <IconButton size="small" color="error" onClick={onDelete}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1.5 }}>
+          <Chip label={CategoryLabels[entry.category]} size="small" variant="outlined" />
+          <Typography
+            sx={{ fontWeight: 700 }}
+            color={entry.type === EntryType.Credit ? 'success.main' : 'error.main'}
+          >
+            {entry.type === EntryType.Credit ? '+' : '-'}
+            {formatCurrency(entry.value, currency)}
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function WalletDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -331,94 +392,119 @@ export default function WalletDetailPage() {
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>{t.common.date}</TableCell>
-              <TableCell>{t.common.title}</TableCell>
-              <TableCell>{t.common.category}</TableCell>
-              <TableCell align="right">{t.common.value}</TableCell>
-              <TableCell align="right">{t.common.actions}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {(entries ?? []).map((entry) => (
-              <TableRow key={entry.id}>
-                <TableCell>{formatDate(entry.date)}</TableCell>
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {entry.type === EntryType.Credit ? (
-                      <TrendingUpIcon fontSize="small" color="success" />
-                    ) : (
-                      <TrendingDownIcon fontSize="small" color="error" />
-                    )}
-                    {entry.title}
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={CategoryLabels[entry.category]}
-                    size="small"
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <Typography
-                    sx={{ fontWeight: 600 }}
-                    color={entry.type === EntryType.Credit ? 'success.main' : 'error.main'}
-                  >
-                    {entry.type === EntryType.Credit ? '+' : '-'}
-                    {formatCurrency(entry.value, wallet?.currency)}
-                  </Typography>
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    size="small"
-                    onClick={() => {
-                      setEditingEntry(entry);
-                      setDialogOpen(true);
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    color="error"
-                    onClick={() => setDeleteConfirm(entry.id)}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
+      {entries && entries.length > 0 ? (
+        isMobile ? (
+          <Stack spacing={1.5}>
+            {entries.map((entry) => (
+              <EntryCard
+                key={entry.id}
+                entry={entry}
+                currency={wallet?.currency}
+                formatDate={formatDate}
+                onEdit={() => {
+                  setEditingEntry(entry);
+                  setDialogOpen(true);
+                }}
+                onDelete={() => setDeleteConfirm(entry.id)}
+              />
             ))}
-            {entries?.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  <Box sx={{ py: 4 }}>
-                    <Typography variant="h6" sx={{ mb: 1 }}>
-                      {t.wallet.noEntriesYet}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      {t.wallet.createFirstEntry}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      startIcon={<AddIcon />}
-                      onClick={() => {
-                        setEditingEntry(null);
-                        setDialogOpen(true);
-                      }}
-                    >
-                      {t.wallet.newEntry}
-                    </Button>
-                  </Box>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </Stack>
+        ) : (
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>{t.common.date}</TableCell>
+                  <TableCell>{t.common.title}</TableCell>
+                  <TableCell>{t.common.category}</TableCell>
+                  <TableCell align="right">{t.common.value}</TableCell>
+                  <TableCell align="right">{t.common.actions}</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {entries.map((entry) => (
+                  <TableRow key={entry.id}>
+                    <TableCell>{formatDate(entry.date)}</TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {entry.type === EntryType.Credit ? (
+                          <TrendingUpIcon fontSize="small" color="success" />
+                        ) : (
+                          <TrendingDownIcon fontSize="small" color="error" />
+                        )}
+                        {entry.title}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={CategoryLabels[entry.category]}
+                        size="small"
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography
+                        sx={{ fontWeight: 600 }}
+                        color={entry.type === EntryType.Credit ? 'success.main' : 'error.main'}
+                      >
+                        {entry.type === EntryType.Credit ? '+' : '-'}
+                        {formatCurrency(entry.value, wallet?.currency)}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          setEditingEntry(entry);
+                          setDialogOpen(true);
+                        }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => setDeleteConfirm(entry.id)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )
+      ) : (
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 6,
+            px: 3,
+            bgcolor: 'background.paper',
+            borderRadius: 3,
+            border: '1px dashed',
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            {t.wallet.noEntriesYet}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            {t.wallet.createFirstEntry}
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => {
+              setEditingEntry(null);
+              setDialogOpen(true);
+            }}
+          >
+            {t.wallet.newEntry}
+          </Button>
+        </Box>
+      )}
 
       <EntryFormDialog
         open={dialogOpen}
