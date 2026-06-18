@@ -97,6 +97,8 @@ en: {
       categories: 'Categorias',
       reports: 'Relatórios',
       settings: 'Configurações',
+      today: 'Today',
+      yesterday: 'Yesterday',
     },
     wallet: {
       title: 'Wallets',
@@ -364,6 +366,8 @@ en: {
       categories: 'Categorias',
       reports: 'Relatórios',
       settings: 'Configurações',
+      today: 'Hoje',
+      yesterday: 'Ontem',
     },
     wallet: {
       title: 'Carteiras',

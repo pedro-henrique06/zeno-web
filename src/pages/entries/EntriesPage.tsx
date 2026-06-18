@@ -36,6 +36,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
 import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { groupEntriesByDate } from '@/utils/groupEntriesByDate';
 
 interface EntryFormData {
   walletId: string;
@@ -197,11 +198,9 @@ function EntryFormDialog({
 
 function EntryCard({
   entry,
-  formatDate,
   onClick,
 }: {
   entry: Entry;
-  formatDate: (dateStr: string) => string;
   onClick: () => void;
 }) {
   return (
@@ -210,20 +209,15 @@ function EntryCard({
       onClick={onClick}
     >
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {entry.type === EntryType.Credit ? (
-                <TrendingUpIcon fontSize="small" color="success" />
-              ) : (
-                <TrendingDownIcon fontSize="small" color="error" />
-              )}
-              <Typography sx={{ fontWeight: 600 }} noWrap>
-                {entry.title}
-              </Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              {formatDate(entry.date)}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 1 }}>
+            {entry.type === EntryType.Credit ? (
+              <TrendingUpIcon fontSize="small" color="success" />
+            ) : (
+              <TrendingDownIcon fontSize="small" color="error" />
+            )}
+            <Typography sx={{ fontWeight: 600 }} noWrap>
+              {entry.title}
             </Typography>
           </Box>
           <Typography
@@ -244,7 +238,7 @@ function EntryCard({
 
 export default function EntriesPage() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const isMobile = useIsMobile();
   const [walletId, setWalletId] = useState<string>('');
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -306,14 +300,29 @@ export default function EntriesPage() {
 
       {entries && entries.length > 0 ? (
         isMobile ? (
-          <Stack spacing={1.5}>
-            {entries.map((entry) => (
-              <EntryCard
-                key={entry.id}
-                entry={entry}
-                formatDate={formatDate}
-                onClick={() => navigate(`/wallets/${entry.walletId}`)}
-              />
+          <Stack spacing={2.5}>
+            {groupEntriesByDate(entries, locale, {
+              today: t.common.today,
+              yesterday: t.common.yesterday,
+            }).map((group) => (
+              <Box key={group.key}>
+                <Typography
+                  variant="overline"
+                  color="text.secondary"
+                  sx={{ fontWeight: 700, letterSpacing: 0.5, pl: 0.5 }}
+                >
+                  {group.label}
+                </Typography>
+                <Stack spacing={1.5} sx={{ mt: 1 }}>
+                  {group.entries.map((entry) => (
+                    <EntryCard
+                      key={entry.id}
+                      entry={entry}
+                      onClick={() => navigate(`/wallets/${entry.walletId}`)}
+                    />
+                  ))}
+                </Stack>
+              </Box>
             ))}
           </Stack>
         ) : (
