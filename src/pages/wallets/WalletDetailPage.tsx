@@ -20,6 +20,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   TextField,
   MenuItem,
   CircularProgress,
@@ -42,6 +47,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
 import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
 import { useIsMobile } from '@/hooks/useIsMobile';
+import { groupEntriesByDate } from '@/utils/groupEntriesByDate';
 
 interface EntryFormData {
   title: string;
@@ -208,53 +214,36 @@ function EntryFormDialog({
 function EntryCard({
   entry,
   currency,
-  onEdit,
-  onDelete,
-  formatDate,
+  onClick,
 }: {
   entry: Entry;
   currency: string | undefined;
-  onEdit: () => void;
-  onDelete: () => void;
-  formatDate: (dateStr: string) => string;
+  onClick: () => void;
 }) {
   return (
-    <Card>
+    <Card sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }} onClick={onClick}>
       <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {entry.type === EntryType.Credit ? (
-                <TrendingUpIcon fontSize="small" color="success" />
-              ) : (
-                <TrendingDownIcon fontSize="small" color="error" />
-              )}
-              <Typography sx={{ fontWeight: 600 }} noWrap>
-                {entry.title}
-              </Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              {formatDate(entry.date)}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 1 }}>
+            {entry.type === EntryType.Credit ? (
+              <TrendingUpIcon fontSize="small" color="success" />
+            ) : (
+              <TrendingDownIcon fontSize="small" color="error" />
+            )}
+            <Typography sx={{ fontWeight: 600 }} noWrap>
+              {entry.title}
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <IconButton size="small" onClick={onEdit}>
-              <EditIcon fontSize="small" />
-            </IconButton>
-            <IconButton size="small" color="error" onClick={onDelete}>
-              <DeleteIcon fontSize="small" />
-            </IconButton>
-          </Box>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1.5 }}>
-          <Chip label={CategoryLabels[entry.category]} size="small" variant="outlined" />
           <Typography
-            sx={{ fontWeight: 700 }}
+            sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}
             color={entry.type === EntryType.Credit ? 'success.main' : 'error.main'}
           >
             {entry.type === EntryType.Credit ? '+' : '-'}
             {formatCurrency(entry.value, currency)}
           </Typography>
+        </Box>
+        <Box sx={{ mt: 1.5 }}>
+          <Chip label={CategoryLabels[entry.category]} size="small" variant="outlined" />
         </Box>
       </CardContent>
     </Card>
@@ -268,7 +257,8 @@ export default function WalletDetailPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const { t } = useLanguage();
+  const [actionEntry, setActionEntry] = useState<Entry | null>(null);
+  const { t, locale } = useLanguage();
 
   const now = new Date();
 
@@ -394,19 +384,30 @@ export default function WalletDetailPage() {
 
       {entries && entries.length > 0 ? (
         isMobile ? (
-          <Stack spacing={1.5}>
-            {entries.map((entry) => (
-              <EntryCard
-                key={entry.id}
-                entry={entry}
-                currency={wallet?.currency}
-                formatDate={formatDate}
-                onEdit={() => {
-                  setEditingEntry(entry);
-                  setDialogOpen(true);
-                }}
-                onDelete={() => setDeleteConfirm(entry.id)}
-              />
+          <Stack spacing={2.5}>
+            {groupEntriesByDate(entries, locale, {
+              today: t.common.today,
+              yesterday: t.common.yesterday,
+            }).map((group) => (
+              <Box key={group.key}>
+                <Typography
+                  variant="overline"
+                  color="text.secondary"
+                  sx={{ fontWeight: 700, letterSpacing: 0.5, pl: 0.5 }}
+                >
+                  {group.label}
+                </Typography>
+                <Stack spacing={1.5} sx={{ mt: 1 }}>
+                  {group.entries.map((entry) => (
+                    <EntryCard
+                      key={entry.id}
+                      entry={entry}
+                      currency={wallet?.currency}
+                      onClick={() => setActionEntry(entry)}
+                    />
+                  ))}
+                </Stack>
+              </Box>
             ))}
           </Stack>
         ) : (
@@ -507,6 +508,7 @@ export default function WalletDetailPage() {
       )}
 
       <EntryFormDialog
+        key={editingEntry?.id ?? 'new'}
         open={dialogOpen}
         onClose={() => {
           setDialogOpen(false);
@@ -515,6 +517,61 @@ export default function WalletDetailPage() {
         walletId={id ?? ''}
         entry={editingEntry}
       />
+
+      <Drawer
+        anchor="bottom"
+        open={!!actionEntry}
+        onClose={() => setActionEntry(null)}
+        slotProps={{
+          paper: {
+            sx: {
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              pb: 'env(safe-area-inset-bottom)',
+            },
+          },
+        }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1.5 }}>
+          <Box sx={{ width: 40, height: 4, borderRadius: 2, bgcolor: 'divider' }} />
+        </Box>
+        {actionEntry && (
+          <Box sx={{ px: 3, pt: 1.5, pb: 0.5 }}>
+            <Typography sx={{ fontWeight: 600 }} noWrap>
+              {actionEntry.title}
+            </Typography>
+          </Box>
+        )}
+        <List sx={{ pt: 1, pb: 2 }}>
+          <ListItemButton
+            sx={{ mx: 2, mb: 0.5, borderRadius: 2 }}
+            onClick={() => {
+              if (actionEntry) {
+                setEditingEntry(actionEntry);
+                setDialogOpen(true);
+              }
+              setActionEntry(null);
+            }}
+          >
+            <ListItemIcon>
+              <EditIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={t.common.edit} />
+          </ListItemButton>
+          <ListItemButton
+            sx={{ mx: 2, borderRadius: 2, color: 'error.main' }}
+            onClick={() => {
+              if (actionEntry) setDeleteConfirm(actionEntry.id);
+              setActionEntry(null);
+            }}
+          >
+            <ListItemIcon sx={{ color: 'error.main' }}>
+              <DeleteIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary={t.common.delete} />
+          </ListItemButton>
+        </List>
+      </Drawer>
 
       <Dialog open={!!deleteConfirm} onClose={() => setDeleteConfirm(null)}>
         <DialogTitle>{t.wallet.deleteEntry}</DialogTitle>
