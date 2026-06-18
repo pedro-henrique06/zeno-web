@@ -30,6 +30,7 @@ import type { Wallet, Account, CreateAccountRequest } from '@/types';
 import { AccountTypeLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
+import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
 
 interface WalletFormDialogProps {
   open: boolean;
@@ -55,49 +56,48 @@ function WalletFormDialog({ open, onClose }: WalletFormDialogProps) {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{t.wallet.newWallet}</DialogTitle>
-      <DialogContent>
-        <TextField
-          fullWidth
-          label={t.wallet.name}
-          margin="normal"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Ex: Minha Carteira Principal"
-        />
-        <TextField
-          fullWidth
-          label={t.wallet.description}
-          margin="normal"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Ex: Carteira para gastos do dia a dia"
-        />
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Moeda</InputLabel>
-          <Select
-            value={currency}
-            label="Moeda"
-            onChange={(e) => setCurrency(e.target.value)}
+    <ResponsiveFormDialog
+      open={open}
+      onClose={handleClose}
+      title={t.wallet.newWallet}
+      actions={
+        <>
+          <Button onClick={handleClose}>{t.common.cancel}</Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={!name || createMutation.isPending}
           >
-            <MenuItem value="BRL">BRL - Real Brasileiro</MenuItem>
-            <MenuItem value="USD">USD - Dólar Americano</MenuItem>
-            <MenuItem value="EUR">EUR - Euro</MenuItem>
-          </Select>
-        </FormControl>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>{t.common.cancel}</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={!name || createMutation.isPending}
-        >
-          {t.common.create}
-        </Button>
-      </DialogActions>
-    </Dialog>
+            {t.common.create}
+          </Button>
+        </>
+      }
+    >
+      <TextField
+        fullWidth
+        label={t.wallet.name}
+        margin="normal"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Ex: Minha Carteira Principal"
+      />
+      <TextField
+        fullWidth
+        label={t.wallet.description}
+        margin="normal"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Ex: Carteira para gastos do dia a dia"
+      />
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Moeda</InputLabel>
+        <Select value={currency} label="Moeda" onChange={(e) => setCurrency(e.target.value)}>
+          <MenuItem value="BRL">BRL - Real Brasileiro</MenuItem>
+          <MenuItem value="USD">USD - Dólar Americano</MenuItem>
+          <MenuItem value="EUR">EUR - Euro</MenuItem>
+        </Select>
+      </FormControl>
+    </ResponsiveFormDialog>
   );
 }
 
@@ -128,51 +128,50 @@ function AccountFormDialog({ open, onClose, walletId, account }: AccountFormDial
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Nova Conta</DialogTitle>
-      <DialogContent>
-        <TextField
-          fullWidth
-          label="Nome da conta"
-          margin="normal"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Ex: Conta Corrente Nubank"
-        />
-        <TextField
-          fullWidth
-          label="Banco"
-          margin="normal"
-          value={bank}
-          onChange={(e) => setBank(e.target.value)}
-          placeholder="Ex: Nubank, Inter, CEF"
-        />
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Tipo</InputLabel>
-          <Select
-            value={type}
-            label="Tipo"
-            onChange={(e) => setType(e.target.value)}
+    <ResponsiveFormDialog
+      open={open}
+      onClose={handleClose}
+      title="Nova Conta"
+      actions={
+        <>
+          <Button onClick={handleClose}>{t.common.cancel}</Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={!name || createMutation.isPending}
           >
-            <MenuItem value="checking">Conta Corrente</MenuItem>
-            <MenuItem value="savings">Poupança</MenuItem>
-            <MenuItem value="investment">Investimento</MenuItem>
-            <MenuItem value="credit">Cartão de Crédito</MenuItem>
-            <MenuItem value="other">Outros</MenuItem>
-          </Select>
-        </FormControl>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>{t.common.cancel}</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={!name || createMutation.isPending}
-        >
-          {t.common.create}
-        </Button>
-      </DialogActions>
-    </Dialog>
+            {t.common.create}
+          </Button>
+        </>
+      }
+    >
+      <TextField
+        fullWidth
+        label="Nome da conta"
+        margin="normal"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Ex: Conta Corrente Nubank"
+      />
+      <TextField
+        fullWidth
+        label="Banco"
+        margin="normal"
+        value={bank}
+        onChange={(e) => setBank(e.target.value)}
+        placeholder="Ex: Nubank, Inter, CEF"
+      />
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Tipo</InputLabel>
+        <Select value={type} label="Tipo" onChange={(e) => setType(e.target.value)}>
+          <MenuItem value="checking">Conta Corrente</MenuItem>
+          <MenuItem value="savings">Poupança</MenuItem>
+          <MenuItem value="investment">Investimento</MenuItem>
+          <MenuItem value="credit">Cartão de Crédito</MenuItem>
+          <MenuItem value="other">Outros</MenuItem>
+        </Select>
+      </FormControl>
+    </ResponsiveFormDialog>
   );
 }
 

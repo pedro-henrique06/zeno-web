@@ -29,6 +29,7 @@ import { useSalaries, useCreateSalary, useUpdateSalary, useDeleteSalary } from '
 import type { Salary, CreateSalaryRequest, UpdateSalaryRequest, Account, Wallet } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency, formatDate } from '@/utils/currency';
+import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
 
 interface SalaryFormData {
   accountId: string;
@@ -84,87 +85,91 @@ function SalaryFormDialog({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{isEditing ? t.salary.editSalary : t.salary.newSalary}</DialogTitle>
-      <DialogContent>
-        {!isEditing ? (
-          <FormControl fullWidth margin="normal">
-            <InputLabel>{t.common.wallet}</InputLabel>
-            <Select
-              value={form.accountId}
-              label={t.common.wallet}
-              onChange={(e) => setForm({ ...form, accountId: e.target.value })}
-            >
-              {accounts.map((a: Account) => (
-                <MenuItem key={a.id} value={a.id}>
-                  {a.name} - {a.bank}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ) : (
-          <TextField
-            fullWidth
+    <ResponsiveFormDialog
+      open={open}
+      onClose={handleClose}
+      title={isEditing ? t.salary.editSalary : t.salary.newSalary}
+      actions={
+        <>
+          <Button onClick={handleClose}>{t.common.cancel}</Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={
+              !form.accountId ||
+              !form.amount ||
+              createMutation.isPending ||
+              updateMutation.isPending
+            }
+          >
+            {isEditing ? t.common.save : t.common.create}
+          </Button>
+        </>
+      }
+    >
+      {!isEditing ? (
+        <FormControl fullWidth margin="normal">
+          <InputLabel>{t.common.wallet}</InputLabel>
+          <Select
+            value={form.accountId}
             label={t.common.wallet}
-            margin="normal"
-            value={`${accounts.find((a: Account) => a.id === salary?.accountId)?.name ?? '-'}`}
-            slotProps={{ input: { readOnly: true } }}
-          />
-        )}
+            onChange={(e) => setForm({ ...form, accountId: e.target.value })}
+          >
+            {accounts.map((a: Account) => (
+              <MenuItem key={a.id} value={a.id}>
+                {a.name} - {a.bank}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ) : (
         <TextField
           fullWidth
-          label={t.common.value}
-          type="number"
+          label={t.common.wallet}
           margin="normal"
-          value={form.amount || ''}
-          onChange={(e) => setForm({ ...form, amount: Number(e.target.value) })}
-          slotProps={{ htmlInput: { min: 0 } }}
+          value={`${accounts.find((a: Account) => a.id === salary?.accountId)?.name ?? '-'}`}
+          slotProps={{ input: { readOnly: true } }}
         />
-        <TextField
-          fullWidth
-          label={t.salary.dayOfMonth}
-          type="number"
-          margin="normal"
-          slotProps={{ htmlInput: { min: 1, max: 31 } }}
-          value={form.dayOfMonth}
-          onChange={(e) =>
-            setForm({ ...form, dayOfMonth: Number(e.target.value) })
-          }
-        />
-        <TextField
-          fullWidth
-          label={t.common.description}
-          margin="normal"
-          value={form.description}
-          onChange={(e) => setForm({ ...form, description: e.target.value })}
-        />
-        {isEditing && (
-          <FormControl fullWidth margin="normal">
-            <InputLabel>{t.common.status}</InputLabel>
-            <Select
-              value={String(form.active)}
-              label={t.common.status}
-              onChange={(e) => setForm({ ...form, active: e.target.value === 'true' })}
-            >
-              <MenuItem value="true">{t.common.active}</MenuItem>
-              <MenuItem value="false">{t.common.inactive}</MenuItem>
-            </Select>
-          </FormControl>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>{t.common.cancel}</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={
-            !form.accountId || !form.amount || createMutation.isPending || updateMutation.isPending
-          }
-        >
-          {isEditing ? t.common.save : t.common.create}
-        </Button>
-      </DialogActions>
-    </Dialog>
+      )}
+      <TextField
+        fullWidth
+        label={t.common.value}
+        type="number"
+        margin="normal"
+        value={form.amount || ''}
+        onChange={(e) => setForm({ ...form, amount: Number(e.target.value) })}
+        slotProps={{ htmlInput: { min: 0 } }}
+      />
+      <TextField
+        fullWidth
+        label={t.salary.dayOfMonth}
+        type="number"
+        margin="normal"
+        slotProps={{ htmlInput: { min: 1, max: 31 } }}
+        value={form.dayOfMonth}
+        onChange={(e) => setForm({ ...form, dayOfMonth: Number(e.target.value) })}
+      />
+      <TextField
+        fullWidth
+        label={t.common.description}
+        margin="normal"
+        value={form.description}
+        onChange={(e) => setForm({ ...form, description: e.target.value })}
+      />
+      {isEditing && (
+        <FormControl fullWidth margin="normal">
+          <InputLabel>{t.common.status}</InputLabel>
+          <Select
+            value={String(form.active)}
+            label={t.common.status}
+            onChange={(e) => setForm({ ...form, active: e.target.value === 'true' })}
+          >
+            <MenuItem value="true">{t.common.active}</MenuItem>
+            <MenuItem value="false">{t.common.inactive}</MenuItem>
+          </Select>
+        </FormControl>
+      )}
+    </ResponsiveFormDialog>
   );
 }
 
