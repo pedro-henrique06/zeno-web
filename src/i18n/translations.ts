@@ -15,6 +15,7 @@ en: {
       reports: 'Reports',
       settings: 'Settings',
       entries: 'Entries',
+      more: 'More',
     },
     auth: {
       signInTitle: 'Sign in to Zeno',
@@ -281,6 +282,7 @@ en: {
       reports: 'Relatórios',
       settings: 'Configurações',
       entries: 'Lançamentos',
+      more: 'Mais',
     },
     auth: {
       signInTitle: 'Entrar no Zeno',
