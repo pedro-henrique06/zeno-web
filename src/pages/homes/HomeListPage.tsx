@@ -30,6 +30,7 @@ import {
 import type { Home, CreateHomeRequest, UpdateHomeRequest, SplitMode } from '@/types';
 import { SplitMode as SplitModeEnum, SplitModeLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
 
 function HomeFormDialog({
   open,
@@ -74,51 +75,54 @@ function HomeFormDialog({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{isEditing ? t.home.editHome : t.home.newHome}</DialogTitle>
-      <DialogContent>
-        <TextField
-          fullWidth
-          label={t.wallet.name}
-          margin="normal"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          label={t.common.description}
-          margin="normal"
-          multiline
-          rows={2}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <TextField
-          fullWidth
-          select
-          label={t.home.splitMode}
-          margin="normal"
-          value={splitMode}
-          onChange={(e) => setSplitMode(Number(e.target.value) as SplitMode)}
-        >
-          {Object.entries(SplitModeLabels).map(([value, label]) => (
-            <MenuItem key={value} value={Number(value)}>
-              {label}
-            </MenuItem>
-          ))}
-        </TextField>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose}>{t.common.cancel}</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={!name || createMutation.isPending || updateMutation.isPending}
-        >
-          {isEditing ? t.common.save : t.common.create}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <ResponsiveFormDialog
+      open={open}
+      onClose={handleClose}
+      title={isEditing ? t.home.editHome : t.home.newHome}
+      actions={
+        <>
+          <Button onClick={handleClose}>{t.common.cancel}</Button>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={!name || createMutation.isPending || updateMutation.isPending}
+          >
+            {isEditing ? t.common.save : t.common.create}
+          </Button>
+        </>
+      }
+    >
+      <TextField
+        fullWidth
+        label={t.wallet.name}
+        margin="normal"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <TextField
+        fullWidth
+        label={t.common.description}
+        margin="normal"
+        multiline
+        rows={2}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <TextField
+        fullWidth
+        select
+        label={t.home.splitMode}
+        margin="normal"
+        value={splitMode}
+        onChange={(e) => setSplitMode(Number(e.target.value) as SplitMode)}
+      >
+        {Object.entries(SplitModeLabels).map(([value, label]) => (
+          <MenuItem key={value} value={Number(value)}>
+            {label}
+          </MenuItem>
+        ))}
+      </TextField>
+    </ResponsiveFormDialog>
   );
 }
 
