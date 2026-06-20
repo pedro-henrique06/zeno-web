@@ -45,10 +45,17 @@ export function BalancesHorizonDialog({
 }: BalancesHorizonDialogProps) {
   const { t } = useLanguage();
 
-  const months = [0, 1, 2].map((offset) => {
-    const date = new Date(year, month - 1 + offset, 1);
+  const months = Array.from({ length: 12 }, (_, i) => {
+    const date = new Date(year, month - 1 + i, 1);
     return { month: date.getMonth() + 1, year: date.getFullYear() };
   });
+
+  const getBalanceColor = (balance: number): string => {
+    if (balance === 0) return 'error.main';
+    if (balance > 8000) return 'success.main';
+    if (balance > 0) return 'warning.main';
+    return 'error.main';
+  };
 
   const daysInMonth = (m: number, y: number) => new Date(y, m, 0).getDate();
   const maxDays = Math.max(...months.map((m) => daysInMonth(m.month, m.year)));
@@ -99,7 +106,7 @@ export function BalancesHorizonDialog({
                       <TableCell key={i} align="right" sx={{ whiteSpace: 'nowrap' }}>
                         <Typography
                           variant="body2"
-                          sx={{ fontWeight: 600, color: value >= 0 ? 'success.main' : 'error.main' }}
+                          sx={{ fontWeight: 600, color: getBalanceColor(value) }}
                         >
                           {formatCurrency(value)}
                         </Typography>
