@@ -11,6 +11,8 @@ import DashboardPage from '@/pages/dashboard/DashboardPage';
 import EntriesPage from '@/pages/entries/EntriesPage';
 import CategoriesPage from '@/pages/categories/CategoriesPage';
 import ReportsPage from '@/pages/reports/ReportsPage';
+import BalancesPage from '@/pages/balances/BalancesPage';
+import MenuPage from '@/pages/menu/MenuPage';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
 
@@ -60,6 +62,8 @@ export default function AppRoutes() {
           <Route path="entries" element={<EntriesPage />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="reports" element={<ReportsPage />} />
+          <Route path="balances" element={<BalancesPage />} />
+          <Route path="menu" element={<MenuPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

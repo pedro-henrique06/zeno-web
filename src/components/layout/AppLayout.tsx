@@ -34,18 +34,21 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import CategoryIcon from '@mui/icons-material/Category';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import MenuIcon from '@mui/icons-material/Menu';
+import AddIcon from '@mui/icons-material/Add';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLogout } from '@/hooks/useAuth';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useThemeContext } from '@/theme/ThemeContext';
+import { AddEntrySheet } from '@/components/AddEntrySheet';
 
 const DRAWER_WIDTH = 260;
 const COLLAPSED_WIDTH = 72;
 
 export default function AppLayout({ children }: { children: ReactNode }) {
-  const [moreOpen, setMoreOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
@@ -58,6 +61,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const navItems = [
+    { label: t.nav.balances, path: '/balances', icon: <AccountBalanceIcon /> },
     { label: t.nav.dashboard, path: '/', icon: <DashboardIcon /> },
     { label: t.nav.wallets, path: '/wallets', icon: <AccountBalanceWalletIcon /> },
     { label: t.nav.entries, path: '/entries', icon: <ReceiptLongIcon /> },
@@ -65,10 +69,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     { label: t.nav.salaries, path: '/salaries', icon: <AutorenewIcon /> },
     { label: t.common.categories, path: '/categories', icon: <CategoryIcon /> },
     { label: t.nav.reports, path: '/reports', icon: <AssessmentIcon /> },
+    { label: t.nav.menu, path: '/menu', icon: <MenuIcon /> },
   ];
 
-  const mainNavItems = navItems.slice(0, 3);
-  const moreNavItems = navItems.slice(3);
+  const mobileTabs = [
+    { label: t.nav.balances, path: '/balances', icon: <AccountBalanceIcon /> },
+    { label: t.nav.dashboard, path: '/', icon: <DashboardIcon /> },
+    { label: '', path: 'add', icon: <AddIcon /> },
+    { label: t.common.categories, path: '/categories', icon: <CategoryIcon /> },
+    { label: t.nav.menu, path: '/menu', icon: <MenuIcon /> },
+  ];
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -92,8 +102,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     return location.pathname.startsWith(path);
   };
 
-  const activeMainItem = mainNavItems.find((item) => isActive(item.path));
-  const bottomNavValue = activeMainItem?.path ?? 'more';
+  const activeTab = mobileTabs.find((item) => item.path !== 'add' && isActive(item.path));
+  const bottomNavValue = activeTab?.path ?? '';
   const currentTitle = navItems.find((item) => isActive(item.path))?.label ?? 'Zeno';
 
   const drawerContent = (
@@ -399,74 +409,50 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           showLabels
           value={bottomNavValue}
           onChange={(_, newValue) => {
-            if (newValue === 'more') {
-              setMoreOpen(true);
+            if (newValue === 'add') {
+              setAddOpen(true);
             } else {
               navigate(newValue);
             }
           }}
           sx={{ height: 64 }}
         >
-          {mainNavItems.map((item) => (
-            <BottomNavigationAction
-              key={item.path}
-              label={item.label}
-              value={item.path}
-              icon={item.icon}
-            />
-          ))}
-          <BottomNavigationAction label={t.nav.more} value="more" icon={<MoreHorizIcon />} />
+          {mobileTabs.map((item) =>
+            item.path === 'add' ? (
+              <BottomNavigationAction
+                key="add"
+                value="add"
+                icon={
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: '50%',
+                      bgcolor: 'text.primary',
+                      color: 'background.paper',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {item.icon}
+                  </Box>
+                }
+                sx={{ minWidth: 'auto' }}
+              />
+            ) : (
+              <BottomNavigationAction
+                key={item.path}
+                label={item.label}
+                value={item.path}
+                icon={item.icon}
+              />
+            ),
+          )}
         </BottomNavigation>
       </Paper>
 
-      <Drawer
-        anchor="bottom"
-        open={moreOpen}
-        onClose={() => setMoreOpen(false)}
-        slotProps={{
-          paper: {
-            sx: {
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-              pb: 'env(safe-area-inset-bottom)',
-            },
-          },
-        }}
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1.5 }}>
-          <Box sx={{ width: 40, height: 4, borderRadius: 2, bgcolor: 'divider' }} />
-        </Box>
-        <List sx={{ pt: 1, pb: 2 }}>
-          {moreNavItems.map((item) => {
-            const active = isActive(item.path);
-            return (
-              <ListItemButton
-                key={item.path}
-                selected={active}
-                onClick={() => {
-                  navigate(item.path);
-                  setMoreOpen(false);
-                }}
-                sx={{
-                  mx: 2,
-                  mb: 0.5,
-                  borderRadius: 2,
-                  bgcolor: active ? 'primary.main' : 'transparent',
-                  color: active ? 'primary.contrastText' : 'text.primary',
-                  '&:hover': {
-                    bgcolor: active ? 'primary.dark' : 'action.hover',
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ color: active ? 'inherit' : 'text.secondary' }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.label} />
-              </ListItemButton>
-            );
-          })}
-        </List>
-      </Drawer>
+      <AddEntrySheet open={addOpen} onClose={() => setAddOpen(false)} />
     </Box>
   );
 }
