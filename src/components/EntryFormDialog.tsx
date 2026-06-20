@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import {
   Box,
@@ -63,6 +63,15 @@ export function EntryFormDialog({
   const updateMutation = useUpdateEntry();
   const isEditing = !!entry;
   const { t } = useLanguage();
+
+  useEffect(() => {
+    if (!fixedWalletId && form.walletId === '' && wallets.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setForm((prev) => ({ ...prev, walletId: wallets[0].id }));
+    }
+    // Only sync on initial wallet load, not on form changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallets, fixedWalletId]);
 
   const handleSubmit = () => {
     if (isEditing && entry) {

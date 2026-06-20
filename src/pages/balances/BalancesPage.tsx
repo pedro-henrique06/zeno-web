@@ -121,7 +121,7 @@ export default function BalancesPage() {
         onClose={() => setHorizonOpen(false)}
         month={month}
         year={year}
-        baseline={rows[0]?.balance ?? baseline}
+        baseline={baseline}
         avgDailyNet={avgDailyNet}
         locale={locale}
       />
