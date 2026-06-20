@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as entryApi from '@/api/entry';
+import { useWallets } from '@/hooks/useWallets';
 import type { CreateEntryRequest, UpdateEntryRequest } from '@/types';
 
 export function useEntries(month: number, year: number, walletId: string) {
@@ -8,6 +9,32 @@ export function useEntries(month: number, year: number, walletId: string) {
     queryFn: () => entryApi.getEntries(month, year, walletId),
     enabled: !!walletId,
   });
+}
+
+/**
+ * Aggregates entries across every wallet for a given month, since the API
+ * only supports fetching entries one wallet at a time.
+ */
+export function useAllEntries(month: number, year: number) {
+  const { data: wallets, isLoading: walletsLoading } = useWallets();
+  const walletIds = wallets?.map((w) => w.id) ?? [];
+
+  const query = useQuery({
+    queryKey: ['entries', 'all', walletIds.join(','), month, year],
+    queryFn: async () => {
+      const results = await Promise.all(
+        walletIds.map((id) => entryApi.getEntries(month, year, id)),
+      );
+      return results.flat();
+    },
+    enabled: walletIds.length > 0,
+  });
+
+  return {
+    ...query,
+    isLoading: walletsLoading || query.isLoading,
+    data: walletIds.length === 0 && !walletsLoading ? [] : query.data,
+  };
 }
 
 export function useCreateEntry() {

@@ -19,182 +19,20 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  TextField,
-  ToggleButtonGroup,
-  ToggleButton,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
 import { useWallets } from '@/hooks/useWallets';
-import { useEntries, useCreateEntry } from '@/hooks/useEntries';
+import { useEntries } from '@/hooks/useEntries';
 import type { Entry } from '@/types';
-import { EntryType, Category, CategoryLabels } from '@/types';
+import { EntryType, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
-import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { groupEntriesByDate } from '@/utils/groupEntriesByDate';
-
-interface EntryFormData {
-  walletId: string;
-  title: string;
-  value: number;
-  type: EntryType;
-  description: string;
-  category: Category;
-  date: string;
-}
-
-function EntryFormDialog({
-  open,
-  onClose,
-  wallets,
-  defaultWalletId,
-}: {
-  open: boolean;
-  onClose: () => void;
-  wallets: { id: string; name: string }[];
-  defaultWalletId?: string;
-}) {
-  const [form, setForm] = useState<EntryFormData>({
-    walletId: defaultWalletId ?? wallets[0]?.id ?? '',
-    title: '',
-    value: 0,
-    type: EntryType.Credit,
-    description: '',
-    category: Category.Salary,
-    date: dayjs().format('YYYY-MM-DD'),
-  });
-
-  const createMutation = useCreateEntry();
-  const { t } = useLanguage();
-
-  const handleSubmit = () => {
-    createMutation.mutate(form, { onSuccess: onClose });
-  };
-
-  const handleClose = () => {
-    setForm({
-      walletId: wallets[0]?.id ?? '',
-      title: '',
-      value: 0,
-      type: EntryType.Credit,
-      description: '',
-      category: Category.Salary,
-      date: dayjs().format('YYYY-MM-DD'),
-    });
-    onClose();
-  };
-
-  const handleTypeChange = (_: React.MouseEvent<HTMLElement>, newType: EntryType | null) => {
-    if (newType !== null) {
-      setForm({ ...form, type: newType });
-    }
-  };
-
-  return (
-    <ResponsiveFormDialog
-      open={open}
-      onClose={handleClose}
-      title={t.entry.newEntry}
-      actions={
-        <>
-          <Button onClick={handleClose}>{t.common.cancel}</Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={!form.walletId || !form.title || !form.value || createMutation.isPending}
-          >
-            {t.common.create}
-          </Button>
-        </>
-      }
-    >
-      <FormControl fullWidth margin="normal">
-        <InputLabel>{t.common.wallet}</InputLabel>
-        <Select
-          value={form.walletId}
-          label={t.common.wallet}
-          onChange={(e) => setForm({ ...form, walletId: e.target.value })}
-        >
-          {wallets.map((w) => (
-            <MenuItem key={w.id} value={w.id}>
-              {w.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <Box sx={{ mb: 2, mt: 1 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          {t.common.type}
-        </Typography>
-        <ToggleButtonGroup value={form.type} exclusive onChange={handleTypeChange} fullWidth>
-          <ToggleButton value={EntryType.Credit} color="success">
-            {t.common.credit}
-          </ToggleButton>
-          <ToggleButton value={EntryType.Debit} color="error">
-            {t.common.debit}
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
-
-      <TextField
-        fullWidth
-        label={t.common.value}
-        type="number"
-        margin="normal"
-        value={form.value || ''}
-        onChange={(e) => setForm({ ...form, value: Number(e.target.value) })}
-        slotProps={{ htmlInput: { min: 0 } }}
-      />
-      <TextField
-        fullWidth
-        label={t.common.title}
-        margin="normal"
-        value={form.title}
-        onChange={(e) => setForm({ ...form, title: e.target.value })}
-      />
-      <FormControl fullWidth margin="normal">
-        <InputLabel>{t.common.category}</InputLabel>
-        <Select
-          value={form.category}
-          label={t.common.category}
-          onChange={(e) => setForm({ ...form, category: Number(e.target.value) as Category })}
-        >
-          {Object.entries(CategoryLabels)
-            .filter(([key]) => key !== '0')
-            .map(([value, label]) => (
-              <MenuItem key={value} value={Number(value)}>
-                {label}
-              </MenuItem>
-            ))}
-        </Select>
-      </FormControl>
-      <TextField
-        fullWidth
-        label={t.common.date}
-        type="date"
-        margin="normal"
-        value={form.date}
-        onChange={(e) => setForm({ ...form, date: e.target.value })}
-        slotProps={{ inputLabel: { shrink: true } }}
-      />
-      <TextField
-        fullWidth
-        label={t.common.description}
-        margin="normal"
-        multiline
-        rows={2}
-        value={form.description}
-        onChange={(e) => setForm({ ...form, description: e.target.value })}
-      />
-    </ResponsiveFormDialog>
-  );
-}
+import { EntryFormDialog } from '@/components/EntryFormDialog';
 
 function EntryCard({
   entry,

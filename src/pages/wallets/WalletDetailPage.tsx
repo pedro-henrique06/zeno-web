@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import dayjs from 'dayjs';
 import {
   Typography,
   Button,
@@ -25,12 +24,8 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  TextField,
-  MenuItem,
   CircularProgress,
   Box,
-  ToggleButtonGroup,
-  ToggleButton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
@@ -40,176 +35,14 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '@/hooks/useWallets';
-import { useEntries, useCreateEntry, useUpdateEntry, useDeleteEntry } from '@/hooks/useEntries';
-import type { Entry, CreateEntryRequest, UpdateEntryRequest } from '@/types';
-import { EntryType, Category, CategoryLabels } from '@/types';
+import { useEntries, useDeleteEntry } from '@/hooks/useEntries';
+import type { Entry } from '@/types';
+import { EntryType, CategoryLabels } from '@/types';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { formatCurrency } from '@/utils/currency';
-import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { groupEntriesByDate } from '@/utils/groupEntriesByDate';
-
-interface EntryFormData {
-  title: string;
-  value: number;
-  type: EntryType;
-  description: string;
-  category: Category;
-  date: string;
-}
-
-function EntryFormDialog({
-  open,
-  onClose,
-  walletId,
-  entry,
-}: {
-  open: boolean;
-  onClose: () => void;
-  walletId: string;
-  entry?: Entry | null;
-}) {
-  const [form, setForm] = useState<EntryFormData>({
-    title: entry?.title ?? '',
-    value: entry?.value ?? 0,
-    type: entry?.type ?? EntryType.Credit,
-    description: entry?.description ?? '',
-    category: entry?.category ?? Category.None,
-    date: entry?.date ? dayjs(entry.date).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
-  });
-
-  const createMutation = useCreateEntry();
-  const updateMutation = useUpdateEntry();
-  const isEditing = !!entry;
-  const { t } = useLanguage();
-
-  const handleSubmit = () => {
-    if (isEditing && entry) {
-      const data: UpdateEntryRequest = { id: entry.id, walletId, ...form };
-      updateMutation.mutate(data, { onSuccess: onClose });
-    } else {
-      const data: CreateEntryRequest = { walletId, ...form };
-      createMutation.mutate(data, { onSuccess: onClose });
-    }
-  };
-
-  const handleClose = () => {
-    setForm({
-      title: '',
-      value: 0,
-      type: EntryType.Credit,
-      description: '',
-      category: Category.None,
-      date: dayjs().format('YYYY-MM-DD'),
-    });
-    onClose();
-  };
-
-  const handleTypeChange = (_: React.MouseEvent<HTMLElement>, newType: EntryType | null) => {
-    if (newType !== null) {
-      setForm({ ...form, type: newType });
-    }
-  };
-
-  return (
-    <ResponsiveFormDialog
-      open={open}
-      onClose={handleClose}
-      title={isEditing ? t.wallet.editEntry : t.wallet.newEntry}
-      actions={
-        <>
-          <Button onClick={handleClose}>{t.common.cancel}</Button>
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            disabled={
-              !form.title || !form.value || createMutation.isPending || updateMutation.isPending
-            }
-          >
-            {isEditing ? t.common.save : t.common.create}
-          </Button>
-        </>
-      }
-    >
-      <Box sx={{ mb: 2, mt: 1 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          {t.common.type}
-        </Typography>
-        <ToggleButtonGroup
-          value={form.type}
-          exclusive
-          onChange={handleTypeChange}
-          fullWidth
-          sx={{
-            '& .MuiToggleButton-root': {
-              py: 1.5,
-              textTransform: 'none',
-              fontWeight: 600,
-            },
-          }}
-        >
-          <ToggleButton value={EntryType.Credit} color="success">
-            {t.common.credit}
-          </ToggleButton>
-          <ToggleButton value={EntryType.Debit} color="error">
-            {t.common.debit}
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
-      <TextField
-        fullWidth
-        label={t.common.value}
-        type="number"
-        margin="normal"
-        value={form.value || ''}
-        onChange={(e) => setForm({ ...form, value: Number(e.target.value) })}
-        slotProps={{ htmlInput: { min: 0 } }}
-      />
-      <TextField
-        fullWidth
-        label={t.common.title}
-        margin="normal"
-        value={form.title}
-        onChange={(e) => setForm({ ...form, title: e.target.value })}
-      />
-      <TextField
-        fullWidth
-        select
-        label={t.common.category}
-        margin="normal"
-        value={form.category}
-        onChange={(e) => setForm({ ...form, category: Number(e.target.value) as Category })}
-      >
-        <MenuItem value={Category.None}>{t.category.selectCategory}</MenuItem>
-        {Object.entries(CategoryLabels)
-          .filter(([key]) => key !== '0')
-          .map(([value, label]) => (
-            <MenuItem key={value} value={Number(value)}>
-              {label}
-            </MenuItem>
-          ))}
-      </TextField>
-      <TextField
-        fullWidth
-        label={t.common.date}
-        type="date"
-        margin="normal"
-        value={form.date}
-        onChange={(e) => setForm({ ...form, date: e.target.value })}
-        slotProps={{ inputLabel: { shrink: true } }}
-      />
-      <TextField
-        fullWidth
-        label={t.common.description}
-        margin="normal"
-        multiline
-        rows={2}
-        value={form.description}
-        onChange={(e) => setForm({ ...form, description: e.target.value })}
-      />
-    </ResponsiveFormDialog>
-  );
-}
+import { EntryFormDialog } from '@/components/EntryFormDialog';
 
 function EntryCard({
   entry,
@@ -514,7 +347,8 @@ export default function WalletDetailPage() {
           setDialogOpen(false);
           setEditingEntry(null);
         }}
-        walletId={id ?? ''}
+        wallets={[]}
+        fixedWalletId={id ?? ''}
         entry={editingEntry}
       />
 
