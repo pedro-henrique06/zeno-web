@@ -72,6 +72,17 @@ export default function BalancesPage() {
 
   const avgDailyNet = daysInMonth > 0 ? monthNet / daysInMonth : 0;
 
+  const getBalanceColor = (balance: number): string => {
+    if (balance === 0) return 'error.main';
+    if (balance > 8000) return 'success.main';
+    if (balance > 0) return 'warning.main';
+    return 'error.main';
+  };
+
+  const getDailyColor = (net: number): string => {
+    return net < 0 ? 'error.main' : 'text.primary';
+  };
+
   return (
     <Box>
       <MonthSwitcher
@@ -96,22 +107,30 @@ export default function BalancesPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.day}>
-                <TableCell>{row.day}</TableCell>
-                <TableCell align="right">
-                  {row.daily > 0 ? formatCurrency(row.daily) : '-'}
-                </TableCell>
-                <TableCell align="right">
-                  <Typography
-                    variant="body2"
-                    sx={{ fontWeight: 700, color: row.balance >= 0 ? 'success.main' : 'error.main' }}
-                  >
-                    {formatCurrency(row.balance)}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ))}
+            {rows.map((row) => {
+              const dayNet = netByDay.get(row.day) ?? 0;
+              return (
+                <TableRow key={row.day}>
+                  <TableCell>{row.day}</TableCell>
+                  <TableCell align="right">
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, color: getDailyColor(dayNet) }}
+                    >
+                      {row.daily > 0 ? formatCurrency(row.daily) : '-'}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 700, color: getBalanceColor(row.balance) }}
+                    >
+                      {formatCurrency(row.balance)}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </TableContainer>
