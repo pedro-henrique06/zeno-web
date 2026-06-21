@@ -2,19 +2,17 @@ import { Box, IconButton, Typography } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import type { Locale } from '@/i18n/translations';
 
 interface MonthSwitcherProps {
   month: number;
   year: number;
   onChange: (month: number, year: number) => void;
-  locale: Locale;
   endAdornment?: React.ReactNode;
 }
 
-export function MonthSwitcher({ month, year, onChange, locale, endAdornment }: MonthSwitcherProps) {
+export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwitcherProps) {
   const date = new Date(year, month - 1, 1);
-  const label = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
+  const label = new Intl.DateTimeFormat('pt-BR', {
     month: 'short',
     year: '2-digit',
   }).format(date);

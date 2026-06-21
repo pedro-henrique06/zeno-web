@@ -1,24 +1,25 @@
-export {
-  LOCALE_MAP,
-  getCurrentLocale,
-  setCurrentLocale,
-  getLocaleFromCurrency,
-  getLocaleFromLanguage,
-  formatCurrency,
-  formatDate,
-  formatDateTime,
-  formatMonthYear,
-} from './settings';
+export function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    signDisplay: 'negative',
+  }).format(value);
+}
 
-export const CURRENCIES = [
-  { code: 'BRL', label: 'BRL - Real Brasileiro' },
-  { code: 'USD', label: 'USD - Dólar Americano' },
-  { code: 'EUR', label: 'EUR - Euro' },
-  { code: 'GBP', label: 'GBP - Libra Esterlina' },
-  { code: 'JPY', label: 'JPY - Iene Japonês' },
-  { code: 'ARS', label: 'ARS - Peso Argentino' },
-  { code: 'MXN', label: 'MXN - Peso Mexicano' },
-  { code: 'CLP', label: 'CLP - Peso Chileno' },
-  { code: 'COP', label: 'COP - Peso Colombiano' },
-  { code: 'PEN', label: 'PEN - Sol Peruano' },
-] as const;
+export function formatDate(date: string | Date): string {
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '-';
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(d);
+}
+
+export function formatMonthYear(month: number, year: number): string {
+  const date = new Date(year, month - 1, 1);
+  return new Intl.DateTimeFormat('pt-BR', {
+    month: 'short',
+    year: '2-digit',
+  }).format(date);
+}

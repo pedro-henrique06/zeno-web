@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios, { type AxiosResponse } from 'axios';
+import type { ApiResponse } from '@/types';
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -25,5 +26,10 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   },
 );
+
+export async function unwrap<T>(promise: Promise<AxiosResponse<ApiResponse<T>>>): Promise<T> {
+  const response = await promise;
+  return response.data.data;
+}
 
 export default apiClient;

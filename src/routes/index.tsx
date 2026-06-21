@@ -2,17 +2,14 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet, useSearchParams } from 
 import AppLayout from '@/components/layout/AppLayout';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
-import WalletListPage from '@/pages/wallets/WalletListPage';
-import WalletDetailPage from '@/pages/wallets/WalletDetailPage';
-import SalaryPage from '@/pages/salaries/SalaryPage';
-import HomeListPage from '@/pages/homes/HomeListPage';
-import HomeDetailPage from '@/pages/homes/HomeDetailPage';
 import DashboardPage from '@/pages/dashboard/DashboardPage';
 import EntriesPage from '@/pages/entries/EntriesPage';
 import CategoriesPage from '@/pages/categories/CategoriesPage';
-import ReportsPage from '@/pages/reports/ReportsPage';
 import BalancesPage from '@/pages/balances/BalancesPage';
 import MenuPage from '@/pages/menu/MenuPage';
+import EditProfilePage from '@/pages/menu/EditProfilePage';
+import DailyBudgetPage from '@/pages/menu/DailyBudgetPage';
+import SettingsPage from '@/pages/menu/SettingsPage';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
 
@@ -53,17 +50,14 @@ export default function AppRoutes() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/auth/callback" element={<OAuthCallback />} />
         <Route element={<ProtectedLayout />}>
-          <Route index element={<DashboardPage />} />
-          <Route path="wallets" element={<WalletListPage />} />
-          <Route path="wallets/:id" element={<WalletDetailPage />} />
-          <Route path="salaries" element={<SalaryPage />} />
-          <Route path="homes" element={<HomeListPage />} />
-          <Route path="homes/:id" element={<HomeDetailPage />} />
+          <Route index element={<BalancesPage />} />
+          <Route path="totais" element={<DashboardPage />} />
+          <Route path="tags" element={<CategoriesPage />} />
           <Route path="entries" element={<EntriesPage />} />
-          <Route path="categories" element={<CategoriesPage />} />
-          <Route path="reports" element={<ReportsPage />} />
-          <Route path="balances" element={<BalancesPage />} />
           <Route path="menu" element={<MenuPage />} />
+          <Route path="menu/perfil" element={<EditProfilePage />} />
+          <Route path="menu/previsao-diario" element={<DailyBudgetPage />} />
+          <Route path="menu/configuracoes" element={<SettingsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

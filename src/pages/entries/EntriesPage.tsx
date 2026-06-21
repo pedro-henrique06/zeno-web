@@ -15,59 +15,53 @@ import {
   CardContent,
   Stack,
   CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-import { useNavigate } from 'react-router-dom';
-import { useWallets } from '@/hooks/useWallets';
 import { useEntries } from '@/hooks/useEntries';
+import { useTags } from '@/hooks/useTags';
 import type { Entry } from '@/types';
-import { EntryType, CategoryLabels } from '@/types';
-import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency } from '@/utils/currency';
+import { EntryKindColors, EntryKindLetters, EntryKindLabels, isCredit } from '@/utils/entryKind';
+import { formatCurrency, formatDate } from '@/utils/currency';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { groupEntriesByDate } from '@/utils/groupEntriesByDate';
 import { EntryFormDialog } from '@/components/EntryFormDialog';
 
-function EntryCard({
-  entry,
-  onClick,
-}: {
-  entry: Entry;
-  onClick: () => void;
-}) {
+function EntryCard({ entry, tagName, onClick }: { entry: Entry; tagName?: string; onClick: () => void }) {
+  const credit = isCredit(entry.kind);
   return (
-    <Card
-      sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
-      onClick={onClick}
-    >
+    <Card sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }} onClick={onClick}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
           <Box sx={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 1 }}>
-            {entry.type === EntryType.Credit ? (
-              <TrendingUpIcon fontSize="small" color="success" />
-            ) : (
-              <TrendingDownIcon fontSize="small" color="error" />
-            )}
+            <Box
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                bgcolor: EntryKindColors[entry.kind],
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 12,
+                fontWeight: 700,
+                flexShrink: 0,
+              }}
+            >
+              {EntryKindLetters[entry.kind]}
+            </Box>
             <Typography sx={{ fontWeight: 600 }} noWrap>
               {entry.title}
             </Typography>
           </Box>
-          <Typography
-            sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}
-            color={entry.type === EntryType.Credit ? 'success.main' : 'error.main'}
-          >
-            {entry.type === EntryType.Credit ? '+' : '-'}
+          <Typography sx={{ fontWeight: 700, whiteSpace: 'nowrap' }} color={credit ? 'success.main' : 'error.main'}>
+            {credit ? '+' : '-'}
             {formatCurrency(entry.value)}
           </Typography>
         </Box>
-        <Box sx={{ mt: 1.5 }}>
-          <Chip label={CategoryLabels[entry.category]} size="small" variant="outlined" />
+        <Box sx={{ mt: 1.5, display: 'flex', gap: 1 }}>
+          <Chip label={EntryKindLabels[entry.kind]} size="small" variant="outlined" />
+          {tagName && <Chip label={tagName} size="small" />}
         </Box>
       </CardContent>
     </Card>
@@ -75,18 +69,18 @@ function EntryCard({
 }
 
 export default function EntriesPage() {
-  const navigate = useNavigate();
-  const { t, locale } = useLanguage();
   const isMobile = useIsMobile();
-  const [walletId, setWalletId] = useState<string>('');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
 
   const now = new Date();
   const month = now.getMonth() + 1;
   const year = now.getFullYear();
 
-  const { data: wallets } = useWallets();
-  const { data: entries, isLoading } = useEntries(month, year, walletId);
+  const { data, isLoading, isError } = useEntries(month, year);
+  const { data: tags } = useTags();
+
+  const tagNameById = new Map((tags ?? []).map((tag) => [tag.id, tag.name]));
 
   if (isLoading) {
     return (
@@ -96,59 +90,43 @@ export default function EntriesPage() {
     );
   }
 
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return '-';
-    return d.toLocaleDateString('pt-BR');
+  if (isError) {
+    return (
+      <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography color="error">Não foi possível carregar os lançamentos. Tente novamente.</Typography>
+      </Box>
+    );
+  }
+
+  const entries = data?.items ?? [];
+
+  const openEdit = (entry: Entry) => {
+    setEditingEntry(entry);
+    setDialogOpen(true);
+  };
+
+  const openCreate = () => {
+    setEditingEntry(null);
+    setDialogOpen(true);
   };
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          {t.nav.entries}
+          Lançamentos
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setDialogOpen(true)}
-          disabled={!wallets?.length}
-        >
-          {t.wallet.newEntry}
+        <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
+          Novo
         </Button>
       </Box>
 
-      <Box sx={{ mb: 3 }}>
-        <FormControl sx={{ minWidth: 300 }}>
-          <InputLabel>{t.common.wallet}</InputLabel>
-          <Select
-            value={walletId}
-            label={t.common.wallet}
-            onChange={(e) => setWalletId(e.target.value)}
-          >
-            <MenuItem value="">{t.entry.selectType}</MenuItem>
-            {wallets?.map((w) => (
-              <MenuItem key={w.id} value={w.id}>
-                {w.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </Box>
-
-      {entries && entries.length > 0 ? (
+      {entries.length > 0 ? (
         isMobile ? (
           <Stack spacing={2.5}>
-            {groupEntriesByDate(entries, locale, {
-              today: t.common.today,
-              yesterday: t.common.yesterday,
-            }).map((group) => (
+            {groupEntriesByDate(entries).map((group) => (
               <Box key={group.key}>
-                <Typography
-                  variant="overline"
-                  color="text.secondary"
-                  sx={{ fontWeight: 700, letterSpacing: 0.5, pl: 0.5 }}
-                >
+                <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700, letterSpacing: 0.5, pl: 0.5 }}>
                   {group.label}
                 </Typography>
                 <Stack spacing={1.5} sx={{ mt: 1 }}>
@@ -156,7 +134,8 @@ export default function EntriesPage() {
                     <EntryCard
                       key={entry.id}
                       entry={entry}
-                      onClick={() => navigate(`/wallets/${entry.walletId}`)}
+                      tagName={entry.tagId ? tagNameById.get(entry.tagId) : undefined}
+                      onClick={() => openEdit(entry)}
                     />
                   ))}
                 </Stack>
@@ -168,48 +147,38 @@ export default function EntriesPage() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>{t.common.date}</TableCell>
-                  <TableCell>{t.common.title}</TableCell>
-                  <TableCell>{t.common.category}</TableCell>
-                  <TableCell align="right">{t.common.value}</TableCell>
+                  <TableCell>Data</TableCell>
+                  <TableCell>Título</TableCell>
+                  <TableCell>Tipo</TableCell>
+                  <TableCell>Tag</TableCell>
+                  <TableCell align="right">Valor</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {entries.map((entry) => (
-                  <TableRow
-                    key={entry.id}
-                    sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
-                    onClick={() => navigate(`/wallets/${entry.walletId}`)}
-                  >
-                    <TableCell>{formatDate(entry.date)}</TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {entry.type === EntryType.Credit ? (
-                          <TrendingUpIcon fontSize="small" color="success" />
-                        ) : (
-                          <TrendingDownIcon fontSize="small" color="error" />
-                        )}
-                        {entry.title}
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={CategoryLabels[entry.category]}
-                        size="small"
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Typography
-                        sx={{ fontWeight: 600 }}
-                        color={entry.type === EntryType.Credit ? 'success.main' : 'error.main'}
-                      >
-                        {entry.type === EntryType.Credit ? '+' : '-'}
-                        {formatCurrency(entry.value)}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {entries.map((entry) => {
+                  const credit = isCredit(entry.kind);
+                  const tagName = entry.tagId ? tagNameById.get(entry.tagId) : undefined;
+                  return (
+                    <TableRow
+                      key={entry.id}
+                      sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
+                      onClick={() => openEdit(entry)}
+                    >
+                      <TableCell>{formatDate(entry.date)}</TableCell>
+                      <TableCell>{entry.title}</TableCell>
+                      <TableCell>
+                        <Chip label={EntryKindLabels[entry.kind]} size="small" variant="outlined" />
+                      </TableCell>
+                      <TableCell>{tagName ?? '-'}</TableCell>
+                      <TableCell align="right">
+                        <Typography sx={{ fontWeight: 600 }} color={credit ? 'success.main' : 'error.main'}>
+                          {credit ? '+' : '-'}
+                          {formatCurrency(entry.value)}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
@@ -232,22 +201,17 @@ export default function EntriesPage() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             Adicione um lançamento para começar a controlar suas finanças.
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setDialogOpen(true)}
-            disabled={!wallets?.length}
-          >
-            {t.wallet.newEntry}
+          <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
+            Novo
           </Button>
         </Box>
       )}
 
       <EntryFormDialog
+        key={editingEntry?.id ?? 'new'}
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        wallets={wallets ?? []}
-        defaultWalletId={walletId || undefined}
+        entry={editingEntry}
       />
     </Box>
   );

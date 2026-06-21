@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@mui/material/styles'
 import { CssBaseline } from '@mui/material'
 import { AuthProvider } from '@/contexts/AuthContext'
-import { LanguageProvider } from '@/i18n/LanguageContext'
 import { ThemeContextProvider, useThemeContext } from '@/theme/ThemeContext'
 import AppRoutes from '@/routes'
 
@@ -30,15 +29,13 @@ function ThemeBridge({ children }: { children: React.ReactNode }) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <ThemeContextProvider>
-          <AuthProvider>
-            <ThemeBridge>
-              <AppRoutes />
-            </ThemeBridge>
-          </AuthProvider>
-        </ThemeContextProvider>
-      </LanguageProvider>
+      <ThemeContextProvider>
+        <AuthProvider>
+          <ThemeBridge>
+            <AppRoutes />
+          </ThemeBridge>
+        </AuthProvider>
+      </ThemeContextProvider>
     </QueryClientProvider>
   </StrictMode>,
 )
