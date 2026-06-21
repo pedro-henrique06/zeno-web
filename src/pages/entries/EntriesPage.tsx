@@ -77,7 +77,7 @@ export default function EntriesPage() {
   const month = now.getMonth() + 1;
   const year = now.getFullYear();
 
-  const { data, isLoading } = useEntries(month, year);
+  const { data, isLoading, isError } = useEntries(month, year);
   const { data: tags } = useTags();
 
   const tagNameById = new Map((tags ?? []).map((tag) => [tag.id, tag.name]));
@@ -86,6 +86,14 @@ export default function EntriesPage() {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography color="error">Não foi possível carregar os lançamentos. Tente novamente.</Typography>
       </Box>
     );
   }
@@ -200,6 +208,7 @@ export default function EntriesPage() {
       )}
 
       <EntryFormDialog
+        key={editingEntry?.id ?? 'new'}
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         entry={editingEntry}

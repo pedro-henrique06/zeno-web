@@ -20,12 +20,20 @@ export default function BalancesPage() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
 
-  const { data, isLoading } = useBalances(month, year);
+  const { data, isLoading, isError } = useBalances(month, year);
 
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography color="error">Não foi possível carregar os saldos. Tente novamente.</Typography>
       </Box>
     );
   }

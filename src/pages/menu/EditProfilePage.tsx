@@ -76,7 +76,7 @@ function EditProfileForm({ profile }: { profile: UserProfile }) {
 
 export default function EditProfilePage() {
   const navigate = useNavigate();
-  const { data: profile, isLoading } = useProfile();
+  const { data: profile, isLoading, isError } = useProfile();
 
   return (
     <Box>
@@ -89,7 +89,11 @@ export default function EditProfilePage() {
         </Typography>
       </Box>
 
-      {isLoading || !profile ? (
+      {isError ? (
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Typography color="error">Não foi possível carregar o perfil. Tente novamente.</Typography>
+        </Box>
+      ) : isLoading || !profile ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
           <CircularProgress />
         </Box>

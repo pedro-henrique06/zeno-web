@@ -1,12 +1,9 @@
 export function formatCurrency(value: number): string {
-  const formatted = new Intl.NumberFormat('pt-BR', {
+  return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
+    signDisplay: 'negative',
   }).format(value);
-  if (value < 0) {
-    return formatted.replace('-', '-R$').replace('R$', '-R$');
-  }
-  return formatted;
 }
 
 export function formatDate(date: string | Date): string {

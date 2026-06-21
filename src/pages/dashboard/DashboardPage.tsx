@@ -65,7 +65,15 @@ export default function DashboardPage() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
 
-  const { data, isLoading } = useSummary(month, year);
+  const { data, isLoading, isError } = useSummary(month, year);
+
+  if (isError) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <Typography color="error">Não foi possível carregar o resumo. Tente novamente.</Typography>
+      </Box>
+    );
+  }
 
   if (isLoading || !data) {
     return (

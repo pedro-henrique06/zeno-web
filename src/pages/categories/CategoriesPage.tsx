@@ -25,7 +25,7 @@ import { useTags, useCreateTag, useUpdateTag, useDeleteTag } from '@/hooks/useTa
 import type { Tag } from '@/types';
 
 export default function CategoriesPage() {
-  const { data: tags, isLoading } = useTags();
+  const { data: tags, isLoading, isError } = useTags();
   const createMutation = useCreateTag();
   const updateMutation = useUpdateTag();
   const deleteMutation = useDeleteTag();
@@ -64,6 +64,14 @@ export default function CategoriesPage() {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography color="error">Não foi possível carregar as tags. Tente novamente.</Typography>
       </Box>
     );
   }
