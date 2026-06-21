@@ -1,7 +1,12 @@
-import { useState } from 'react';
+import { useState, type MouseEvent } from 'react';
 import {
+  Avatar,
   Box,
   CircularProgress,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -11,14 +16,30 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useBalances } from '@/hooks/useBalances';
 import { formatCurrency } from '@/utils/currency';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { EntryKind } from '@/types';
+import type { BalanceDay } from '@/types';
+import { EntryKindColors, EntryKindLetters, EntryKindLabels } from '@/utils/entryKind';
+
+const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
+
+const KIND_FIELD: Record<EntryKind, keyof BalanceDay> = {
+  [EntryKind.Entrada]: 'entrada',
+  [EntryKind.Saida]: 'saida',
+  [EntryKind.Diario]: 'diario',
+  [EntryKind.Economia]: 'economia',
+  [EntryKind.Cartao]: 'cartao',
+};
 
 export default function BalancesPage() {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
+  const [kind, setKind] = useState<EntryKind>(EntryKind.Diario);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const { data, isLoading, isError } = useBalances(month, year);
 
@@ -49,7 +70,48 @@ export default function BalancesPage() {
           <TableHead>
             <TableRow>
               <TableCell>Dia</TableCell>
-              <TableCell align="right">Diário</TableCell>
+              <TableCell align="right">
+                <Box
+                  onClick={(e: MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    cursor: 'pointer',
+                    px: 1,
+                    py: 0.25,
+                    borderRadius: 999,
+                    bgcolor: 'action.hover',
+                  }}
+                >
+                  <Avatar sx={{ bgcolor: EntryKindColors[kind], width: 20, height: 20, fontSize: 11, fontWeight: 700 }}>
+                    {EntryKindLetters[kind]}
+                  </Avatar>
+                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                    {EntryKindLabels[kind]}
+                  </Typography>
+                  <KeyboardArrowDownIcon fontSize="small" />
+                </Box>
+                <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
+                  {KINDS.map((k) => (
+                    <MenuItem
+                      key={k}
+                      selected={k === kind}
+                      onClick={() => {
+                        setKind(k);
+                        setAnchorEl(null);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <Avatar sx={{ bgcolor: EntryKindColors[k], width: 24, height: 24, fontSize: 12, fontWeight: 700 }}>
+                          {EntryKindLetters[k]}
+                        </Avatar>
+                      </ListItemIcon>
+                      <ListItemText>{EntryKindLabels[k]}</ListItemText>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </TableCell>
               <TableCell align="right">Saldos</TableCell>
             </TableRow>
           </TableHead>
@@ -58,13 +120,44 @@ export default function BalancesPage() {
               const rowSx = day.isProjected
                 ? { bgcolor: '#FCE4EC', '& .MuiTableCell-root': { color: '#C2185B' } }
                 : { bgcolor: '#FFF9C4', '& .MuiTableCell-root': { color: '#000' } };
+              const value = day[KIND_FIELD[kind]] as number;
+              const hasValue = value > 0;
               return (
                 <TableRow key={day.day} sx={rowSx}>
-                  <TableCell>{day.day}</TableCell>
+                  <TableCell>
+                    {day.isToday ? (
+                      <Box
+                        sx={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: 24,
+                          height: 24,
+                          borderRadius: '50%',
+                          bgcolor: '#000',
+                          color: '#fff',
+                          fontWeight: 700,
+                          fontSize: 13,
+                        }}
+                      >
+                        {day.day}
+                      </Box>
+                    ) : (
+                      day.day
+                    )}
+                  </TableCell>
                   <TableCell align="right">
-                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                      {day.diario > 0 ? formatCurrency(day.diario) : '-'}
-                    </Typography>
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                      <Avatar sx={{ bgcolor: EntryKindColors[kind], width: 20, height: 20, fontSize: 11, fontWeight: 700 }}>
+                        {EntryKindLetters[kind]}
+                      </Avatar>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[kind] : 'text.disabled' }}
+                      >
+                        {formatCurrency(value)}
+                      </Typography>
+                    </Box>
                   </TableCell>
                   <TableCell align="right">
                     <Typography variant="body2" sx={{ fontWeight: 700 }}>
