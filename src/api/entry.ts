@@ -1,23 +1,17 @@
-import apiClient from './client';
-import type {
-  Entry,
-  CreateEntryRequest,
-  UpdateEntryRequest,
-} from '@/types';
+import apiClient, { unwrap } from './client';
+import type { Entry, CreateEntryRequest, UpdateEntryRequest, PagedResponse } from '@/types';
 
 export async function getEntries(
   month: number,
   year: number,
-  walletId: string,
-): Promise<Entry[]> {
-  const response = await apiClient.get<Entry[]>('/entry', {
-    params: { month, year, walletId },
-  });
-  return response.data;
+  page = 1,
+  pageSize = 50,
+): Promise<PagedResponse<Entry>> {
+  return unwrap(apiClient.get('/entry', { params: { month, year, page, pageSize } }));
 }
 
-export async function createEntry(data: CreateEntryRequest): Promise<void> {
-  await apiClient.post('/entry', data);
+export async function createEntry(data: CreateEntryRequest): Promise<Entry> {
+  return unwrap(apiClient.post('/entry', data));
 }
 
 export async function updateEntry(data: UpdateEntryRequest): Promise<void> {

@@ -1,58 +1,16 @@
-export type EntryType = 0 | 1;
-export const EntryType = { Credit: 0, Debit: 1 } as const;
-
-export type Category = 0 | 1 | 2 | 3 | 4 | 5 | 6;
-export const Category = {
-  None: 0,
-  Restaurant: 1,
-  Grocery: 2,
-  Entertainment: 3,
-  Utilities: 4,
-  Transportation: 5,
-  Salary: 6,
+export type EntryKind = 0 | 1 | 2 | 3 | 4;
+export const EntryKind = {
+  Entrada: 0,
+  Saida: 1,
+  Diario: 2,
+  Economia: 3,
+  Cartao: 4,
 } as const;
-
-export const CategoryKeys: Record<Category, string> = {
-  [0]: 'none',
-  [1]: 'restaurant',
-  [2]: 'grocery',
-  [3]: 'entertainment',
-  [4]: 'utilities',
-  [5]: 'transportation',
-  [6]: 'salary',
-};
-
-export const CategoryLabels: Record<Category, string> = {
-  [0]: 'Nenhuma',
-  [1]: 'Restaurante',
-  [2]: 'Mercado',
-  [3]: 'Entretenimento',
-  [4]: 'Serviços',
-  [5]: 'Transporte',
-  [6]: 'Salário',
-};
-
-export type SplitMode = 0 | 1;
-export const SplitMode = { ByTotalBalance: 0, ByIndividualAccounts: 1 } as const;
-
-export const SplitModeLabels: Record<SplitMode, string> = {
-  [0]: 'Por Saldo Total',
-  [1]: 'Por Contas Individuais',
-};
-
-export type HomeRole = 0 | 1;
-export const HomeRole = { Admin: 0, Member: 1 } as const;
-
-export const HomeRoleKeys: Record<HomeRole, string> = {
-  [0]: 'admin',
-  [1]: 'member',
-};
 
 export interface User {
   id: string;
   name: string;
   email: string;
-  createdAt: string;
 }
 
 export interface LoginRequest {
@@ -71,212 +29,136 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  token: string;
-}
-
-export interface Wallet {
-  id: string;
-  name: string;
-  description: string;
-  balance: number;
   userId: string;
-  currency: string;
+  name: string;
+  email: string;
+  phone?: string;
+  document?: string;
+  birthDate?: string;
+  oAuthProvider: string;
+  token: string;
+  refreshToken?: string;
+}
+
+export interface UserProfile {
+  userId: string;
+  name: string;
+  email: string;
+  phone?: string;
+  document?: string;
+  birthDate?: string;
+  oAuthProvider: string;
+  hasPassword: boolean;
+  dailyBudget?: number;
+}
+
+export interface UpdateProfileRequest {
+  name: string;
+  email: string;
+  phone?: string;
+  document?: string;
+  birthDate?: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+export interface UpdateDailyBudgetRequest {
+  dailyBudget: number;
+}
+
+export interface Tag {
+  id: string;
+  userId: string;
+  name: string;
   createdAt: string;
 }
 
-export interface CreateWalletRequest {
+export interface CreateTagRequest {
   name: string;
-  description: string;
-  currency: string;
 }
 
-export interface UpdateWalletRequest {
+export interface UpdateTagRequest {
   id: string;
   name: string;
-  description: string;
-  currency: string;
 }
-
-export interface Account {
-  id: string;
-  name: string;
-  bank: string;
-  type: string;
-  balance: number;
-  walletId: string;
-  createdAt: string;
-}
-
-export interface CreateAccountRequest {
-  name: string;
-  bank: string;
-  type: string;
-  walletId: string;
-}
-
-export interface UpdateAccountRequest {
-  id: string;
-  name: string;
-  bank: string;
-  type: string;
-}
-
-export const AccountTypes = {
-  Checking: 'checking',
-  Savings: 'savings',
-  Investment: 'investment',
-  Credit: 'credit',
-  Other: 'other',
-} as const;
-
-export const AccountTypeLabels: Record<string, string> = {
-  checking: 'Conta Corrente',
-  savings: 'Poupança',
-  investment: 'Investimento',
-  credit: 'Cartão de Crédito',
-  other: 'Outros',
-};
 
 export interface Entry {
   id: string;
+  userId: string;
   title: string;
   value: number;
-  type: EntryType;
+  kind: EntryKind;
   description: string;
-  category: Category;
+  tagId: string | null;
   date: string;
-  walletId: string;
 }
 
 export interface CreateEntryRequest {
   title: string;
   value: number;
-  type: EntryType;
-  description: string;
-  category: Category;
+  kind: EntryKind;
+  description?: string;
+  tagId?: string | null;
   date: string;
-  walletId: string;
 }
 
-export interface UpdateEntryRequest {
+export interface UpdateEntryRequest extends CreateEntryRequest {
   id: string;
-  title: string;
-  value: number;
-  type: EntryType;
-  description: string;
-  category: Category;
-  date: string;
-  walletId: string;
 }
 
-export interface Salary {
-  id: string;
-  accountId: string;
-  userId: string;
-  amount: number;
-  description: string;
-  dayOfMonth: number;
-  active: boolean;
-  createdAt: string;
-  lastProcessedAt: string | null;
+export interface BalanceDay {
+  day: number;
+  entrada: number;
+  saida: number;
+  diario: number;
+  economia: number;
+  cartao: number;
+  balance: number;
+  isProjected: boolean;
+  isToday: boolean;
 }
 
-export interface CreateSalaryRequest {
-  accountId: string;
-  amount: number;
-  description: string;
-  dayOfMonth: number;
-  active: boolean;
-}
-
-export interface UpdateSalaryRequest {
-  id: string;
-  accountId: string;
-  amount: number;
-  description: string;
-  dayOfMonth: number;
-  active: boolean;
-}
-
-export interface Home {
-  id: string;
-  name: string;
-  description: string;
-  splitMode: SplitMode;
-  createdAt: string;
-}
-
-export interface CreateHomeRequest {
-  name: string;
-  description: string;
-  splitMode: SplitMode;
-}
-
-export interface UpdateHomeRequest {
-  id: string;
-  name: string;
-  description: string;
-  splitMode: SplitMode;
-}
-
-export interface HomeMember {
-  homeId: string;
-  userId: string;
-  role: HomeRole;
-  joinedAt: string;
-  userName?: string;
-  userEmail?: string;
-}
-
-export interface HomeWallet {
-  homeId: string;
-  walletId: string;
-}
-
-export interface HomeExpense {
-  id: string;
-  homeId: string;
-  title: string;
-  value: number;
-  category: Category;
+export interface BalancesResponse {
   month: number;
   year: number;
-  createdAt: string;
+  days: BalanceDay[];
 }
 
-export interface CreateExpenseRequest {
-  homeId: string;
-  title: string;
-  value: number;
-  category: Category;
-  month: number;
-  year: number;
+export interface Movements {
+  entrada: number;
+  saida: number;
+  diario: number;
+  economia: number;
+  cartao: number;
 }
 
-export interface SplitResult {
-  walletId: string;
-  userId: string;
-  userName: string;
-  walletName: string;
-  walletIncome: number;
-  salaryAmount: number;
-  salaryWeight: number;
-  totalIncome: number;
-  totalSalary: number;
-  percentage: number;
-  amountToPay: number;
+export interface SummaryResponse {
+  performance: number;
+  economizedPercent: number;
+  costOfLiving: number;
+  dailyAverageReal: number;
+  dailyBudget: number;
+  daysElapsed: number;
+  daysRemaining: number;
+  daysInMonth: number;
+  movements: Movements;
 }
 
-export interface BudgetAlert {
-  homeId: string;
-  month: number;
-  year: number;
-  totalIncome: number;
-  totalExpenses: number;
-  maxNeedsLimit: number;
-  needsUsagePercentage: number;
-  wantsLimit: number;
-  savingsLimit: number;
-  isOverBudget: boolean;
-  alertMessage: string;
+export interface PagedResponse<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+  errors: string[];
 }

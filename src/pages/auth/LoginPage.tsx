@@ -17,7 +17,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useLogin } from '@/hooks/useAuth';
-import { useLanguage } from '@/i18n/LanguageContext';
 import type { LoginRequest } from '@/types';
 
 export default function LoginPage() {
@@ -27,7 +26,6 @@ export default function LoginPage() {
   });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const loginMutation = useLogin();
@@ -40,15 +38,12 @@ export default function LoginPage() {
         navigate('/');
       },
       onError: (err) => {
-        setError(
-          (err as any).response?.data?.message || t.auth.loginError,
-        );
+        setError((err as any).response?.data?.message || 'Não foi possível entrar. Verifique seus dados.');
       },
     });
   };
 
   const handleGoogleLogin = () => {
-    // Usar URL absoluta sem passar pelo axios para evitar interceptadores
     window.location.assign('/api/auth/oauth/google');
   };
 
@@ -68,16 +63,16 @@ export default function LoginPage() {
             Zeno
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-            {t.auth.signInSubtitle}
+            Organize suas finanças
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {t.auth.signInDescription}
+            Entre para continuar
           </Typography>
         </Box>
 
         <Paper sx={{ p: 4 }}>
           <Typography variant="h5" sx={{ fontWeight: 700 }} align="center" gutterBottom>
-            {t.auth.signInTitle}
+            Entrar
           </Typography>
 
           {error && (
@@ -89,7 +84,7 @@ export default function LoginPage() {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label={t.auth.email}
+              label="Email"
               type="email"
               margin="normal"
               required
@@ -99,7 +94,7 @@ export default function LoginPage() {
             />
             <TextField
               fullWidth
-              label={t.auth.password}
+              label="Senha"
               type={showPassword ? 'text' : 'password'}
               margin="normal"
               required
@@ -132,7 +127,7 @@ export default function LoginPage() {
                 color="text.secondary"
                 sx={{ fontSize: '0.875rem' }}
               >
-                {t.auth.forgotPassword}
+                Esqueci minha senha
               </MuiLink>
             </Box>
             <Button
@@ -143,7 +138,7 @@ export default function LoginPage() {
               disabled={loginMutation.isPending}
               sx={{ mt: 3, mb: 2, py: 1.5 }}
             >
-              {loginMutation.isPending ? t.auth.signingIn : t.auth.signIn}
+              {loginMutation.isPending ? 'Entrando...' : 'Entrar'}
             </Button>
             <Divider sx={{ my: 3 }} />
             <Button
@@ -155,12 +150,12 @@ export default function LoginPage() {
               startIcon={<GoogleIcon />}
               sx={{ py: 1.5, textTransform: 'none', fontWeight: 500 }}
             >
-              {t.auth.signInWithGoogle || 'Sign in with Google'}
+              Entrar com Google
             </Button>
             <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-              {t.auth.noAccount}{' '}
+              Não tem uma conta?{' '}
               <MuiLink component={Link} to="/register" underline="hover">
-                {t.auth.createOne}
+                Criar conta
               </MuiLink>
             </Typography>
           </Box>

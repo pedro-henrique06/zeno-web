@@ -16,7 +16,6 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useRegister } from '@/hooks/useAuth';
-import { useLanguage } from '@/i18n/LanguageContext';
 import type { RegisterRequest } from '@/types';
 
 export default function RegisterPage() {
@@ -31,24 +30,23 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const registerMutation = useRegister();
 
   const apiUrl = import.meta.env.VITE_API_URL || '';
-    const googleAuthUrl = apiUrl ? `${apiUrl}/auth/oauth/google` : '/api/auth/oauth/google';
+  const googleAuthUrl = apiUrl ? `${apiUrl}/auth/oauth/google` : '/api/auth/oauth/google';
 
-    const handleGoogleRegister = () => {
-      window.location.assign(googleAuthUrl);
-    };
+  const handleGoogleRegister = () => {
+    window.location.assign(googleAuthUrl);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (form.password !== form.confirmPassword) {
-      setError(t.auth.passwordMismatch || 'As senhas não conferem');
+      setError('As senhas não conferem');
       return;
     }
 
@@ -73,7 +71,7 @@ export default function RegisterPage() {
           setError(errorData.map((e: unknown) => (e as { error: string }).error).join(', '));
         } else {
           const msg = errorData as { message?: string; error?: string };
-          setError(msg?.message || msg?.error || t.auth.registerError);
+          setError(msg?.message || msg?.error || 'Não foi possível criar a conta.');
         }
       },
     });
@@ -95,13 +93,13 @@ export default function RegisterPage() {
             Zeno
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-            {t.auth.registerSubtitle}
+            Crie sua conta
           </Typography>
         </Box>
 
         <Paper sx={{ p: 4 }}>
           <Typography variant="h5" sx={{ fontWeight: 700 }} align="center" gutterBottom>
-            {t.auth.registerTitle}
+            Criar conta
           </Typography>
 
           {error && (
@@ -113,7 +111,7 @@ export default function RegisterPage() {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label={t.auth.name}
+              label="Nome"
               margin="normal"
               required
               autoComplete="name"
@@ -122,7 +120,7 @@ export default function RegisterPage() {
             />
             <TextField
               fullWidth
-              label={t.auth.email}
+              label="Email"
               type="email"
               margin="normal"
               required
@@ -132,32 +130,32 @@ export default function RegisterPage() {
             />
             <TextField
               fullWidth
-              label={t.auth.phone || 'Telefone'}
+              label="Telefone"
               margin="normal"
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
             <TextField
               fullWidth
-              label={t.auth.document || 'CPF/CNPJ'}
+              label="CPF/CNPJ"
               margin="normal"
               value={form.document}
               onChange={(e) => setForm({ ...form, document: e.target.value })}
             />
             <TextField
               fullWidth
-              label={t.auth.birthDate || 'Data de Nascimento'}
+              label="Data de Nascimento"
               type="date"
               margin="normal"
               slotProps={{
-                inputLabel: { shrink: true }
+                inputLabel: { shrink: true },
               }}
               value={form.birthDate}
               onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
             />
             <TextField
               fullWidth
-              label={t.auth.password}
+              label="Senha"
               type={showPassword ? 'text' : 'password'}
               margin="normal"
               required
@@ -183,7 +181,7 @@ export default function RegisterPage() {
             />
             <TextField
               fullWidth
-              label={t.auth.confirmPassword || 'Confirmar Senha'}
+              label="Confirmar Senha"
               type={showPassword ? 'text' : 'password'}
               margin="normal"
               required
@@ -199,7 +197,7 @@ export default function RegisterPage() {
               startIcon={<GoogleIcon />}
               sx={{ mt: 3, mb: 2, py: 1.5 }}
             >
-              {t.auth.signInWithGoogle || 'Sign up with Google'}
+              Criar conta com Google
             </Button>
             <Button
               fullWidth
@@ -209,12 +207,12 @@ export default function RegisterPage() {
               disabled={registerMutation.isPending}
               sx={{ mb: 2, py: 1.5 }}
             >
-              {registerMutation.isPending ? t.auth.creatingAccount : t.auth.createAccount}
+              {registerMutation.isPending ? 'Criando conta...' : 'Criar conta'}
             </Button>
             <Typography variant="body2" align="center">
-              {t.auth.haveAccount}{' '}
+              Já tem uma conta?{' '}
               <MuiLink component={Link} to="/login" underline="hover">
-                {t.auth.signInLink}
+                Entrar
               </MuiLink>
             </Typography>
           </Box>
