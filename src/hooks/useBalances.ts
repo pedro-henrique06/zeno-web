@@ -7,3 +7,11 @@ export function useBalances(month: number, year: number) {
     queryFn: () => balanceApi.getBalances(month, year),
   });
 }
+
+export function useBalancesHorizon(year: number, enabled: boolean) {
+  return useQuery({
+    queryKey: ['balances-horizon', year],
+    queryFn: () => balanceApi.getBalancesHorizon(year),
+    enabled,
+  });
+}

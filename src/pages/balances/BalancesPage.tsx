@@ -3,6 +3,7 @@ import {
   Avatar,
   Box,
   CircularProgress,
+  IconButton,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -20,12 +21,15 @@ import { alpha, type Theme } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import CallMadeIcon from '@mui/icons-material/CallMade';
+import InsightsIcon from '@mui/icons-material/Insights';
 import { useBalances } from '@/hooks/useBalances';
 import { formatCurrency } from '@/utils/currency';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { EntryKind } from '@/types';
 import type { BalanceDay } from '@/types';
 import { EntryKindColors, EntryKindLetters, EntryKindLabels } from '@/utils/entryKind';
+import { getBalanceColor } from '@/utils/balanceColor';
+import { BalancesHorizonDialog } from '@/components/BalancesHorizonDialog';
 
 const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
 
@@ -51,18 +55,13 @@ function KindAvatar({ kind, size }: { kind: EntryKind; size: number }) {
   );
 }
 
-function getBalanceColor(value: number): string {
-  if (value <= 0) return 'error.main';
-  if (value < 10000) return 'warning.main';
-  return 'success.main';
-}
-
 export default function BalancesPage() {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
   const [kind, setKind] = useState<EntryKind>(EntryKind.Diario);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [horizonOpen, setHorizonOpen] = useState(false);
 
   const { data, isLoading, isError } = useBalances(month, year);
 
@@ -86,7 +85,16 @@ export default function BalancesPage() {
 
   return (
     <Box>
-      <MonthSwitcher month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y); }} />
+      <MonthSwitcher
+        month={month}
+        year={year}
+        onChange={(m, y) => { setMonth(m); setYear(y); }}
+        endAdornment={
+          <IconButton size="small" onClick={() => setHorizonOpen(true)} title="Horizonte de saldos">
+            <InsightsIcon fontSize="small" />
+          </IconButton>
+        }
+      />
 
       <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
         <Table size="small">
@@ -189,6 +197,8 @@ export default function BalancesPage() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <BalancesHorizonDialog key={year} open={horizonOpen} onClose={() => setHorizonOpen(false)} initialYear={year} />
     </Box>
   );
 }

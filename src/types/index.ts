@@ -130,6 +130,11 @@ export interface BalancesResponse {
   days: BalanceDay[];
 }
 
+export interface BalancesHorizonResponse {
+  year: number;
+  months: BalancesResponse[];
+}
+
 export interface Movements {
   entrada: number;
   saida: number;
