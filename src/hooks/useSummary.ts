@@ -23,3 +23,11 @@ export function usePerformanceHorizon(year: number, enabled: boolean) {
     enabled,
   });
 }
+
+export function useCostOfLivingHorizon(year: number, enabled: boolean) {
+  return useQuery({
+    queryKey: ['cost-of-living-horizon', year],
+    queryFn: () => summaryApi.getCostOfLivingHorizon(year),
+    enabled,
+  });
+}

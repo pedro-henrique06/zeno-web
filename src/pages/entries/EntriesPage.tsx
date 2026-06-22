@@ -21,7 +21,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RepeatIcon from '@mui/icons-material/Repeat';
 import { useEntries } from '@/hooks/useEntries';
 import { useTags } from '@/hooks/useTags';
-import type { Entry } from '@/types';
+import { EntryKind, type Entry } from '@/types';
 import { EntryKindColors, EntryKindLetters, EntryKindLabels, isCredit } from '@/utils/entryKind';
 import { formatCurrency, formatDate } from '@/utils/currency';
 import { useIsMobile } from '@/hooks/useIsMobile';
@@ -72,6 +72,17 @@ function EntryCard({ entry, tagName, onClick }: { entry: Entry; tagName?: string
   );
 }
 
+const ALL_KINDS = [EntryKind.Entrada, EntryKind.Saida, EntryKind.Diario, EntryKind.Economia, EntryKind.Cartao];
+
+function parseKinds(param: string | null): EntryKind[] {
+  if (!param) return ALL_KINDS;
+  const parsed = param
+    .split(',')
+    .map((v) => Number(v))
+    .filter((v): v is EntryKind => ALL_KINDS.includes(v as EntryKind));
+  return parsed.length > 0 ? parsed : ALL_KINDS;
+}
+
 export default function EntriesPage() {
   const isMobile = useIsMobile();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -82,8 +93,24 @@ export default function EntriesPage() {
   const month = Number(searchParams.get('month')) || now.getMonth() + 1;
   const year = Number(searchParams.get('year')) || now.getFullYear();
 
+  const activeKinds = parseKinds(searchParams.get('kinds'));
+
   const handleMonthChange = (m: number, y: number) => {
-    setSearchParams({ month: String(m), year: String(y) });
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set('month', String(m));
+      next.set('year', String(y));
+      return next;
+    });
+  };
+
+  const toggleKind = (kind: EntryKind) => {
+    const next = activeKinds.includes(kind) ? activeKinds.filter((k) => k !== kind) : [...activeKinds, kind];
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set('kinds', (next.length > 0 ? next : ALL_KINDS).join(','));
+      return params;
+    });
   };
 
   const { data, isLoading, isError } = useEntries(month, year);
@@ -107,7 +134,7 @@ export default function EntriesPage() {
     );
   }
 
-  const entries = data?.items ?? [];
+  const entries = (data?.items ?? []).filter((entry) => activeKinds.includes(entry.kind));
 
   const openEdit = (entry: Entry) => {
     setEditingEntry(entry);
@@ -131,6 +158,40 @@ export default function EntriesPage() {
       </Box>
 
       <MonthSwitcher month={month} year={year} onChange={handleMonthChange} />
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, mt: 1 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+          Filtro:
+        </Typography>
+        {ALL_KINDS.map((kind) => {
+          const active = activeKinds.includes(kind);
+          return (
+            <Box
+              key={kind}
+              onClick={() => toggleKind(kind)}
+              title={EntryKindLabels[kind]}
+              sx={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                bgcolor: EntryKindColors[kind],
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 12,
+                fontWeight: 700,
+                cursor: 'pointer',
+                opacity: active ? 1 : 0.3,
+                border: active ? '2px solid' : 'none',
+                borderColor: 'text.primary',
+              }}
+            >
+              {EntryKindLetters[kind]}
+            </Box>
+          );
+        })}
+      </Box>
 
       {entries.length > 0 ? (
         isMobile ? (
