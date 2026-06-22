@@ -32,7 +32,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Box sx={{ p: 2, pb: 9 }}>{children}</Box>
+      <Box sx={{ p: 2, pt: 'calc(16px + env(safe-area-inset-top, 0px))', pb: 9 }}>{children}</Box>
 
       <Paper
         elevation={3}
