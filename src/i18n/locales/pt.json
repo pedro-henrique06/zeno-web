@@ -1,0 +1,219 @@
+{
+  "common": {
+    "appName": "Zeno",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "noTag": "Sem tag"
+  },
+  "currency": {
+    "BRL": "Real brasileiro (R$)",
+    "USD": "Dólar americano ($)",
+    "EUR": "Euro (€)"
+  },
+  "language": {
+    "PtBR": "Português",
+    "EnUS": "English",
+    "Es": "Español"
+  },
+  "auth": {
+    "login": {
+      "tagline": "Organize suas finanças",
+      "subtitle": "Entre para continuar",
+      "title": "Entrar",
+      "email": "Email",
+      "password": "Senha",
+      "showPassword": "Mostrar senha",
+      "hidePassword": "Ocultar senha",
+      "forgotPassword": "Esqueci minha senha",
+      "submit": "Entrar",
+      "submitting": "Entrando...",
+      "googleButton": "Entrar com Google",
+      "noAccount": "Não tem uma conta?",
+      "createAccount": "Criar conta",
+      "genericError": "Não foi possível entrar. Verifique seus dados."
+    },
+    "register": {
+      "tagline": "Crie sua conta",
+      "title": "Criar conta",
+      "name": "Nome",
+      "email": "Email",
+      "phone": "Telefone",
+      "document": "CPF/CNPJ",
+      "birthDate": "Data de Nascimento",
+      "password": "Senha",
+      "confirmPassword": "Confirmar Senha",
+      "currency": "Moeda",
+      "language": "Idioma",
+      "showPassword": "Mostrar senha",
+      "hidePassword": "Ocultar senha",
+      "googleButton": "Criar conta com Google",
+      "submit": "Criar conta",
+      "submitting": "Criando conta...",
+      "haveAccount": "Já tem uma conta?",
+      "login": "Entrar",
+      "passwordMismatch": "As senhas não conferem",
+      "genericError": "Não foi possível criar a conta."
+    }
+  },
+  "menu": {
+    "title": "Menu",
+    "editProfile": "Editar perfil",
+    "dailyBudget": "Previsão de diário",
+    "settings": "Configurações",
+    "suggestions": "Mandar sugestões",
+    "help": "Ajuda",
+    "terms": "Termos de uso",
+    "privacy": "Política de privacidade",
+    "logout": "Sair",
+    "version": "Versão {{version}}"
+  },
+  "settings": {
+    "title": "Configurações",
+    "lightMode": "Modo claro",
+    "darkMode": "Modo escuro",
+    "logout": "Sair"
+  },
+  "editProfile": {
+    "title": "Editar perfil",
+    "loadError": "Não foi possível carregar o perfil. Tente novamente.",
+    "name": "Nome",
+    "email": "Email",
+    "phone": "Telefone",
+    "document": "CPF/CNPJ",
+    "birthDate": "Data de nascimento",
+    "currency": "Moeda",
+    "language": "Idioma",
+    "save": "Salvar"
+  },
+  "dailyBudget": {
+    "title": "Previsão de diário",
+    "loadError": "Não foi possível carregar a previsão de diário. Tente novamente.",
+    "totalMonthly": "Total mensal",
+    "dividedBy": "Dividido por",
+    "days": "{{count}} dias"
+  },
+  "dashboard": {
+    "loadError": "Não foi possível carregar o resumo. Tente novamente.",
+    "monthlyCalculations": "Cálculos do mês",
+    "performance": "Performance",
+    "moneyLeftOver": "Sobrou dinheiro",
+    "moneyShort": "Faltou dinheiro",
+    "saved": "Economizado",
+    "nothingSaved": "Nada economizado",
+    "costOfLiving": "Custo de vida",
+    "dailyAverage": "Diário médio",
+    "monthMovements": "Movimentações do mês",
+    "seeAll": "Ver todas",
+    "income": "Entradas",
+    "expenses": "Saídas",
+    "daily": "Diários",
+    "savings": "Economias",
+    "cardSpending": "Gastos com cartão"
+  },
+  "entries": {
+    "title": "Lançamentos",
+    "new": "Novo",
+    "loadError": "Não foi possível carregar os lançamentos. Tente novamente.",
+    "filter": "Filtro:",
+    "date": "Data",
+    "titleColumn": "Título",
+    "type": "Tipo",
+    "tag": "Tag",
+    "value": "Valor",
+    "emptyTitle": "Nenhum lançamento este mês",
+    "emptySubtitle": "Adicione um lançamento para começar a controlar suas finanças."
+  },
+  "balances": {
+    "loadError": "Não foi possível carregar os saldos. Tente novamente.",
+    "horizonTooltip": "Horizonte de saldos",
+    "day": "Dia",
+    "balances": "Saldos",
+    "all": "Todas"
+  },
+  "categories": {
+    "searchPlaceholder": "Buscar tags",
+    "loadError": "Não foi possível carregar as tags. Tente novamente.",
+    "emptyTitle": "Sem tags por aqui...",
+    "emptySubtitle": "Crie uma tag para organizar seus lançamentos.",
+    "editTitle": "Editar tag",
+    "newTitle": "Nova tag",
+    "name": "Nome"
+  },
+  "entryForm": {
+    "editTitle": "Editar lançamento",
+    "newTitle": "Novo lançamento",
+    "save": "Salvar",
+    "create": "Criar",
+    "type": "Tipo",
+    "titleField": "Título",
+    "value": "Valor",
+    "tag": "Tag",
+    "date": "Data",
+    "recurring": "Repetir todo mês",
+    "description": "Descrição"
+  },
+  "monthlyExpenseCategory": {
+    "descriptionPlaceholder": "Descrição",
+    "saveExisting": "Salvar gasto mensal",
+    "saveNew": "Adicionar gasto mensal"
+  },
+  "addEntrySheet": {
+    "title": "Adicionar",
+    "descriptions": {
+      "entrada": "Dinheiro que entrou",
+      "saida": "Conta ou despesa fixa",
+      "diario": "Gasto do dia a dia",
+      "economia": "Dinheiro guardado",
+      "cartao": "Compra no cartão de crédito"
+    }
+  },
+  "entryKind": {
+    "entrada": "Entrada",
+    "saida": "Saída",
+    "diario": "Diário",
+    "economia": "Economia",
+    "cartao": "Gasto com cartão"
+  },
+  "horizon": {
+    "balances": {
+      "title": "Horizonte de saldos",
+      "loadError": "Não foi possível carregar o horizonte de saldos.",
+      "day": "Dia"
+    },
+    "performance": {
+      "title": "Performance",
+      "loadError": "Não foi possível carregar a performance.",
+      "explanation": "Performance é como uma foto do seu mês financeiro: é a diferença entre quanto entrou e quanto saiu. Entradas menos saídas (fixas, diárias, economias, cartão e previsão de diário) = performance.",
+      "totalByMonth": "Total por mês"
+    },
+    "economized": {
+      "title": "Economizado",
+      "loadError": "Não foi possível carregar o economizado.",
+      "explanation": "É o percentual que você conseguiu guardar em relação a tudo que entrou no período. O ideal é que fique entre 20% e 30%.",
+      "totalYear": "Total no ano",
+      "totalByMonth": "Total por mês",
+      "savingsLabel": "Economias {{value}}",
+      "incomeLabel": "Entradas {{value}}"
+    },
+    "costOfLiving": {
+      "title": "Custo de vida",
+      "loadError": "Não foi possível carregar o custo de vida.",
+      "explanation": "Custo de vida é quanto você gasta para viver: saídas, diários, gastos com cartão e a previsão de diário para os dias que ainda faltam no mês.",
+      "totalYear": "Total no ano",
+      "totalByMonth": "Total por mês"
+    },
+    "dailyAverage": {
+      "title": "Diário médio",
+      "loadError": "Não foi possível carregar o diário médio.",
+      "explanation": "É a soma de todos os gastos diários (sem considerar previsão futura) dividida pelo número de dias do mês. Assim você sabe, em média, quanto gasta por dia no seu estilo de vida.",
+      "averageByMonth": "Média por mês"
+    }
+  },
+  "appLayout": {
+    "balances": "Saldos",
+    "totals": "Totais",
+    "tags": "Tags",
+    "menu": "Menu"
+  }
+}

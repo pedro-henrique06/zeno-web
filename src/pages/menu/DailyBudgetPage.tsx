@@ -15,6 +15,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useProfile, useUpdateDailyBudget } from '@/hooks/useUser';
 import { useMonthlyExpenseCategories } from '@/hooks/useMonthlyExpenseCategories';
 import { MonthlyExpenseCategorySheet } from '@/components/MonthlyExpenseCategorySheet';
@@ -22,6 +23,7 @@ import { formatCurrency } from '@/utils/currency';
 import type { MonthlyExpenseCategory } from '@/types';
 
 export default function DailyBudgetPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: profile } = useProfile();
   const { data: categories, isLoading, isError } = useMonthlyExpenseCategories();
@@ -60,7 +62,7 @@ export default function DailyBudgetPage() {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h5" sx={{ fontWeight: 700, flex: 1 }}>
-          Previsão de diário
+          {t('dailyBudget.title')}
         </Typography>
         <IconButton onClick={handleAdd}>
           <AddIcon />
@@ -69,7 +71,7 @@ export default function DailyBudgetPage() {
 
       {isError ? (
         <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Typography color="error">Não foi possível carregar a previsão de diário. Tente novamente.</Typography>
+          <Typography color="error">{t('dailyBudget.loadError')}</Typography>
         </Box>
       ) : isLoading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -92,7 +94,7 @@ export default function DailyBudgetPage() {
                     }}
                   >
                     <ListItemText primary={category.name} slotProps={{ primary: { sx: { fontWeight: 700 } } }} />
-                    <Typography sx={{ fontWeight: 700 }}>{formatCurrency(category.amount)}</Typography>
+                    <Typography sx={{ fontWeight: 700 }}>{formatCurrency(category.amount, profile?.currency, profile?.language)}</Typography>
                   </ListItemButton>
                 ))}
               </List>
@@ -101,19 +103,19 @@ export default function DailyBudgetPage() {
 
           <Paper sx={{ borderRadius: 3, p: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
-              <Typography sx={{ fontWeight: 700 }}>Total mensal</Typography>
-              <Typography>{formatCurrency(totalMensal)}</Typography>
+              <Typography sx={{ fontWeight: 700 }}>{t('dailyBudget.totalMonthly')}</Typography>
+              <Typography>{formatCurrency(totalMensal, profile?.currency, profile?.language)}</Typography>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-              <Typography sx={{ fontWeight: 700 }}>Dividido por</Typography>
+              <Typography sx={{ fontWeight: 700 }}>{t('dailyBudget.dividedBy')}</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Typography>{daysInMonth} dias</Typography>
+                <Typography>{t('dailyBudget.days', { count: daysInMonth })}</Typography>
                 <ExpandMoreIcon fontSize="small" sx={{ color: 'text.secondary' }} />
               </Box>
             </Box>
             <Divider sx={{ mb: 2 }} />
             <Typography variant="h4" sx={{ fontWeight: 700, textAlign: 'right' }}>
-              {formatCurrency(dailyValue)}
+              {formatCurrency(dailyValue, profile?.currency, profile?.language)}
             </Typography>
           </Paper>
         </>

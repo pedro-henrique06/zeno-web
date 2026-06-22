@@ -4,11 +4,13 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '@/theme/ThemeContext';
 import { useLogout } from '@/hooks/useAuth';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { mode, toggleTheme } = useThemeContext();
   const logoutMutation = useLogout();
 
@@ -19,7 +21,7 @@ export default function SettingsPage() {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h5" sx={{ fontWeight: 700 }}>
-          Configurações
+          {t('settings.title')}
         </Typography>
       </Box>
 
@@ -27,14 +29,14 @@ export default function SettingsPage() {
         <List sx={{ py: 1 }}>
           <ListItemButton onClick={toggleTheme} sx={{ mx: 1, borderRadius: 2 }}>
             <ListItemIcon>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
-            <ListItemText primary={mode === 'dark' ? 'Modo claro' : 'Modo escuro'} />
+            <ListItemText primary={mode === 'dark' ? t('settings.lightMode') : t('settings.darkMode')} />
             <Switch checked={mode === 'dark'} onChange={toggleTheme} />
           </ListItemButton>
           <ListItemButton onClick={() => logoutMutation.mutate()} sx={{ mx: 1, borderRadius: 2, color: 'error.main' }}>
             <ListItemIcon sx={{ color: 'error.main' }}>
               <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary="Sair" />
+            <ListItemText primary={t('settings.logout')} />
           </ListItemButton>
         </List>
       </Paper>

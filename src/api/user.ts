@@ -1,5 +1,5 @@
 import apiClient from './client';
-import type { UserProfile, UpdateProfileRequest, ChangePasswordRequest, UpdateDailyBudgetRequest } from '@/types';
+import type { UserProfile, UpdateProfileRequest, ChangePasswordRequest, UpdateDailyBudgetRequest, UpdateCurrencyRequest, UpdateLanguageRequest } from '@/types';
 
 export async function getProfile(): Promise<UserProfile> {
   const response = await apiClient.get<UserProfile>('/user/me');
@@ -17,5 +17,15 @@ export async function changePassword(data: ChangePasswordRequest): Promise<void>
 
 export async function updateDailyBudget(data: UpdateDailyBudgetRequest): Promise<UserProfile> {
   const response = await apiClient.put<UserProfile>('/user/me/daily-budget', data);
+  return response.data;
+}
+
+export async function updateCurrency(data: UpdateCurrencyRequest): Promise<UserProfile> {
+  const response = await apiClient.put<UserProfile>('/user/me/currency', data);
+  return response.data;
+}
+
+export async function updateLanguage(data: UpdateLanguageRequest): Promise<UserProfile> {
+  const response = await apiClient.put<UserProfile>('/user/me/language', data);
   return response.data;
 }

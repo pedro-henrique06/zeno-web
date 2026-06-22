@@ -13,9 +13,12 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useTranslation } from 'react-i18next';
 import { useEconomizedHorizon } from '@/hooks/useSummary';
-import { formatCurrency } from '@/utils/currency';
+import { useProfile } from '@/hooks/useUser';
+import { formatCurrency, LANGUAGE_LOCALES } from '@/utils/currency';
 import { EntryKind } from '@/types';
+import type { Currency, Language } from '@/types';
 import { EntryKindColors } from '@/utils/entryKind';
 
 interface EconomizedHorizonDialogProps {
@@ -24,13 +27,20 @@ interface EconomizedHorizonDialogProps {
   initialYear: number;
 }
 
-function monthLabel(month: number) {
-  const date = new Date(2000, month - 1, 1);
-  const label = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(date);
-  return label.charAt(0).toUpperCase() + label.slice(1);
-}
-
-function EconomizedBar({ percent, economia, entrada }: { percent: number; economia: number; entrada: number }) {
+function EconomizedBar({
+  percent,
+  economia,
+  entrada,
+  currency,
+  language,
+}: {
+  percent: number;
+  economia: number;
+  entrada: number;
+  currency?: Currency;
+  language?: Language;
+}) {
+  const { t } = useTranslation();
   return (
     <Box>
       <LinearProgress
@@ -45,10 +55,10 @@ function EconomizedBar({ percent, economia, entrada }: { percent: number; econom
       />
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
         <Typography variant="caption" color="text.secondary">
-          Economias {formatCurrency(economia)}
+          {t('horizon.economized.savingsLabel', { value: formatCurrency(economia, currency, language) })}
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          Entradas {formatCurrency(entrada)}
+          {t('horizon.economized.incomeLabel', { value: formatCurrency(entrada, currency, language) })}
         </Typography>
       </Box>
     </Box>
@@ -56,16 +66,24 @@ function EconomizedBar({ percent, economia, entrada }: { percent: number; econom
 }
 
 export function EconomizedHorizonDialog({ open, onClose, initialYear }: EconomizedHorizonDialogProps) {
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
   const [year, setYear] = useState(initialYear);
 
   const { data, isLoading, isError } = useEconomizedHorizon(year, open);
 
   const months = data?.months ?? [];
 
+  const monthLabel = (month: number) => {
+    const date = new Date(2000, month - 1, 1);
+    const label = new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], { month: 'long' }).format(date);
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        Economizado
+        {t('horizon.economized.title')}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <IconButton size="small" onClick={() => setYear((y) => y - 1)}>
@@ -88,31 +106,36 @@ export function EconomizedHorizonDialog({ open, onClose, initialYear }: Economiz
           </Box>
         ) : isError || !data ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography color="error">Não foi possível carregar o economizado.</Typography>
+            <Typography color="error">{t('horizon.economized.loadError')}</Typography>
           </Box>
         ) : (
           <>
             <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, mb: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                É o percentual que você conseguiu guardar em relação a tudo que entrou no período. O ideal é que
-                fique entre 20% e 30%.
+                {t('horizon.economized.explanation')}
               </Typography>
             </Paper>
 
             <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700 }}>
-              Total no ano
+              {t('horizon.economized.totalYear')}
             </Typography>
             <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
               {data.economizedPercent.toFixed(1)}%
             </Typography>
-            <EconomizedBar percent={data.economizedPercent} economia={data.economia} entrada={data.entrada} />
+            <EconomizedBar
+              percent={data.economizedPercent}
+              economia={data.economia}
+              entrada={data.entrada}
+              currency={profile?.currency}
+              language={profile?.language}
+            />
 
             <Typography
               variant="overline"
               color="text.secondary"
               sx={{ fontWeight: 700, display: 'block', mt: 3, mb: 1 }}
             >
-              Total por mês
+              {t('horizon.economized.totalByMonth')}
             </Typography>
             {months.map((m) => (
               <Box key={m.month} sx={{ mb: 2 }}>
@@ -120,7 +143,13 @@ export function EconomizedHorizonDialog({ open, onClose, initialYear }: Economiz
                   <Typography sx={{ fontWeight: 700 }}>{monthLabel(m.month)}</Typography>
                   <Typography sx={{ fontWeight: 700 }}>{m.economizedPercent.toFixed(1)}%</Typography>
                 </Box>
-                <EconomizedBar percent={m.economizedPercent} economia={m.economia} entrada={m.entrada} />
+                <EconomizedBar
+                  percent={m.economizedPercent}
+                  economia={m.economia}
+                  entrada={m.entrada}
+                  currency={profile?.currency}
+                  language={profile?.language}
+                />
               </Box>
             ))}
           </>

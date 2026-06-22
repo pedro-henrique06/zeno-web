@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { EntryKind } from '@/types';
 
 export const EntryKindColors: Record<EntryKind, string> = {
@@ -16,13 +17,16 @@ export const EntryKindLetters: Record<EntryKind, string> = {
   [EntryKind.Cartao]: 'C',
 };
 
-export const EntryKindLabels: Record<EntryKind, string> = {
-  [EntryKind.Entrada]: 'Entrada',
-  [EntryKind.Saida]: 'Saída',
-  [EntryKind.Diario]: 'Diário',
-  [EntryKind.Economia]: 'Economia',
-  [EntryKind.Cartao]: 'Gasto com cartão',
-};
+export function useEntryKindLabels(): Record<EntryKind, string> {
+  const { t } = useTranslation();
+  return {
+    [EntryKind.Entrada]: t('entryKind.entrada'),
+    [EntryKind.Saida]: t('entryKind.saida'),
+    [EntryKind.Diario]: t('entryKind.diario'),
+    [EntryKind.Economia]: t('entryKind.economia'),
+    [EntryKind.Cartao]: t('entryKind.cartao'),
+  };
+}
 
 export function isCredit(kind: EntryKind): boolean {
   return kind === EntryKind.Entrada;

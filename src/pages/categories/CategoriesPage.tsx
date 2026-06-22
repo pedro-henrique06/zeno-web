@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -25,6 +26,7 @@ import { useTags, useCreateTag, useUpdateTag, useDeleteTag } from '@/hooks/useTa
 import type { Tag } from '@/types';
 
 export default function CategoriesPage() {
+  const { t } = useTranslation();
   const { data: tags, isLoading, isError } = useTags();
   const createMutation = useCreateTag();
   const updateMutation = useUpdateTag();
@@ -71,7 +73,7 @@ export default function CategoriesPage() {
   if (isError) {
     return (
       <Box sx={{ textAlign: 'center', mt: 4 }}>
-        <Typography color="error">Não foi possível carregar as tags. Tente novamente.</Typography>
+        <Typography color="error">{t('categories.loadError')}</Typography>
       </Box>
     );
   }
@@ -81,7 +83,7 @@ export default function CategoriesPage() {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
         <TextField
           fullWidth
-          placeholder="Buscar tags"
+          placeholder={t('categories.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           slotProps={{
@@ -124,17 +126,17 @@ export default function CategoriesPage() {
       ) : (
         <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
           <LocalOfferIcon sx={{ fontSize: 64, mb: 2, opacity: 0.4 }} />
-          <Typography variant="h6">Sem tags por aqui...</Typography>
-          <Typography variant="body2">Crie uma tag para organizar seus lançamentos.</Typography>
+          <Typography variant="h6">{t('categories.emptyTitle')}</Typography>
+          <Typography variant="body2">{t('categories.emptySubtitle')}</Typography>
         </Box>
       )}
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>{editingTag ? 'Editar tag' : 'Nova tag'}</DialogTitle>
+        <DialogTitle>{editingTag ? t('categories.editTitle') : t('categories.newTitle')}</DialogTitle>
         <DialogContent>
           <TextField
             fullWidth
-            label="Nome"
+            label={t('categories.name')}
             margin="normal"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -142,13 +144,13 @@ export default function CategoriesPage() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
+          <Button onClick={() => setDialogOpen(false)}>{t('common.cancel')}</Button>
           <Button
             variant="contained"
             onClick={handleSave}
             disabled={!name.trim() || createMutation.isPending || updateMutation.isPending}
           >
-            Salvar
+            {t('common.save')}
           </Button>
         </DialogActions>
       </Dialog>

@@ -4,11 +4,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import BackspaceOutlinedIcon from '@mui/icons-material/BackspaceOutlined';
+import { useTranslation } from 'react-i18next';
 import {
   useCreateMonthlyExpenseCategory,
   useUpdateMonthlyExpenseCategory,
   useDeleteMonthlyExpenseCategory,
 } from '@/hooks/useMonthlyExpenseCategories';
+import { useProfile } from '@/hooks/useUser';
+import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
 import type { MonthlyExpenseCategory } from '@/types';
 
 interface MonthlyExpenseCategorySheetProps {
@@ -21,6 +24,8 @@ const MAX_AMOUNT_CENTS = 99_999_999;
 const KEYPAD_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'back'];
 
 export function MonthlyExpenseCategorySheet({ open, onClose, category }: MonthlyExpenseCategorySheetProps) {
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
   const [amountCents, setAmountCents] = useState(0);
   const [name, setName] = useState('');
   const [wasOpen, setWasOpen] = useState(open);
@@ -62,7 +67,7 @@ export function MonthlyExpenseCategorySheet({ open, onClose, category }: Monthly
     }
   };
 
-  const displayAmount = (amountCents / 100).toLocaleString('pt-BR', {
+  const displayAmount = (amountCents / 100).toLocaleString(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
@@ -85,7 +90,7 @@ export function MonthlyExpenseCategorySheet({ open, onClose, category }: Monthly
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, pt: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
           <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.secondary' }}>
-            R$
+            {CURRENCY_SYMBOLS[profile?.currency ?? 'BRL']}
           </Typography>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
             {displayAmount}
@@ -116,7 +121,7 @@ export function MonthlyExpenseCategorySheet({ open, onClose, category }: Monthly
         }}
       >
         <EditIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-        <InputBase fullWidth placeholder="Descrição" value={name} onChange={(e) => setName(e.target.value)} />
+        <InputBase fullWidth placeholder={t('monthlyExpenseCategory.descriptionPlaceholder')} value={name} onChange={(e) => setName(e.target.value)} />
       </Box>
 
       <Box sx={{ px: 2, py: 2 }}>
@@ -134,7 +139,7 @@ export function MonthlyExpenseCategorySheet({ open, onClose, category }: Monthly
             '&:hover': { bgcolor: 'text.primary' },
           }}
         >
-          {isEditing ? 'Salvar gasto mensal' : 'Adicionar gasto mensal'}
+          {isEditing ? t('monthlyExpenseCategory.saveExisting') : t('monthlyExpenseCategory.saveNew')}
         </Button>
       </Box>
 

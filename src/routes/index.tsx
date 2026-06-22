@@ -12,6 +12,9 @@ import DailyBudgetPage from '@/pages/menu/DailyBudgetPage';
 import SettingsPage from '@/pages/menu/SettingsPage';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useProfile } from '@/hooks/useUser';
+import { LANGUAGE_TO_I18N } from '@/i18n';
 
 function OAuthCallback() {
   const [searchParams] = useSearchParams();
@@ -31,6 +34,15 @@ function OAuthCallback() {
 
 function ProtectedLayout() {
   const { isAuthenticated } = useAuth();
+  const { data: profile } = useProfile(isAuthenticated);
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    if (!profile?.language) return;
+    const code = LANGUAGE_TO_I18N[profile.language];
+    i18n.changeLanguage(code);
+    localStorage.setItem('language', code);
+  }, [profile?.language, i18n]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

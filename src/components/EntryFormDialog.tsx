@@ -10,10 +10,11 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useCreateEntry, useUpdateEntry } from '@/hooks/useEntries';
 import { useTags } from '@/hooks/useTags';
 import type { CreateEntryRequest, Entry, EntryKind, UpdateEntryRequest } from '@/types';
-import { EntryKindLabels } from '@/utils/entryKind';
+import { useEntryKindLabels } from '@/utils/entryKind';
 import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
 
 interface EntryFormData {
@@ -35,6 +36,8 @@ interface EntryFormDialogProps {
 }
 
 export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }: EntryFormDialogProps) {
+  const { t } = useTranslation();
+  const kindLabels = useEntryKindLabels();
   const [form, setForm] = useState<EntryFormData>({
     title: entry?.title ?? '',
     value: entry?.value ?? 0,
@@ -78,16 +81,16 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
     <ResponsiveFormDialog
       open={open}
       onClose={handleClose}
-      title={isEditing ? 'Editar lançamento' : 'Novo lançamento'}
+      title={isEditing ? t('entryForm.editTitle') : t('entryForm.newTitle')}
       actions={
         <>
-          <Button onClick={handleClose}>Cancelar</Button>
+          <Button onClick={handleClose}>{t('common.cancel')}</Button>
           <Button
             onClick={handleSubmit}
             variant="contained"
             disabled={!form.title || !form.value || createMutation.isPending || updateMutation.isPending}
           >
-            {isEditing ? 'Salvar' : 'Criar'}
+            {isEditing ? t('entryForm.save') : t('entryForm.create')}
           </Button>
         </>
       }
@@ -96,12 +99,12 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
         <TextField
           fullWidth
           select
-          label="Tipo"
+          label={t('entryForm.type')}
           margin="normal"
           value={form.kind}
           onChange={(e) => setForm({ ...form, kind: Number(e.target.value) as EntryKind })}
         >
-          {Object.entries(EntryKindLabels).map(([value, label]) => (
+          {Object.entries(kindLabels).map(([value, label]) => (
             <MenuItem key={value} value={Number(value)}>
               {label}
             </MenuItem>
@@ -111,14 +114,14 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
 
       <TextField
         fullWidth
-        label="Título"
+        label={t('entryForm.titleField')}
         margin="normal"
         value={form.title}
         onChange={(e) => setForm({ ...form, title: e.target.value })}
       />
       <TextField
         fullWidth
-        label="Valor"
+        label={t('entryForm.value')}
         type="number"
         margin="normal"
         value={form.value || ''}
@@ -126,13 +129,13 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
         slotProps={{ htmlInput: { min: 0 } }}
       />
       <FormControl fullWidth margin="normal">
-        <InputLabel>Tag</InputLabel>
+        <InputLabel>{t('entryForm.tag')}</InputLabel>
         <Select
           value={form.tagId}
-          label="Tag"
+          label={t('entryForm.tag')}
           onChange={(e) => setForm({ ...form, tagId: e.target.value })}
         >
-          <MenuItem value="">Sem tag</MenuItem>
+          <MenuItem value="">{t('common.noTag')}</MenuItem>
           {tags?.map((tag) => (
             <MenuItem key={tag.id} value={tag.id}>
               {tag.name}
@@ -142,7 +145,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
       </FormControl>
       <TextField
         fullWidth
-        label="Data"
+        label={t('entryForm.date')}
         type="date"
         margin="normal"
         value={form.date}
@@ -157,11 +160,11 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
             onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })}
           />
         }
-        label="Repetir todo mês"
+        label={t('entryForm.recurring')}
       />
       <TextField
         fullWidth
-        label="Descrição"
+        label={t('entryForm.description')}
         margin="normal"
         multiline
         rows={2}

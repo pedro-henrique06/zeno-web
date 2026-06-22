@@ -1,0 +1,219 @@
+{
+  "common": {
+    "appName": "Zeno",
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "noTag": "No tag"
+  },
+  "currency": {
+    "BRL": "Brazilian Real (R$)",
+    "USD": "US Dollar ($)",
+    "EUR": "Euro (€)"
+  },
+  "language": {
+    "PtBR": "Português",
+    "EnUS": "English",
+    "Es": "Español"
+  },
+  "auth": {
+    "login": {
+      "tagline": "Organize your finances",
+      "subtitle": "Sign in to continue",
+      "title": "Sign in",
+      "email": "Email",
+      "password": "Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "forgotPassword": "Forgot my password",
+      "submit": "Sign in",
+      "submitting": "Signing in...",
+      "googleButton": "Sign in with Google",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create account",
+      "genericError": "Could not sign in. Check your details."
+    },
+    "register": {
+      "tagline": "Create your account",
+      "title": "Create account",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "document": "Document ID",
+      "birthDate": "Date of birth",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "currency": "Currency",
+      "language": "Language",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "googleButton": "Sign up with Google",
+      "submit": "Create account",
+      "submitting": "Creating account...",
+      "haveAccount": "Already have an account?",
+      "login": "Sign in",
+      "passwordMismatch": "Passwords do not match",
+      "genericError": "Could not create account."
+    }
+  },
+  "menu": {
+    "title": "Menu",
+    "editProfile": "Edit profile",
+    "dailyBudget": "Daily budget",
+    "settings": "Settings",
+    "suggestions": "Send suggestions",
+    "help": "Help",
+    "terms": "Terms of use",
+    "privacy": "Privacy policy",
+    "logout": "Log out",
+    "version": "Version {{version}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "logout": "Log out"
+  },
+  "editProfile": {
+    "title": "Edit profile",
+    "loadError": "Could not load the profile. Try again.",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "document": "Document ID",
+    "birthDate": "Date of birth",
+    "currency": "Currency",
+    "language": "Language",
+    "save": "Save"
+  },
+  "dailyBudget": {
+    "title": "Daily budget",
+    "loadError": "Could not load the daily budget. Try again.",
+    "totalMonthly": "Monthly total",
+    "dividedBy": "Divided by",
+    "days": "{{count}} days"
+  },
+  "dashboard": {
+    "loadError": "Could not load the summary. Try again.",
+    "monthlyCalculations": "Monthly calculations",
+    "performance": "Performance",
+    "moneyLeftOver": "Money left over",
+    "moneyShort": "Money short",
+    "saved": "Saved",
+    "nothingSaved": "Nothing saved",
+    "costOfLiving": "Cost of living",
+    "dailyAverage": "Daily average",
+    "monthMovements": "Month movements",
+    "seeAll": "See all",
+    "income": "Income",
+    "expenses": "Expenses",
+    "daily": "Daily",
+    "savings": "Savings",
+    "cardSpending": "Card spending"
+  },
+  "entries": {
+    "title": "Entries",
+    "new": "New",
+    "loadError": "Could not load the entries. Try again.",
+    "filter": "Filter:",
+    "date": "Date",
+    "titleColumn": "Title",
+    "type": "Type",
+    "tag": "Tag",
+    "value": "Value",
+    "emptyTitle": "No entries this month",
+    "emptySubtitle": "Add an entry to start tracking your finances."
+  },
+  "balances": {
+    "loadError": "Could not load the balances. Try again.",
+    "horizonTooltip": "Balance horizon",
+    "day": "Day",
+    "balances": "Balances",
+    "all": "All"
+  },
+  "categories": {
+    "searchPlaceholder": "Search tags",
+    "loadError": "Could not load the tags. Try again.",
+    "emptyTitle": "No tags around here...",
+    "emptySubtitle": "Create a tag to organize your entries.",
+    "editTitle": "Edit tag",
+    "newTitle": "New tag",
+    "name": "Name"
+  },
+  "entryForm": {
+    "editTitle": "Edit entry",
+    "newTitle": "New entry",
+    "save": "Save",
+    "create": "Create",
+    "type": "Type",
+    "titleField": "Title",
+    "value": "Value",
+    "tag": "Tag",
+    "date": "Date",
+    "recurring": "Repeat every month",
+    "description": "Description"
+  },
+  "monthlyExpenseCategory": {
+    "descriptionPlaceholder": "Description",
+    "saveExisting": "Save monthly expense",
+    "saveNew": "Add monthly expense"
+  },
+  "addEntrySheet": {
+    "title": "Add",
+    "descriptions": {
+      "entrada": "Money that came in",
+      "saida": "Bill or fixed expense",
+      "diario": "Day-to-day spending",
+      "economia": "Money saved",
+      "cartao": "Credit card purchase"
+    }
+  },
+  "entryKind": {
+    "entrada": "Income",
+    "saida": "Expense",
+    "diario": "Daily",
+    "economia": "Savings",
+    "cartao": "Card spending"
+  },
+  "horizon": {
+    "balances": {
+      "title": "Balance horizon",
+      "loadError": "Could not load the balance horizon.",
+      "day": "Day"
+    },
+    "performance": {
+      "title": "Performance",
+      "loadError": "Could not load the performance.",
+      "explanation": "Performance is like a snapshot of your financial month: it's the difference between how much came in and how much went out. Income minus expenses (fixed, daily, savings, card and daily budget forecast) = performance.",
+      "totalByMonth": "Total by month"
+    },
+    "economized": {
+      "title": "Saved",
+      "loadError": "Could not load the savings.",
+      "explanation": "This is the percentage you managed to save relative to everything that came in during the period. Ideally it should be between 20% and 30%.",
+      "totalYear": "Total for the year",
+      "totalByMonth": "Total by month",
+      "savingsLabel": "Savings {{value}}",
+      "incomeLabel": "Income {{value}}"
+    },
+    "costOfLiving": {
+      "title": "Cost of living",
+      "loadError": "Could not load the cost of living.",
+      "explanation": "Cost of living is how much you spend to live: expenses, daily spending, card spending and the daily budget forecast for the remaining days of the month.",
+      "totalYear": "Total for the year",
+      "totalByMonth": "Total by month"
+    },
+    "dailyAverage": {
+      "title": "Daily average",
+      "loadError": "Could not load the daily average.",
+      "explanation": "It's the sum of all daily expenses (not counting future forecast) divided by the number of days in the month. This way you know, on average, how much you spend per day in your lifestyle.",
+      "averageByMonth": "Average by month"
+    }
+  },
+  "appLayout": {
+    "balances": "Balances",
+    "totals": "Totals",
+    "tags": "Tags",
+    "menu": "Menu"
+  }
+}
