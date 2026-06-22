@@ -22,16 +22,19 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 import InsightsIcon from '@mui/icons-material/Insights';
+import AppsIcon from '@mui/icons-material/Apps';
 import { useBalances } from '@/hooks/useBalances';
 import { formatCurrency } from '@/utils/currency';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { EntryKind } from '@/types';
 import type { BalanceDay } from '@/types';
 import { EntryKindColors, EntryKindLetters, EntryKindLabels } from '@/utils/entryKind';
-import { getBalanceColor } from '@/utils/balanceColor';
+import { getBalanceColor, getBalanceTone } from '@/utils/balanceColor';
 import { BalancesHorizonDialog } from '@/components/BalancesHorizonDialog';
 
 const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
+const ALL_COLOR = '#3B82F6';
+type KindFilter = EntryKind | 'all';
 
 const KIND_FIELD: Record<EntryKind, keyof BalanceDay> = {
   [EntryKind.Entrada]: 'entrada',
@@ -55,11 +58,58 @@ function KindAvatar({ kind, size }: { kind: EntryKind; size: number }) {
   );
 }
 
+function AllAvatar({ size }: { size: number }) {
+  return (
+    <Avatar sx={{ bgcolor: ALL_COLOR, width: size, height: size }}>
+      <AppsIcon sx={{ fontSize: size * 0.6 }} />
+    </Avatar>
+  );
+}
+
+function DayCell({ day }: { day: BalanceDay }) {
+  return day.isToday ? (
+    <Box
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 24,
+        height: 24,
+        borderRadius: '50%',
+        bgcolor: 'primary.main',
+        color: 'primary.contrastText',
+        fontWeight: 700,
+        fontSize: 13,
+      }}
+    >
+      {day.day}
+    </Box>
+  ) : (
+    day.day
+  );
+}
+
+function BalanceCell({ day }: { day: BalanceDay }) {
+  return (
+    <Typography variant="body2" sx={{ fontWeight: 700, color: getBalanceColor(day.balance) }}>
+      {formatCurrency(day.balance)}
+    </Typography>
+  );
+}
+
+function dayRowSx(day: BalanceDay) {
+  return day.isToday
+    ? { bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.12) }
+    : day.isProjected
+      ? { opacity: 0.6 }
+      : {};
+}
+
 export default function BalancesPage() {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
-  const [kind, setKind] = useState<EntryKind>(EntryKind.Diario);
+  const [kind, setKind] = useState<KindFilter>(EntryKind.Diario);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [horizonOpen, setHorizonOpen] = useState(false);
 
@@ -115,13 +165,25 @@ export default function BalancesPage() {
                     bgcolor: 'action.hover',
                   }}
                 >
-                  <KindAvatar kind={kind} size={20} />
+                  {kind === 'all' ? <AllAvatar size={20} /> : <KindAvatar kind={kind} size={20} />}
                   <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                    {EntryKindLabels[kind]}
+                    {kind === 'all' ? 'Todas' : EntryKindLabels[kind]}
                   </Typography>
                   <KeyboardArrowDownIcon fontSize="small" />
                 </Box>
                 <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
+                  <MenuItem
+                    selected={kind === 'all'}
+                    onClick={() => {
+                      setKind('all');
+                      setAnchorEl(null);
+                    }}
+                  >
+                    <ListItemIcon>
+                      <AllAvatar size={24} />
+                    </ListItemIcon>
+                    <ListItemText>Todas</ListItemText>
+                  </MenuItem>
                   {KINDS.map((k) => (
                     <MenuItem
                       key={k}
@@ -143,57 +205,69 @@ export default function BalancesPage() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {days.map((day) => {
-              const rowSx = day.isToday
-                ? { bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.12) }
-                : day.isProjected
-                  ? { opacity: 0.6 }
-                  : {};
-              const value = day[KIND_FIELD[kind]] as number;
-              const hasValue = value > 0;
-              return (
-                <TableRow key={day.day} sx={rowSx}>
-                  <TableCell>
-                    {day.isToday ? (
-                      <Box
-                        sx={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 24,
-                          height: 24,
-                          borderRadius: '50%',
-                          bgcolor: 'primary.main',
-                          color: 'primary.contrastText',
-                          fontWeight: 700,
-                          fontSize: 13,
-                        }}
-                      >
-                        {day.day}
-                      </Box>
-                    ) : (
-                      day.day
-                    )}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
-                      <KindAvatar kind={kind} size={20} />
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[kind] : 'text.disabled' }}
-                      >
-                        {formatCurrency(value)}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2" sx={{ fontWeight: 700, color: getBalanceColor(day.balance) }}>
-                      {formatCurrency(day.balance)}
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {kind === 'all'
+              ? days.flatMap((day) => {
+                  const rowSx = dayRowSx(day);
+                  return KINDS.map((k, idx) => {
+                    const value = day[KIND_FIELD[k]] as number;
+                    const hasValue = value > 0;
+                    return (
+                      <TableRow key={`${day.day}-${k}`} sx={rowSx}>
+                        {idx === 0 && (
+                          <TableCell rowSpan={KINDS.length}>
+                            <DayCell day={day} />
+                          </TableCell>
+                        )}
+                        <TableCell align="right">
+                          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                            <KindAvatar kind={k} size={20} />
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[k] : 'text.disabled' }}
+                            >
+                              {formatCurrency(value)}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        {idx === 0 && (
+                          <TableCell
+                            align="right"
+                            rowSpan={KINDS.length}
+                            sx={{ bgcolor: (theme: Theme) => alpha(theme.palette[getBalanceTone(day.balance)].main, 0.16) }}
+                          >
+                            <BalanceCell day={day} />
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    );
+                  });
+                })
+              : days.map((day) => {
+                  const rowSx = dayRowSx(day);
+                  const value = day[KIND_FIELD[kind]] as number;
+                  const hasValue = value > 0;
+                  return (
+                    <TableRow key={day.day} sx={rowSx}>
+                      <TableCell>
+                        <DayCell day={day} />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                          <KindAvatar kind={kind} size={20} />
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[kind] : 'text.disabled' }}
+                          >
+                            {formatCurrency(value)}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell align="right">
+                        <BalanceCell day={day} />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
           </TableBody>
         </Table>
       </TableContainer>
