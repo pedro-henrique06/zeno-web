@@ -1,4 +1,5 @@
 import { useState, type MouseEvent } from 'react';
+import dayjs from 'dayjs';
 import {
   Avatar,
   Box,
@@ -31,6 +32,7 @@ import type { BalanceDay } from '@/types';
 import { EntryKindColors, EntryKindLetters, EntryKindLabels } from '@/utils/entryKind';
 import { getBalanceColor, getBalanceTone } from '@/utils/balanceColor';
 import { BalancesHorizonDialog } from '@/components/BalancesHorizonDialog';
+import { EntryFormDialog } from '@/components/EntryFormDialog';
 
 const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
 const ALL_COLOR = '#3B82F6';
@@ -112,6 +114,7 @@ export default function BalancesPage() {
   const [kind, setKind] = useState<KindFilter>(EntryKind.Diario);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [horizonOpen, setHorizonOpen] = useState(false);
+  const [entryDate, setEntryDate] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useBalances(month, year);
 
@@ -132,6 +135,8 @@ export default function BalancesPage() {
   }
 
   const days = data?.days ?? [];
+
+  const dayDateString = (day: BalanceDay) => dayjs(new Date(year, month - 1, day.day)).format('YYYY-MM-DD');
 
   return (
     <Box>
@@ -214,7 +219,11 @@ export default function BalancesPage() {
                     return (
                       <TableRow key={`${day.day}-${k}`} sx={rowSx}>
                         {idx === 0 && (
-                          <TableCell rowSpan={KINDS.length}>
+                          <TableCell
+                            rowSpan={KINDS.length}
+                            sx={{ cursor: 'pointer' }}
+                            onClick={() => setEntryDate(dayDateString(day))}
+                          >
                             <DayCell day={day} />
                           </TableCell>
                         )}
@@ -248,7 +257,7 @@ export default function BalancesPage() {
                   const hasValue = value > 0;
                   return (
                     <TableRow key={day.day} sx={rowSx}>
-                      <TableCell>
+                      <TableCell sx={{ cursor: 'pointer' }} onClick={() => setEntryDate(dayDateString(day))}>
                         <DayCell day={day} />
                       </TableCell>
                       <TableCell align="right">
@@ -273,6 +282,14 @@ export default function BalancesPage() {
       </TableContainer>
 
       <BalancesHorizonDialog key={year} open={horizonOpen} onClose={() => setHorizonOpen(false)} initialYear={year} />
+
+      <EntryFormDialog
+        key={entryDate ?? 'closed'}
+        open={!!entryDate}
+        onClose={() => setEntryDate(null)}
+        defaultDate={entryDate ?? undefined}
+        fixedKind={kind === 'all' ? undefined : kind}
+      />
     </Box>
   );
 }

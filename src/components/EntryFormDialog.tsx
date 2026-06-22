@@ -31,16 +31,17 @@ interface EntryFormDialogProps {
   onClose: () => void;
   entry?: Entry | null;
   fixedKind?: EntryKind;
+  defaultDate?: string;
 }
 
-export function EntryFormDialog({ open, onClose, entry, fixedKind }: EntryFormDialogProps) {
+export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }: EntryFormDialogProps) {
   const [form, setForm] = useState<EntryFormData>({
     title: entry?.title ?? '',
     value: entry?.value ?? 0,
     kind: entry?.kind ?? fixedKind ?? 0,
     description: entry?.description ?? '',
     tagId: entry?.tagId ?? '',
-    date: entry?.date ? dayjs(entry.date).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
+    date: entry?.date ? dayjs(entry.date).format('YYYY-MM-DD') : defaultDate ?? dayjs().format('YYYY-MM-DD'),
     isRecurring: entry?.isRecurring ?? false,
   });
 
@@ -67,7 +68,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind }: EntryFormDi
       kind: fixedKind ?? 0,
       description: '',
       tagId: '',
-      date: dayjs().format('YYYY-MM-DD'),
+      date: defaultDate ?? dayjs().format('YYYY-MM-DD'),
       isRecurring: false,
     });
     onClose();
