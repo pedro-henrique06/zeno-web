@@ -1,7 +1,6 @@
 import { Box, IconButton, Typography } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 interface MonthSwitcherProps {
   month: number;
@@ -22,9 +21,12 @@ export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwit
     onChange(next.getMonth() + 1, next.getFullYear());
   };
 
+  const today = new Date();
+
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
       <Box
+        onClick={() => onChange(today.getMonth() + 1, today.getFullYear())}
         sx={{
           width: 36,
           height: 36,
@@ -35,9 +37,12 @@ export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwit
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          cursor: 'pointer',
         }}
       >
-        <CalendarTodayIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+        <Typography sx={{ fontWeight: 700, fontSize: 14, color: 'text.secondary', lineHeight: 1 }}>
+          {today.getDate()}
+        </Typography>
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
