@@ -1,6 +1,15 @@
 import { useState } from 'react';
 import dayjs from 'dayjs';
-import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import {
+  Button,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  MenuItem,
+  Select,
+  Switch,
+  TextField,
+} from '@mui/material';
 import { useCreateEntry, useUpdateEntry } from '@/hooks/useEntries';
 import { useTags } from '@/hooks/useTags';
 import type { CreateEntryRequest, Entry, EntryKind, UpdateEntryRequest } from '@/types';
@@ -14,6 +23,7 @@ interface EntryFormData {
   description: string;
   tagId: string;
   date: string;
+  isRecurring: boolean;
 }
 
 interface EntryFormDialogProps {
@@ -31,6 +41,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind }: EntryFormDi
     description: entry?.description ?? '',
     tagId: entry?.tagId ?? '',
     date: entry?.date ? dayjs(entry.date).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
+    isRecurring: entry?.isRecurring ?? false,
   });
 
   const createMutation = useCreateEntry();
@@ -57,6 +68,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind }: EntryFormDi
       description: '',
       tagId: '',
       date: dayjs().format('YYYY-MM-DD'),
+      isRecurring: false,
     });
     onClose();
   };
@@ -135,6 +147,16 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind }: EntryFormDi
         value={form.date}
         onChange={(e) => setForm({ ...form, date: e.target.value })}
         slotProps={{ inputLabel: { shrink: true } }}
+      />
+      <FormControlLabel
+        sx={{ mt: 1 }}
+        control={
+          <Switch
+            checked={form.isRecurring}
+            onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })}
+          />
+        }
+        label="Repetir todo mês"
       />
       <TextField
         fullWidth

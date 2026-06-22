@@ -95,6 +95,7 @@ export interface Entry {
   description: string;
   tagId: string | null;
   date: string;
+  isRecurring: boolean;
 }
 
 export interface CreateEntryRequest {
@@ -104,6 +105,7 @@ export interface CreateEntryRequest {
   description?: string;
   tagId?: string | null;
   date: string;
+  isRecurring: boolean;
 }
 
 export interface UpdateEntryRequest extends CreateEntryRequest {
@@ -126,6 +128,11 @@ export interface BalancesResponse {
   month: number;
   year: number;
   days: BalanceDay[];
+}
+
+export interface BalancesHorizonResponse {
+  year: number;
+  months: BalancesResponse[];
 }
 
 export interface Movements {
