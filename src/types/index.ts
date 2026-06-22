@@ -203,6 +203,7 @@ export interface DailyAverageHorizonResponse {
   months: DailyAverageMonth[];
 }
 
+
 export interface PagedResponse<T> {
   items: T[];
   page: number;
