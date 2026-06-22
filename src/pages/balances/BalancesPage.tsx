@@ -17,6 +17,8 @@ import {
   Typography,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import CallReceivedIcon from '@mui/icons-material/CallReceived';
+import CallMadeIcon from '@mui/icons-material/CallMade';
 import { useBalances } from '@/hooks/useBalances';
 import { formatCurrency } from '@/utils/currency';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
@@ -33,6 +35,20 @@ const KIND_FIELD: Record<EntryKind, keyof BalanceDay> = {
   [EntryKind.Economia]: 'economia',
   [EntryKind.Cartao]: 'cartao',
 };
+
+const KIND_ICONS: Partial<Record<EntryKind, typeof CallReceivedIcon>> = {
+  [EntryKind.Entrada]: CallReceivedIcon,
+  [EntryKind.Saida]: CallMadeIcon,
+};
+
+function KindAvatar({ kind, size }: { kind: EntryKind; size: number }) {
+  const Icon = KIND_ICONS[kind];
+  return (
+    <Avatar sx={{ bgcolor: EntryKindColors[kind], width: size, height: size, fontSize: size * 0.55, fontWeight: 700 }}>
+      {Icon ? <Icon sx={{ fontSize: size * 0.6 }} /> : EntryKindLetters[kind]}
+    </Avatar>
+  );
+}
 
 export default function BalancesPage() {
   const now = new Date();
@@ -84,9 +100,7 @@ export default function BalancesPage() {
                     bgcolor: 'action.hover',
                   }}
                 >
-                  <Avatar sx={{ bgcolor: EntryKindColors[kind], width: 20, height: 20, fontSize: 11, fontWeight: 700 }}>
-                    {EntryKindLetters[kind]}
-                  </Avatar>
+                  <KindAvatar kind={kind} size={20} />
                   <Typography variant="body2" sx={{ fontWeight: 700 }}>
                     {EntryKindLabels[kind]}
                   </Typography>
@@ -103,9 +117,7 @@ export default function BalancesPage() {
                       }}
                     >
                       <ListItemIcon>
-                        <Avatar sx={{ bgcolor: EntryKindColors[k], width: 24, height: 24, fontSize: 12, fontWeight: 700 }}>
-                          {EntryKindLetters[k]}
-                        </Avatar>
+                        <KindAvatar kind={k} size={24} />
                       </ListItemIcon>
                       <ListItemText>{EntryKindLabels[k]}</ListItemText>
                     </MenuItem>
@@ -148,9 +160,7 @@ export default function BalancesPage() {
                   </TableCell>
                   <TableCell align="right">
                     <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
-                      <Avatar sx={{ bgcolor: EntryKindColors[kind], width: 20, height: 20, fontSize: 11, fontWeight: 700 }}>
-                        {EntryKindLetters[kind]}
-                      </Avatar>
+                      <KindAvatar kind={kind} size={20} />
                       <Typography
                         variant="body2"
                         sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[kind] : 'text.disabled' }}
