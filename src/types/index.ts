@@ -191,6 +191,19 @@ export interface CostOfLivingHorizonResponse {
   months: CostOfLivingMonth[];
 }
 
+export interface DailyAverageMonth {
+  month: number;
+  dailyAverage: number;
+  totalDiario: number;
+  daysInMonth: number;
+}
+
+export interface DailyAverageHorizonResponse {
+  year: number;
+  months: DailyAverageMonth[];
+}
+
+
 export interface PagedResponse<T> {
   items: T[];
   page: number;
