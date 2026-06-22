@@ -55,12 +55,6 @@ function KindAvatar({ kind, size }: { kind: EntryKind; size: number }) {
   );
 }
 
-function getBalanceColor(value: number): string {
-  if (value <= 0) return 'error.main';
-  if (value < 10000) return 'warning.main';
-  return 'success.main';
-}
-
 export default function BalancesPage() {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
