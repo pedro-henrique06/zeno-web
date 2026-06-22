@@ -17,13 +17,14 @@ function OAuthCallback() {
   const [searchParams] = useSearchParams();
   const { login } = useAuth();
   const token = searchParams.get('token');
+  const refreshToken = searchParams.get('refreshToken');
 
   useEffect(() => {
     if (token) {
-      login(token);
+      login(token, undefined, refreshToken ?? undefined);
       window.location.href = '/';
     }
-  }, [token, login]);
+  }, [token, refreshToken, login]);
 
   return null;
 }
