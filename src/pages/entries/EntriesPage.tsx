@@ -17,6 +17,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import RepeatIcon from '@mui/icons-material/Repeat';
 import { useEntries } from '@/hooks/useEntries';
 import { useTags } from '@/hooks/useTags';
 import type { Entry } from '@/types';
@@ -53,6 +54,7 @@ function EntryCard({ entry, tagName, onClick }: { entry: Entry; tagName?: string
             <Typography sx={{ fontWeight: 600 }} noWrap>
               {entry.title}
             </Typography>
+            {entry.isRecurring && <RepeatIcon fontSize="small" sx={{ color: 'text.secondary', flexShrink: 0 }} />}
           </Box>
           <Typography sx={{ fontWeight: 700, whiteSpace: 'nowrap' }} color={credit ? 'success.main' : 'error.main'}>
             {credit ? '+' : '-'}
@@ -165,7 +167,12 @@ export default function EntriesPage() {
                       onClick={() => openEdit(entry)}
                     >
                       <TableCell>{formatDate(entry.date)}</TableCell>
-                      <TableCell>{entry.title}</TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                          {entry.title}
+                          {entry.isRecurring && <RepeatIcon fontSize="small" sx={{ color: 'text.secondary' }} />}
+                        </Box>
+                      </TableCell>
                       <TableCell>
                         <Chip label={EntryKindLabels[entry.kind]} size="small" variant="outlined" />
                       </TableCell>

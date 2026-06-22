@@ -95,6 +95,7 @@ export interface Entry {
   description: string;
   tagId: string | null;
   date: string;
+  isRecurring: boolean;
 }
 
 export interface CreateEntryRequest {
@@ -104,6 +105,7 @@ export interface CreateEntryRequest {
   description?: string;
   tagId?: string | null;
   date: string;
+  isRecurring: boolean;
 }
 
 export interface UpdateEntryRequest extends CreateEntryRequest {
