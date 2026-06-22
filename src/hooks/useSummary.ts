@@ -7,3 +7,11 @@ export function useSummary(month: number, year: number) {
     queryFn: () => summaryApi.getSummary(month, year),
   });
 }
+
+export function useEconomizedHorizon(year: number, enabled: boolean) {
+  return useQuery({
+    queryKey: ['economized-horizon', year],
+    queryFn: () => summaryApi.getEconomizedHorizon(year),
+    enabled,
+  });
+}

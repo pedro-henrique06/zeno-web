@@ -155,6 +155,21 @@ export interface SummaryResponse {
   movements: Movements;
 }
 
+export interface EconomizedMonth {
+  month: number;
+  economizedPercent: number;
+  economia: number;
+  entrada: number;
+}
+
+export interface EconomizedHorizonResponse {
+  year: number;
+  economizedPercent: number;
+  economia: number;
+  entrada: number;
+  months: EconomizedMonth[];
+}
+
 export interface PagedResponse<T> {
   items: T[];
   page: number;
