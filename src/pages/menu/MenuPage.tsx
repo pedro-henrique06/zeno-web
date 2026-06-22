@@ -2,19 +2,37 @@ import { Avatar, Box, List, ListItemButton, ListItemIcon, ListItemText, Paper, T
 import PersonIcon from '@mui/icons-material/Person';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import SettingsIcon from '@mui/icons-material/Settings';
+import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
+import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import LogoutIcon from '@mui/icons-material/Logout';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
+const APP_VERSION = '1.0.0';
+
 export default function MenuPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const items = [
     { label: 'Editar perfil', path: '/menu/perfil', icon: <PersonIcon /> },
     { label: 'Previsão de diário', path: '/menu/previsao-diario', icon: <EventNoteIcon /> },
     { label: 'Configurações', path: '/menu/configuracoes', icon: <SettingsIcon /> },
   ];
+
+  const placeholderItems = [
+    { label: 'Mandar sugestões', icon: <ChatBubbleOutlinedIcon /> },
+    { label: 'Ajuda', icon: <HelpOutlinedIcon /> },
+    { label: 'Termos de uso', icon: <ArticleOutlinedIcon /> },
+    { label: 'Política de privacidade', icon: <ArticleOutlinedIcon /> },
+  ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <Box>
@@ -38,7 +56,7 @@ export default function MenuPage() {
         </Box>
       </Paper>
 
-      <Paper sx={{ borderRadius: 3 }}>
+      <Paper sx={{ borderRadius: 3, mb: 3 }}>
         <List sx={{ py: 1 }}>
           {items.map((item) => (
             <ListItemButton key={item.path} sx={{ mx: 1, borderRadius: 2 }} onClick={() => navigate(item.path)}>
@@ -47,8 +65,25 @@ export default function MenuPage() {
               <ChevronRightIcon fontSize="small" sx={{ color: 'text.secondary' }} />
             </ListItemButton>
           ))}
+          {placeholderItems.map((item) => (
+            <ListItemButton key={item.label} sx={{ mx: 1, borderRadius: 2 }}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.label} />
+              <ChevronRightIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+            </ListItemButton>
+          ))}
+          <ListItemButton sx={{ mx: 1, borderRadius: 2 }} onClick={handleLogout}>
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Sair" />
+          </ListItemButton>
         </List>
       </Paper>
+
+      <Typography variant="caption" color="text.secondary" sx={{ pl: 0.5 }}>
+        Versão {APP_VERSION}
+      </Typography>
     </Box>
   );
 }
