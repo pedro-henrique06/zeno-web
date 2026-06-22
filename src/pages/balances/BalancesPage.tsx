@@ -16,6 +16,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { alpha, type Theme } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import CallMadeIcon from '@mui/icons-material/CallMade';
@@ -48,6 +49,12 @@ function KindAvatar({ kind, size }: { kind: EntryKind; size: number }) {
       {Icon ? <Icon sx={{ fontSize: size * 0.6 }} /> : EntryKindLetters[kind]}
     </Avatar>
   );
+}
+
+function getBalanceColor(value: number): string {
+  if (value <= 0) return 'error.main';
+  if (value < 10000) return 'warning.main';
+  return 'success.main';
 }
 
 export default function BalancesPage() {
@@ -129,9 +136,11 @@ export default function BalancesPage() {
           </TableHead>
           <TableBody>
             {days.map((day) => {
-              const rowSx = day.isProjected
-                ? { bgcolor: '#FCE4EC', '& .MuiTableCell-root': { color: '#C2185B' } }
-                : { bgcolor: '#FFF9C4', '& .MuiTableCell-root': { color: '#000' } };
+              const rowSx = day.isToday
+                ? { bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.12) }
+                : day.isProjected
+                  ? { opacity: 0.6 }
+                  : {};
               const value = day[KIND_FIELD[kind]] as number;
               const hasValue = value > 0;
               return (
@@ -146,8 +155,8 @@ export default function BalancesPage() {
                           width: 24,
                           height: 24,
                           borderRadius: '50%',
-                          bgcolor: '#000',
-                          color: '#fff',
+                          bgcolor: 'primary.main',
+                          color: 'primary.contrastText',
                           fontWeight: 700,
                           fontSize: 13,
                         }}
@@ -170,7 +179,7 @@ export default function BalancesPage() {
                     </Box>
                   </TableCell>
                   <TableCell align="right">
-                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 700, color: getBalanceColor(day.balance) }}>
                       {formatCurrency(day.balance)}
                     </Typography>
                   </TableCell>
