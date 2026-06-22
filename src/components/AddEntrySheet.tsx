@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Avatar, Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { EntryKind } from '@/types';
-import { EntryKindColors, EntryKindLetters, EntryKindLabels } from '@/utils/entryKind';
+import { EntryKindColors, EntryKindLetters, useEntryKindLabels } from '@/utils/entryKind';
 import { EntryFormDialog } from '@/components/EntryFormDialog';
 
 interface AddEntrySheetProps {
@@ -9,17 +10,18 @@ interface AddEntrySheetProps {
   onClose: () => void;
 }
 
-const DESCRIPTIONS: Record<number, string> = {
-  [EntryKind.Entrada]: 'Dinheiro que entrou',
-  [EntryKind.Saida]: 'Conta ou despesa fixa',
-  [EntryKind.Diario]: 'Gasto do dia a dia',
-  [EntryKind.Economia]: 'Dinheiro guardado',
-  [EntryKind.Cartao]: 'Compra no cartão de crédito',
-};
-
 const KINDS = [EntryKind.Entrada, EntryKind.Saida, EntryKind.Diario, EntryKind.Economia, EntryKind.Cartao];
 
 export function AddEntrySheet({ open, onClose }: AddEntrySheetProps) {
+  const { t } = useTranslation();
+  const kindLabels = useEntryKindLabels();
+  const descriptions: Record<number, string> = {
+    [EntryKind.Entrada]: t('addEntrySheet.descriptions.entrada'),
+    [EntryKind.Saida]: t('addEntrySheet.descriptions.saida'),
+    [EntryKind.Diario]: t('addEntrySheet.descriptions.diario'),
+    [EntryKind.Economia]: t('addEntrySheet.descriptions.economia'),
+    [EntryKind.Cartao]: t('addEntrySheet.descriptions.cartao'),
+  };
   const [activeKind, setActiveKind] = useState<number | null>(null);
 
   return (
@@ -42,7 +44,7 @@ export function AddEntrySheet({ open, onClose }: AddEntrySheetProps) {
           <Box sx={{ width: 40, height: 4, borderRadius: 2, bgcolor: 'divider' }} />
         </Box>
         <Typography variant="subtitle1" sx={{ fontWeight: 700, px: 3, pt: 1.5, pb: 0.5 }}>
-          Adicionar
+          {t('addEntrySheet.title')}
         </Typography>
         <List sx={{ pt: 1, pb: 2 }}>
           {KINDS.map((kind) => (
@@ -60,8 +62,8 @@ export function AddEntrySheet({ open, onClose }: AddEntrySheetProps) {
                 </Avatar>
               </ListItemIcon>
               <ListItemText
-                primary={EntryKindLabels[kind]}
-                secondary={DESCRIPTIONS[kind]}
+                primary={kindLabels[kind]}
+                secondary={descriptions[kind]}
                 sx={{ ml: 1 }}
               />
             </ListItemButton>

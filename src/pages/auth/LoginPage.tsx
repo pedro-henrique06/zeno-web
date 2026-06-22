@@ -16,10 +16,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import GoogleIcon from '@mui/icons-material/Google';
+import { useTranslation } from 'react-i18next';
 import { useLogin } from '@/hooks/useAuth';
 import type { LoginRequest } from '@/types';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const [form, setForm] = useState<LoginRequest>({
     email: '',
     password: '',
@@ -38,7 +40,7 @@ export default function LoginPage() {
         navigate('/');
       },
       onError: (err) => {
-        setError((err as any).response?.data?.message || 'Não foi possível entrar. Verifique seus dados.');
+        setError((err as any).response?.data?.message || t('auth.login.genericError'));
       },
     });
   };
@@ -63,16 +65,16 @@ export default function LoginPage() {
             Zeno
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-            Organize suas finanças
+            {t('auth.login.tagline')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Entre para continuar
+            {t('auth.login.subtitle')}
           </Typography>
         </Box>
 
         <Paper sx={{ p: 4 }}>
           <Typography variant="h5" sx={{ fontWeight: 700 }} align="center" gutterBottom>
-            Entrar
+            {t('auth.login.title')}
           </Typography>
 
           {error && (
@@ -84,7 +86,7 @@ export default function LoginPage() {
           <Box component="form" onSubmit={handleSubmit}>
             <TextField
               fullWidth
-              label="Email"
+              label={t('auth.login.email')}
               type="email"
               margin="normal"
               required
@@ -94,7 +96,7 @@ export default function LoginPage() {
             />
             <TextField
               fullWidth
-              label="Senha"
+              label={t('auth.login.password')}
               type={showPassword ? 'text' : 'password'}
               margin="normal"
               required
@@ -109,7 +111,7 @@ export default function LoginPage() {
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
                         size="small"
-                        aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                        aria-label={showPassword ? t('auth.login.hidePassword') : t('auth.login.showPassword')}
                       >
                         {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                       </IconButton>
@@ -127,7 +129,7 @@ export default function LoginPage() {
                 color="text.secondary"
                 sx={{ fontSize: '0.875rem' }}
               >
-                Esqueci minha senha
+                {t('auth.login.forgotPassword')}
               </MuiLink>
             </Box>
             <Button
@@ -138,7 +140,7 @@ export default function LoginPage() {
               disabled={loginMutation.isPending}
               sx={{ mt: 3, mb: 2, py: 1.5 }}
             >
-              {loginMutation.isPending ? 'Entrando...' : 'Entrar'}
+              {loginMutation.isPending ? t('auth.login.submitting') : t('auth.login.submit')}
             </Button>
             <Divider sx={{ my: 3 }} />
             <Button
@@ -150,12 +152,12 @@ export default function LoginPage() {
               startIcon={<GoogleIcon />}
               sx={{ py: 1.5, textTransform: 'none', fontWeight: 500 }}
             >
-              Entrar com Google
+              {t('auth.login.googleButton')}
             </Button>
             <Typography variant="body2" align="center" sx={{ mt: 3 }}>
-              Não tem uma conta?{' '}
+              {t('auth.login.noAccount')}{' '}
               <MuiLink component={Link} to="/register" underline="hover">
-                Criar conta
+                {t('auth.login.createAccount')}
               </MuiLink>
             </Typography>
           </Box>

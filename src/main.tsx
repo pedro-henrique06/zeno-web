@@ -6,6 +6,7 @@ import { CssBaseline } from '@mui/material'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ThemeContextProvider, useThemeContext } from '@/theme/ThemeContext'
 import AppRoutes from '@/routes'
+import '@/i18n'
 
 const queryClient = new QueryClient({
   defaultOptions: {

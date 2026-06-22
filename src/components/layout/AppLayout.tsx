@@ -6,6 +6,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AddEntrySheet } from '@/components/AddEntrySheet';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
@@ -13,13 +14,14 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const tabs = [
-    { label: 'Saldos', path: '/', icon: <AccountBalanceIcon /> },
-    { label: 'Totais', path: '/totais', icon: <AssessmentIcon /> },
+    { label: t('appLayout.balances'), path: '/', icon: <AccountBalanceIcon /> },
+    { label: t('appLayout.totals'), path: '/totais', icon: <AssessmentIcon /> },
     { label: '', path: 'add', icon: <AddIcon /> },
-    { label: 'Tags', path: '/tags', icon: <LocalOfferIcon /> },
-    { label: 'Menu', path: '/menu', icon: <MenuIcon /> },
+    { label: t('appLayout.tags'), path: '/tags', icon: <LocalOfferIcon /> },
+    { label: t('appLayout.menu'), path: '/menu', icon: <MenuIcon /> },
   ];
 
   const isActive = (path: string) => {

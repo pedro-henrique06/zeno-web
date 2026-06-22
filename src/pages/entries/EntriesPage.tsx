@@ -19,17 +19,34 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RepeatIcon from '@mui/icons-material/Repeat';
+import { useTranslation } from 'react-i18next';
 import { useEntries } from '@/hooks/useEntries';
 import { useTags } from '@/hooks/useTags';
+import { useProfile } from '@/hooks/useUser';
 import { EntryKind, type Entry } from '@/types';
-import { EntryKindColors, EntryKindLetters, EntryKindLabels, isCredit } from '@/utils/entryKind';
+import { EntryKindColors, EntryKindLetters, useEntryKindLabels, isCredit } from '@/utils/entryKind';
 import { formatCurrency, formatDate } from '@/utils/currency';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { groupEntriesByDate } from '@/utils/groupEntriesByDate';
 import { EntryFormDialog } from '@/components/EntryFormDialog';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import type { Currency, Language } from '@/types';
 
-function EntryCard({ entry, tagName, onClick }: { entry: Entry; tagName?: string; onClick: () => void }) {
+function EntryCard({
+  entry,
+  tagName,
+  onClick,
+  kindLabels,
+  currency,
+  language,
+}: {
+  entry: Entry;
+  tagName?: string;
+  onClick: () => void;
+  kindLabels: Record<EntryKind, string>;
+  currency?: Currency;
+  language?: Language;
+}) {
   const credit = isCredit(entry.kind);
   return (
     <Card sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }} onClick={onClick}>
@@ -60,11 +77,11 @@ function EntryCard({ entry, tagName, onClick }: { entry: Entry; tagName?: string
           </Box>
           <Typography sx={{ fontWeight: 700, whiteSpace: 'nowrap' }} color={credit ? 'success.main' : 'error.main'}>
             {credit ? '+' : '-'}
-            {formatCurrency(entry.value)}
+            {formatCurrency(entry.value, currency, language)}
           </Typography>
         </Box>
         <Box sx={{ mt: 1.5, display: 'flex', gap: 1 }}>
-          <Chip label={EntryKindLabels[entry.kind]} size="small" variant="outlined" />
+          <Chip label={kindLabels[entry.kind]} size="small" variant="outlined" />
           {tagName && <Chip label={tagName} size="small" />}
         </Box>
       </CardContent>
@@ -84,6 +101,9 @@ function parseKinds(param: string | null): EntryKind[] {
 }
 
 export default function EntriesPage() {
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
+  const kindLabels = useEntryKindLabels();
   const isMobile = useIsMobile();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
@@ -129,7 +149,7 @@ export default function EntriesPage() {
   if (isError) {
     return (
       <Box sx={{ textAlign: 'center', mt: 4 }}>
-        <Typography color="error">Não foi possível carregar os lançamentos. Tente novamente.</Typography>
+        <Typography color="error">{t('entries.loadError')}</Typography>
       </Box>
     );
   }
@@ -150,10 +170,10 @@ export default function EntriesPage() {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          Lançamentos
+          {t('entries.title')}
         </Typography>
         <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
-          Novo
+          {t('entries.new')}
         </Button>
       </Box>
 
@@ -161,7 +181,7 @@ export default function EntriesPage() {
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, mt: 1 }}>
         <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
-          Filtro:
+          {t('entries.filter')}
         </Typography>
         {ALL_KINDS.map((kind) => {
           const active = activeKinds.includes(kind);
@@ -169,7 +189,7 @@ export default function EntriesPage() {
             <Box
               key={kind}
               onClick={() => toggleKind(kind)}
-              title={EntryKindLabels[kind]}
+              title={kindLabels[kind]}
               sx={{
                 width: 28,
                 height: 28,
@@ -208,6 +228,9 @@ export default function EntriesPage() {
                       entry={entry}
                       tagName={entry.tagId ? tagNameById.get(entry.tagId) : undefined}
                       onClick={() => openEdit(entry)}
+                      kindLabels={kindLabels}
+                      currency={profile?.currency}
+                      language={profile?.language}
                     />
                   ))}
                 </Stack>
@@ -219,11 +242,11 @@ export default function EntriesPage() {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Data</TableCell>
-                  <TableCell>Título</TableCell>
-                  <TableCell>Tipo</TableCell>
-                  <TableCell>Tag</TableCell>
-                  <TableCell align="right">Valor</TableCell>
+                  <TableCell>{t('entries.date')}</TableCell>
+                  <TableCell>{t('entries.titleColumn')}</TableCell>
+                  <TableCell>{t('entries.type')}</TableCell>
+                  <TableCell>{t('entries.tag')}</TableCell>
+                  <TableCell align="right">{t('entries.value')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -236,7 +259,7 @@ export default function EntriesPage() {
                       sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
                       onClick={() => openEdit(entry)}
                     >
-                      <TableCell>{formatDate(entry.date)}</TableCell>
+                      <TableCell>{formatDate(entry.date, profile?.language)}</TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                           {entry.title}
@@ -244,13 +267,13 @@ export default function EntriesPage() {
                         </Box>
                       </TableCell>
                       <TableCell>
-                        <Chip label={EntryKindLabels[entry.kind]} size="small" variant="outlined" />
+                        <Chip label={kindLabels[entry.kind]} size="small" variant="outlined" />
                       </TableCell>
                       <TableCell>{tagName ?? '-'}</TableCell>
                       <TableCell align="right">
                         <Typography sx={{ fontWeight: 600 }} color={credit ? 'success.main' : 'error.main'}>
                           {credit ? '+' : '-'}
-                          {formatCurrency(entry.value)}
+                          {formatCurrency(entry.value, profile?.currency, profile?.language)}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -273,13 +296,13 @@ export default function EntriesPage() {
           }}
         >
           <Typography variant="h6" sx={{ mb: 1 }}>
-            Nenhum lançamento este mês
+            {t('entries.emptyTitle')}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Adicione um lançamento para começar a controlar suas finanças.
+            {t('entries.emptySubtitle')}
           </Typography>
           <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
-            Novo
+            {t('entries.new')}
           </Button>
         </Box>
       )}

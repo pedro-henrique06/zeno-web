@@ -17,8 +17,10 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useTranslation } from 'react-i18next';
 import { useBalancesHorizon } from '@/hooks/useBalances';
-import { formatCurrency } from '@/utils/currency';
+import { useProfile } from '@/hooks/useUser';
+import { formatCurrency, LANGUAGE_LOCALES } from '@/utils/currency';
 import { getBalanceColor } from '@/utils/balanceColor';
 
 interface BalancesHorizonDialogProps {
@@ -27,12 +29,9 @@ interface BalancesHorizonDialogProps {
   initialYear: number;
 }
 
-function monthLabel(month: number) {
-  const date = new Date(2000, month - 1, 1);
-  return new Intl.DateTimeFormat('pt-BR', { month: 'short' }).format(date);
-}
-
 export function BalancesHorizonDialog({ open, onClose, initialYear }: BalancesHorizonDialogProps) {
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
   const [year, setYear] = useState(initialYear);
 
   const { data, isLoading, isError } = useBalancesHorizon(year, open);
@@ -40,10 +39,15 @@ export function BalancesHorizonDialog({ open, onClose, initialYear }: BalancesHo
   const months = data?.months ?? [];
   const maxDays = Math.max(0, ...months.map((m) => m.days.length));
 
+  const monthLabel = (month: number) => {
+    const date = new Date(2000, month - 1, 1);
+    return new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], { month: 'short' }).format(date);
+  };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        Horizonte de saldos
+        {t('horizon.balances.title')}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <IconButton size="small" onClick={() => setYear((y) => y - 1)}>
@@ -66,14 +70,14 @@ export function BalancesHorizonDialog({ open, onClose, initialYear }: BalancesHo
           </Box>
         ) : isError ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography color="error">Não foi possível carregar o horizonte de saldos.</Typography>
+            <Typography color="error">{t('horizon.balances.loadError')}</Typography>
           </Box>
         ) : (
           <TableContainer sx={{ maxHeight: '70vh' }}>
             <Table size="small" stickyHeader>
               <TableHead>
                 <TableRow>
-                  <TableCell>Dia</TableCell>
+                  <TableCell>{t('horizon.balances.day')}</TableCell>
                   {months.map((m) => (
                     <TableCell key={m.month} align="right" sx={{ textTransform: 'capitalize', fontWeight: 700, whiteSpace: 'nowrap' }}>
                       {monthLabel(m.month)}
@@ -96,7 +100,7 @@ export function BalancesHorizonDialog({ open, onClose, initialYear }: BalancesHo
                             variant="body2"
                             sx={{ fontWeight: 600, color: getBalanceColor(dayData.balance) }}
                           >
-                            {formatCurrency(dayData.balance)}
+                            {formatCurrency(dayData.balance, profile?.currency, profile?.language)}
                           </Typography>
                         </TableCell>
                       );

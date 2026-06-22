@@ -1,12 +1,19 @@
 import { useState } from 'react';
-import { Box, Button, CircularProgress, IconButton, TextField, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, IconButton, MenuItem, TextField, Typography } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
-import { useProfile, useUpdateProfile } from '@/hooks/useUser';
-import type { UpdateProfileRequest, UserProfile } from '@/types';
+import { useTranslation } from 'react-i18next';
+import { useProfile, useUpdateProfile, useUpdateCurrency, useUpdateLanguage } from '@/hooks/useUser';
+import type { Currency, Language, UpdateProfileRequest, UserProfile } from '@/types';
+
+const CURRENCIES: Currency[] = ['BRL', 'USD', 'EUR'];
+const LANGUAGES: Language[] = ['PtBR', 'EnUS', 'Es'];
 
 function EditProfileForm({ profile }: { profile: UserProfile }) {
+  const { t } = useTranslation();
   const updateMutation = useUpdateProfile();
+  const updateCurrencyMutation = useUpdateCurrency();
+  const updateLanguageMutation = useUpdateLanguage();
   const [form, setForm] = useState<UpdateProfileRequest>({
     name: profile.name,
     email: profile.email,
@@ -23,14 +30,14 @@ function EditProfileForm({ profile }: { profile: UserProfile }) {
     <>
       <TextField
         fullWidth
-        label="Nome"
+        label={t('editProfile.name')}
         margin="normal"
         value={form.name}
         onChange={(e) => setForm({ ...form, name: e.target.value })}
       />
       <TextField
         fullWidth
-        label="Email"
+        label={t('editProfile.email')}
         type="email"
         margin="normal"
         value={form.email}
@@ -38,27 +45,55 @@ function EditProfileForm({ profile }: { profile: UserProfile }) {
       />
       <TextField
         fullWidth
-        label="Telefone"
+        label={t('editProfile.phone')}
         margin="normal"
         value={form.phone}
         onChange={(e) => setForm({ ...form, phone: e.target.value })}
       />
       <TextField
         fullWidth
-        label="CPF/CNPJ"
+        label={t('editProfile.document')}
         margin="normal"
         value={form.document}
         onChange={(e) => setForm({ ...form, document: e.target.value })}
       />
       <TextField
         fullWidth
-        label="Data de nascimento"
+        label={t('editProfile.birthDate')}
         type="date"
         margin="normal"
         value={form.birthDate}
         onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
         slotProps={{ inputLabel: { shrink: true } }}
       />
+      <TextField
+        fullWidth
+        select
+        label={t('editProfile.currency')}
+        margin="normal"
+        value={profile.currency}
+        onChange={(e) => updateCurrencyMutation.mutate({ currency: e.target.value as Currency })}
+      >
+        {CURRENCIES.map((c) => (
+          <MenuItem key={c} value={c}>
+            {t(`currency.${c}`)}
+          </MenuItem>
+        ))}
+      </TextField>
+      <TextField
+        fullWidth
+        select
+        label={t('editProfile.language')}
+        margin="normal"
+        value={profile.language}
+        onChange={(e) => updateLanguageMutation.mutate({ language: e.target.value as Language })}
+      >
+        {LANGUAGES.map((l) => (
+          <MenuItem key={l} value={l}>
+            {t(`language.${l}`)}
+          </MenuItem>
+        ))}
+      </TextField>
 
       <Button
         fullWidth
@@ -68,13 +103,14 @@ function EditProfileForm({ profile }: { profile: UserProfile }) {
         onClick={handleSubmit}
         disabled={updateMutation.isPending}
       >
-        Salvar
+        {t('editProfile.save')}
       </Button>
     </>
   );
 }
 
 export default function EditProfilePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { data: profile, isLoading, isError } = useProfile();
 
@@ -85,13 +121,13 @@ export default function EditProfilePage() {
           <ArrowBackIcon />
         </IconButton>
         <Typography variant="h5" sx={{ fontWeight: 700 }}>
-          Editar perfil
+          {t('editProfile.title')}
         </Typography>
       </Box>
 
       {isError ? (
         <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Typography color="error">Não foi possível carregar o perfil. Tente novamente.</Typography>
+          <Typography color="error">{t('editProfile.loadError')}</Typography>
         </Box>
       ) : isLoading || !profile ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>

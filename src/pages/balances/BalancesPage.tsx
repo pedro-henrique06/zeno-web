@@ -24,12 +24,14 @@ import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 import InsightsIcon from '@mui/icons-material/Insights';
 import AppsIcon from '@mui/icons-material/Apps';
+import { useTranslation } from 'react-i18next';
 import { useBalances } from '@/hooks/useBalances';
+import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { EntryKind } from '@/types';
-import type { BalanceDay } from '@/types';
-import { EntryKindColors, EntryKindLetters, EntryKindLabels } from '@/utils/entryKind';
+import type { BalanceDay, Currency, Language } from '@/types';
+import { EntryKindColors, EntryKindLetters, useEntryKindLabels } from '@/utils/entryKind';
 import { getBalanceColor, getBalanceTone } from '@/utils/balanceColor';
 import { BalancesHorizonDialog } from '@/components/BalancesHorizonDialog';
 import { EntryFormDialog } from '@/components/EntryFormDialog';
@@ -91,10 +93,10 @@ function DayCell({ day }: { day: BalanceDay }) {
   );
 }
 
-function BalanceCell({ day }: { day: BalanceDay }) {
+function BalanceCell({ day, currency, language }: { day: BalanceDay; currency?: Currency; language?: Language }) {
   return (
     <Typography variant="body2" sx={{ fontWeight: 700, color: getBalanceColor(day.balance) }}>
-      {formatCurrency(day.balance)}
+      {formatCurrency(day.balance, currency, language)}
     </Typography>
   );
 }
@@ -108,6 +110,9 @@ function dayRowSx(day: BalanceDay) {
 }
 
 export default function BalancesPage() {
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
+  const kindLabels = useEntryKindLabels();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -129,7 +134,7 @@ export default function BalancesPage() {
   if (isError) {
     return (
       <Box sx={{ textAlign: 'center', mt: 4 }}>
-        <Typography color="error">Não foi possível carregar os saldos. Tente novamente.</Typography>
+        <Typography color="error">{t('balances.loadError')}</Typography>
       </Box>
     );
   }
@@ -145,7 +150,7 @@ export default function BalancesPage() {
         year={year}
         onChange={(m, y) => { setMonth(m); setYear(y); }}
         endAdornment={
-          <IconButton size="small" onClick={() => setHorizonOpen(true)} title="Horizonte de saldos">
+          <IconButton size="small" onClick={() => setHorizonOpen(true)} title={t('balances.horizonTooltip')}>
             <InsightsIcon fontSize="small" />
           </IconButton>
         }
@@ -155,7 +160,7 @@ export default function BalancesPage() {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Dia</TableCell>
+              <TableCell>{t('balances.day')}</TableCell>
               <TableCell align="right">
                 <Box
                   onClick={(e: MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
@@ -172,7 +177,7 @@ export default function BalancesPage() {
                 >
                   {kind === 'all' ? <AllAvatar size={20} /> : <KindAvatar kind={kind} size={20} />}
                   <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                    {kind === 'all' ? 'Todas' : EntryKindLabels[kind]}
+                    {kind === 'all' ? t('balances.all') : kindLabels[kind]}
                   </Typography>
                   <KeyboardArrowDownIcon fontSize="small" />
                 </Box>
@@ -187,7 +192,7 @@ export default function BalancesPage() {
                     <ListItemIcon>
                       <AllAvatar size={24} />
                     </ListItemIcon>
-                    <ListItemText>Todas</ListItemText>
+                    <ListItemText>{t('balances.all')}</ListItemText>
                   </MenuItem>
                   {KINDS.map((k) => (
                     <MenuItem
@@ -201,12 +206,12 @@ export default function BalancesPage() {
                       <ListItemIcon>
                         <KindAvatar kind={k} size={24} />
                       </ListItemIcon>
-                      <ListItemText>{EntryKindLabels[k]}</ListItemText>
+                      <ListItemText>{kindLabels[k]}</ListItemText>
                     </MenuItem>
                   ))}
                 </Menu>
               </TableCell>
-              <TableCell align="right">Saldos</TableCell>
+              <TableCell align="right">{t('balances.balances')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -234,7 +239,7 @@ export default function BalancesPage() {
                               variant="body2"
                               sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[k] : 'text.disabled' }}
                             >
-                              {formatCurrency(value)}
+                              {formatCurrency(value, profile?.currency, profile?.language)}
                             </Typography>
                           </Box>
                         </TableCell>
@@ -244,7 +249,7 @@ export default function BalancesPage() {
                             rowSpan={KINDS.length}
                             sx={{ bgcolor: (theme: Theme) => alpha(theme.palette[getBalanceTone(day.balance)].main, 0.16) }}
                           >
-                            <BalanceCell day={day} />
+                            <BalanceCell day={day} currency={profile?.currency} language={profile?.language} />
                           </TableCell>
                         )}
                       </TableRow>
@@ -267,12 +272,12 @@ export default function BalancesPage() {
                             variant="body2"
                             sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[kind] : 'text.disabled' }}
                           >
-                            {formatCurrency(value)}
+                            {formatCurrency(value, profile?.currency, profile?.language)}
                           </Typography>
                         </Box>
                       </TableCell>
                       <TableCell align="right">
-                        <BalanceCell day={day} />
+                        <BalanceCell day={day} currency={profile?.currency} language={profile?.language} />
                       </TableCell>
                     </TableRow>
                   );

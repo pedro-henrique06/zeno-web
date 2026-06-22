@@ -1,6 +1,8 @@
 import { Box, IconButton, Typography } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useProfile } from '@/hooks/useUser';
+import { LANGUAGE_LOCALES } from '@/utils/currency';
 
 interface MonthSwitcherProps {
   month: number;
@@ -10,8 +12,9 @@ interface MonthSwitcherProps {
 }
 
 export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwitcherProps) {
+  const { data: profile } = useProfile();
   const date = new Date(year, month - 1, 1);
-  const label = new Intl.DateTimeFormat('pt-BR', {
+  const label = new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], {
     month: 'short',
     year: '2-digit',
   }).format(date);

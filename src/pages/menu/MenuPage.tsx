@@ -8,25 +8,27 @@ import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 
 const APP_VERSION = '1.0.0';
 
 export default function MenuPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
 
   const items = [
-    { label: 'Editar perfil', path: '/menu/perfil', icon: <PersonIcon /> },
-    { label: 'Previsão de diário', path: '/menu/previsao-diario', icon: <EventNoteIcon /> },
-    { label: 'Configurações', path: '/menu/configuracoes', icon: <SettingsIcon /> },
+    { label: t('menu.editProfile'), path: '/menu/perfil', icon: <PersonIcon /> },
+    { label: t('menu.dailyBudget'), path: '/menu/previsao-diario', icon: <EventNoteIcon /> },
+    { label: t('menu.settings'), path: '/menu/configuracoes', icon: <SettingsIcon /> },
   ];
 
   const placeholderItems = [
-    { label: 'Mandar sugestões', icon: <ChatBubbleOutlinedIcon /> },
-    { label: 'Ajuda', icon: <HelpOutlinedIcon /> },
-    { label: 'Termos de uso', icon: <ArticleOutlinedIcon /> },
-    { label: 'Política de privacidade', icon: <ArticleOutlinedIcon /> },
+    { label: t('menu.suggestions'), icon: <ChatBubbleOutlinedIcon /> },
+    { label: t('menu.help'), icon: <HelpOutlinedIcon /> },
+    { label: t('menu.terms'), icon: <ArticleOutlinedIcon /> },
+    { label: t('menu.privacy'), icon: <ArticleOutlinedIcon /> },
   ];
 
   const handleLogout = () => {
@@ -37,7 +39,7 @@ export default function MenuPage() {
   return (
     <Box>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
-        Menu
+        {t('menu.title')}
       </Typography>
 
       <Paper sx={{ p: 2, borderRadius: 3, mb: 3 }}>
@@ -76,13 +78,13 @@ export default function MenuPage() {
             <ListItemIcon>
               <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary="Sair" />
+            <ListItemText primary={t('menu.logout')} />
           </ListItemButton>
         </List>
       </Paper>
 
       <Typography variant="caption" color="text.secondary" sx={{ pl: 0.5 }}>
-        Versão {APP_VERSION}
+        {t('menu.version', { version: APP_VERSION })}
       </Typography>
     </Box>
   );

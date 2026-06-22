@@ -7,6 +7,10 @@ export const EntryKind = {
   Cartao: 4,
 } as const;
 
+export type Currency = 'BRL' | 'USD' | 'EUR';
+
+export type Language = 'PtBR' | 'EnUS' | 'Es';
+
 export interface User {
   id: string;
   name: string;
@@ -26,6 +30,8 @@ export interface RegisterRequest {
   phone?: string;
   document?: string;
   birthDate?: string;
+  currency?: Currency;
+  language?: Language;
 }
 
 export interface AuthResponse {
@@ -50,6 +56,8 @@ export interface UserProfile {
   oAuthProvider: string;
   hasPassword: boolean;
   dailyBudget?: number;
+  currency: Currency;
+  language: Language;
 }
 
 export interface UpdateProfileRequest {
@@ -68,6 +76,14 @@ export interface ChangePasswordRequest {
 
 export interface UpdateDailyBudgetRequest {
   dailyBudget: number;
+}
+
+export interface UpdateCurrencyRequest {
+  currency: Currency;
+}
+
+export interface UpdateLanguageRequest {
+  language: Language;
 }
 
 export interface Tag {

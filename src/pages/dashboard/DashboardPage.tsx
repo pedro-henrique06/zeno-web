@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Box, Typography, Paper, Avatar, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useSummary } from '@/hooks/useSummary';
+import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
 import { EntryKind } from '@/types';
+import type { Currency, Language } from '@/types';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { EntryKindColors, EntryKindLetters } from '@/utils/entryKind';
 import { EconomizedHorizonDialog } from '@/components/EconomizedHorizonDialog';
@@ -43,10 +46,14 @@ function MovementRow({
   kind,
   label,
   total,
+  currency,
+  language,
 }: {
   kind: number;
   label: string;
   total: number;
+  currency?: Currency;
+  language?: Language;
 }) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1.25 }}>
@@ -59,7 +66,7 @@ function MovementRow({
         </Typography>
       </Box>
       <Typography sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>
-        {formatCurrency(total)}
+        {formatCurrency(total, currency, language)}
       </Typography>
     </Box>
   );
@@ -67,6 +74,8 @@ function MovementRow({
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -80,7 +89,7 @@ export default function DashboardPage() {
   if (isError) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <Typography color="error">Não foi possível carregar o resumo. Tente novamente.</Typography>
+        <Typography color="error">{t('dashboard.loadError')}</Typography>
       </Box>
     );
   }
@@ -100,34 +109,34 @@ export default function DashboardPage() {
       <MonthSwitcher month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y); }} />
 
       <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700 }}>
-        Cálculos do mês
+        {t('dashboard.monthlyCalculations')}
       </Typography>
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, gap: 2, mb: 4, mt: 1 }}>
         <StatCard
-          label="Performance"
-          value={formatCurrency(performance)}
-          subLabel={performance >= 0 ? 'Sobrou dinheiro' : 'Faltou dinheiro'}
+          label={t('dashboard.performance')}
+          value={formatCurrency(performance, profile?.currency, profile?.language)}
+          subLabel={performance >= 0 ? t('dashboard.moneyLeftOver') : t('dashboard.moneyShort')}
           subColor={performance >= 0 ? 'success.main' : 'error.main'}
           onClick={() => setPerformanceOpen(true)}
         />
         <StatCard
-          label="Economizado"
+          label={t('dashboard.saved')}
           value={`${economizedPercent.toFixed(1)}%`}
-          subLabel={economizedPercent > 0 ? 'Economizado' : 'Nada economizado'}
+          subLabel={economizedPercent > 0 ? t('dashboard.saved') : t('dashboard.nothingSaved')}
           subColor={economizedPercent > 0 ? 'success.main' : 'text.secondary'}
           onClick={() => setEconomizedOpen(true)}
         />
         <StatCard
-          label="Custo de vida"
-          value={formatCurrency(costOfLiving)}
-          subLabel="Custo de vida"
+          label={t('dashboard.costOfLiving')}
+          value={formatCurrency(costOfLiving, profile?.currency, profile?.language)}
+          subLabel={t('dashboard.costOfLiving')}
           subColor="text.secondary"
           onClick={() => setCostOfLivingOpen(true)}
         />
         <StatCard
-          label="Diário médio"
-          value={formatCurrency(dailyAverageReal)}
-          subLabel="Diário médio"
+          label={t('dashboard.dailyAverage')}
+          value={formatCurrency(dailyAverageReal, profile?.currency, profile?.language)}
+          subLabel={t('dashboard.dailyAverage')}
           subColor="text.secondary"
           onClick={() => setDailyAverageOpen(true)}
         />
@@ -136,18 +145,18 @@ export default function DashboardPage() {
       <Paper sx={{ borderRadius: 3, p: 2 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
-            Movimentações do mês
+            {t('dashboard.monthMovements')}
           </Typography>
           <Button size="small" onClick={() => navigate(`/entries?month=${month}&year=${year}`)}>
-            Ver todas
+            {t('dashboard.seeAll')}
           </Button>
         </Box>
 
-        <MovementRow kind={EntryKind.Entrada} label="Entradas" total={movements.entrada} />
-        <MovementRow kind={EntryKind.Saida} label="Saídas" total={movements.saida} />
-        <MovementRow kind={EntryKind.Diario} label="Diários" total={movements.diario} />
-        <MovementRow kind={EntryKind.Economia} label="Economias" total={movements.economia} />
-        <MovementRow kind={EntryKind.Cartao} label="Gastos com cartão" total={movements.cartao} />
+        <MovementRow kind={EntryKind.Entrada} label={t('dashboard.income')} total={movements.entrada} currency={profile?.currency} language={profile?.language} />
+        <MovementRow kind={EntryKind.Saida} label={t('dashboard.expenses')} total={movements.saida} currency={profile?.currency} language={profile?.language} />
+        <MovementRow kind={EntryKind.Diario} label={t('dashboard.daily')} total={movements.diario} currency={profile?.currency} language={profile?.language} />
+        <MovementRow kind={EntryKind.Economia} label={t('dashboard.savings')} total={movements.economia} currency={profile?.currency} language={profile?.language} />
+        <MovementRow kind={EntryKind.Cartao} label={t('dashboard.cardSpending')} total={movements.cartao} currency={profile?.currency} language={profile?.language} />
       </Paper>
 
       <EconomizedHorizonDialog

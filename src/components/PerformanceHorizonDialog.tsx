@@ -13,8 +13,10 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useTranslation } from 'react-i18next';
 import { usePerformanceHorizon } from '@/hooks/useSummary';
-import { formatCurrency } from '@/utils/currency';
+import { useProfile } from '@/hooks/useUser';
+import { formatCurrency, LANGUAGE_LOCALES } from '@/utils/currency';
 
 interface PerformanceHorizonDialogProps {
   open: boolean;
@@ -22,19 +24,21 @@ interface PerformanceHorizonDialogProps {
   initialYear: number;
 }
 
-function monthLabel(month: number) {
-  const date = new Date(2000, month - 1, 1);
-  const label = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(date);
-  return label.charAt(0).toUpperCase() + label.slice(1);
-}
-
 export function PerformanceHorizonDialog({ open, onClose, initialYear }: PerformanceHorizonDialogProps) {
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
   const navigate = useNavigate();
   const [year, setYear] = useState(initialYear);
 
   const { data, isLoading, isError } = usePerformanceHorizon(year, open);
 
   const months = data?.months ?? [];
+
+  const monthLabel = (month: number) => {
+    const date = new Date(2000, month - 1, 1);
+    const label = new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], { month: 'long' }).format(date);
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  };
 
   const openMonth = (month: number) => {
     onClose();
@@ -44,7 +48,7 @@ export function PerformanceHorizonDialog({ open, onClose, initialYear }: Perform
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        Performance
+        {t('horizon.performance.title')}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <IconButton size="small" onClick={() => setYear((y) => y - 1)}>
@@ -67,19 +71,18 @@ export function PerformanceHorizonDialog({ open, onClose, initialYear }: Perform
           </Box>
         ) : isError || !data ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography color="error">Não foi possível carregar a performance.</Typography>
+            <Typography color="error">{t('horizon.performance.loadError')}</Typography>
           </Box>
         ) : (
           <>
             <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, mb: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                Performance é como uma foto do seu mês financeiro: é a diferença entre quanto entrou e quanto saiu.
-                Entradas menos saídas (fixas, diárias, economias, cartão e previsão de diário) = performance.
+                {t('horizon.performance.explanation')}
               </Typography>
             </Paper>
 
             <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700 }}>
-              Total por mês
+              {t('horizon.performance.totalByMonth')}
             </Typography>
             {months.map((m) => (
               <Box
@@ -98,7 +101,7 @@ export function PerformanceHorizonDialog({ open, onClose, initialYear }: Perform
               >
                 <Typography sx={{ fontWeight: 600 }}>{monthLabel(m.month)}</Typography>
                 <Typography sx={{ fontWeight: 700, color: m.performance < 0 ? 'error.main' : 'text.primary' }}>
-                  {formatCurrency(m.performance)}
+                  {formatCurrency(m.performance, profile?.currency, profile?.language)}
                 </Typography>
               </Box>
             ))}

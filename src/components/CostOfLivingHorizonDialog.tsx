@@ -13,8 +13,10 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useTranslation } from 'react-i18next';
 import { useCostOfLivingHorizon } from '@/hooks/useSummary';
-import { formatCurrency } from '@/utils/currency';
+import { useProfile } from '@/hooks/useUser';
+import { formatCurrency, LANGUAGE_LOCALES } from '@/utils/currency';
 import { EntryKind } from '@/types';
 
 interface CostOfLivingHorizonDialogProps {
@@ -25,19 +27,21 @@ interface CostOfLivingHorizonDialogProps {
 
 const COST_OF_LIVING_KINDS = [EntryKind.Saida, EntryKind.Diario, EntryKind.Cartao];
 
-function monthLabel(month: number) {
-  const date = new Date(2000, month - 1, 1);
-  const label = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(date);
-  return label.charAt(0).toUpperCase() + label.slice(1);
-}
-
 export function CostOfLivingHorizonDialog({ open, onClose, initialYear }: CostOfLivingHorizonDialogProps) {
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
   const navigate = useNavigate();
   const [year, setYear] = useState(initialYear);
 
   const { data, isLoading, isError } = useCostOfLivingHorizon(year, open);
 
   const months = data?.months ?? [];
+
+  const monthLabel = (month: number) => {
+    const date = new Date(2000, month - 1, 1);
+    const label = new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], { month: 'long' }).format(date);
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  };
 
   const openMonth = (month: number) => {
     onClose();
@@ -47,7 +51,7 @@ export function CostOfLivingHorizonDialog({ open, onClose, initialYear }: CostOf
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        Custo de vida
+        {t('horizon.costOfLiving.title')}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <IconButton size="small" onClick={() => setYear((y) => y - 1)}>
@@ -70,28 +74,27 @@ export function CostOfLivingHorizonDialog({ open, onClose, initialYear }: CostOf
           </Box>
         ) : isError || !data ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography color="error">Não foi possível carregar o custo de vida.</Typography>
+            <Typography color="error">{t('horizon.costOfLiving.loadError')}</Typography>
           </Box>
         ) : (
           <>
             <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, mb: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                Custo de vida é quanto você gasta para viver: saídas, diários, gastos com cartão e a previsão de
-                diário para os dias que ainda faltam no mês.
+                {t('horizon.costOfLiving.explanation')}
               </Typography>
             </Paper>
 
             <Box sx={{ textAlign: 'center', mb: 3 }}>
               <Typography variant="body2" color="text.secondary">
-                Total no ano
+                {t('horizon.costOfLiving.totalYear')}
               </Typography>
               <Typography variant="h4" sx={{ fontWeight: 700 }}>
-                {formatCurrency(data.costOfLiving)}
+                {formatCurrency(data.costOfLiving, profile?.currency, profile?.language)}
               </Typography>
             </Box>
 
             <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700 }}>
-              Total por mês
+              {t('horizon.costOfLiving.totalByMonth')}
             </Typography>
             {months.map((m) => (
               <Box
@@ -109,7 +112,7 @@ export function CostOfLivingHorizonDialog({ open, onClose, initialYear }: CostOf
                 }}
               >
                 <Typography sx={{ fontWeight: 600 }}>{monthLabel(m.month)}</Typography>
-                <Typography sx={{ fontWeight: 700 }}>{formatCurrency(m.costOfLiving)}</Typography>
+                <Typography sx={{ fontWeight: 700 }}>{formatCurrency(m.costOfLiving, profile?.currency, profile?.language)}</Typography>
               </Box>
             ))}
           </>
