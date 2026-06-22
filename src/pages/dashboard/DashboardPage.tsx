@@ -7,6 +7,7 @@ import { EntryKind } from '@/types';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { EntryKindColors, EntryKindLetters } from '@/utils/entryKind';
 import { EconomizedHorizonDialog } from '@/components/EconomizedHorizonDialog';
+import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog';
 
 function StatCard({
   label,
@@ -68,6 +69,7 @@ export default function DashboardPage() {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
   const [economizedOpen, setEconomizedOpen] = useState(false);
+  const [performanceOpen, setPerformanceOpen] = useState(false);
 
   const { data, isLoading, isError } = useSummary(month, year);
 
@@ -102,6 +104,7 @@ export default function DashboardPage() {
           value={formatCurrency(performance)}
           subLabel={performance >= 0 ? 'Sobrou dinheiro' : 'Faltou dinheiro'}
           subColor={performance >= 0 ? 'success.main' : 'error.main'}
+          onClick={() => setPerformanceOpen(true)}
         />
         <StatCard
           label="Economizado"
@@ -145,6 +148,13 @@ export default function DashboardPage() {
         key={year}
         open={economizedOpen}
         onClose={() => setEconomizedOpen(false)}
+        initialYear={year}
+      />
+
+      <PerformanceHorizonDialog
+        key={year}
+        open={performanceOpen}
+        onClose={() => setPerformanceOpen(false)}
         initialYear={year}
       />
     </Box>

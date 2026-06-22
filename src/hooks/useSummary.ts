@@ -15,3 +15,11 @@ export function useEconomizedHorizon(year: number, enabled: boolean) {
     enabled,
   });
 }
+
+export function usePerformanceHorizon(year: number, enabled: boolean) {
+  return useQuery({
+    queryKey: ['performance-horizon', year],
+    queryFn: () => summaryApi.getPerformanceHorizon(year),
+    enabled,
+  });
+}

@@ -170,6 +170,16 @@ export interface EconomizedHorizonResponse {
   months: EconomizedMonth[];
 }
 
+export interface PerformanceMonth {
+  month: number;
+  performance: number;
+}
+
+export interface PerformanceHorizonResponse {
+  year: number;
+  months: PerformanceMonth[];
+}
+
 export interface PagedResponse<T> {
   items: T[];
   page: number;
