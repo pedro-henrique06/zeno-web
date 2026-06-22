@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   CircularProgress,
@@ -28,11 +29,17 @@ function monthLabel(month: number) {
 }
 
 export function PerformanceHorizonDialog({ open, onClose, initialYear }: PerformanceHorizonDialogProps) {
+  const navigate = useNavigate();
   const [year, setYear] = useState(initialYear);
 
   const { data, isLoading, isError } = usePerformanceHorizon(year, open);
 
   const months = data?.months ?? [];
+
+  const openMonth = (month: number) => {
+    onClose();
+    navigate(`/entries?month=${month}&year=${year}`);
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -77,6 +84,7 @@ export function PerformanceHorizonDialog({ open, onClose, initialYear }: Perform
             {months.map((m) => (
               <Box
                 key={m.month}
+                onClick={() => openMonth(m.month)}
                 sx={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -84,6 +92,8 @@ export function PerformanceHorizonDialog({ open, onClose, initialYear }: Perform
                   py: 1.25,
                   borderBottom: 1,
                   borderColor: 'divider',
+                  cursor: 'pointer',
+                  '&:hover': { bgcolor: 'action.hover' },
                 }}
               >
                 <Typography sx={{ fontWeight: 600 }}>{monthLabel(m.month)}</Typography>

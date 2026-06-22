@@ -132,7 +132,7 @@ export default function DashboardPage() {
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             Movimentações do mês
           </Typography>
-          <Button size="small" onClick={() => navigate('/entries')}>
+          <Button size="small" onClick={() => navigate(`/entries?month=${month}&year=${year}`)}>
             Ver todas
           </Button>
         </Box>
@@ -145,14 +145,14 @@ export default function DashboardPage() {
       </Paper>
 
       <EconomizedHorizonDialog
-        key={year}
+        key={`economized-${year}`}
         open={economizedOpen}
         onClose={() => setEconomizedOpen(false)}
         initialYear={year}
       />
 
       <PerformanceHorizonDialog
-        key={year}
+        key={`performance-${year}`}
         open={performanceOpen}
         onClose={() => setPerformanceOpen(false)}
         initialYear={year}

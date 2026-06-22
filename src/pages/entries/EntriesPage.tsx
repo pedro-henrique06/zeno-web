@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Typography,
   Button,
@@ -26,6 +27,7 @@ import { formatCurrency, formatDate } from '@/utils/currency';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { groupEntriesByDate } from '@/utils/groupEntriesByDate';
 import { EntryFormDialog } from '@/components/EntryFormDialog';
+import { MonthSwitcher } from '@/components/MonthSwitcher';
 
 function EntryCard({ entry, tagName, onClick }: { entry: Entry; tagName?: string; onClick: () => void }) {
   const credit = isCredit(entry.kind);
@@ -75,9 +77,14 @@ export default function EntriesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null);
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const now = new Date();
-  const month = now.getMonth() + 1;
-  const year = now.getFullYear();
+  const month = Number(searchParams.get('month')) || now.getMonth() + 1;
+  const year = Number(searchParams.get('year')) || now.getFullYear();
+
+  const handleMonthChange = (m: number, y: number) => {
+    setSearchParams({ month: String(m), year: String(y) });
+  };
 
   const { data, isLoading, isError } = useEntries(month, year);
   const { data: tags } = useTags();
@@ -114,7 +121,7 @@ export default function EntriesPage() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>
           Lançamentos
         </Typography>
@@ -122,6 +129,8 @@ export default function EntriesPage() {
           Novo
         </Button>
       </Box>
+
+      <MonthSwitcher month={month} year={year} onChange={handleMonthChange} />
 
       {entries.length > 0 ? (
         isMobile ? (
