@@ -86,6 +86,25 @@ export interface UpdateTagRequest {
   name: string;
 }
 
+export interface MonthlyExpenseCategory {
+  id: string;
+  userId: string;
+  name: string;
+  amount: number;
+  createdAt: string;
+}
+
+export interface CreateMonthlyExpenseCategoryRequest {
+  name: string;
+  amount: number;
+}
+
+export interface UpdateMonthlyExpenseCategoryRequest {
+  id: string;
+  name: string;
+  amount: number;
+}
+
 export interface Entry {
   id: string;
   userId: string;
