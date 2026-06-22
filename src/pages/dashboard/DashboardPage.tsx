@@ -6,20 +6,23 @@ import { formatCurrency } from '@/utils/currency';
 import { EntryKind } from '@/types';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { EntryKindColors, EntryKindLetters } from '@/utils/entryKind';
+import { EconomizedHorizonDialog } from '@/components/EconomizedHorizonDialog';
 
 function StatCard({
   label,
   value,
   subLabel,
   subColor,
+  onClick,
 }: {
   label: string;
   value: string;
   subLabel: string;
   subColor: 'success.main' | 'error.main' | 'text.secondary';
+  onClick?: () => void;
 }) {
   return (
-    <Paper sx={{ p: 2, borderRadius: 3 }}>
+    <Paper sx={{ p: 2, borderRadius: 3, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
         {label}
       </Typography>
@@ -64,6 +67,7 @@ export default function DashboardPage() {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
+  const [economizedOpen, setEconomizedOpen] = useState(false);
 
   const { data, isLoading, isError } = useSummary(month, year);
 
@@ -104,6 +108,7 @@ export default function DashboardPage() {
           value={`${economizedPercent.toFixed(1)}%`}
           subLabel={economizedPercent > 0 ? 'Economizado' : 'Nada economizado'}
           subColor={economizedPercent > 0 ? 'success.main' : 'text.secondary'}
+          onClick={() => setEconomizedOpen(true)}
         />
         <StatCard
           label="Custo de vida"
@@ -135,6 +140,13 @@ export default function DashboardPage() {
         <MovementRow kind={EntryKind.Economia} label="Economias" total={movements.economia} />
         <MovementRow kind={EntryKind.Cartao} label="Gastos com cartão" total={movements.cartao} />
       </Paper>
+
+      <EconomizedHorizonDialog
+        key={year}
+        open={economizedOpen}
+        onClose={() => setEconomizedOpen(false)}
+        initialYear={year}
+      />
     </Box>
   );
 }
