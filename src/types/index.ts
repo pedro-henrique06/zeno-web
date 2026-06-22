@@ -180,6 +180,17 @@ export interface PerformanceHorizonResponse {
   months: PerformanceMonth[];
 }
 
+export interface CostOfLivingMonth {
+  month: number;
+  costOfLiving: number;
+}
+
+export interface CostOfLivingHorizonResponse {
+  year: number;
+  costOfLiving: number;
+  months: CostOfLivingMonth[];
+}
+
 export interface PagedResponse<T> {
   items: T[];
   page: number;

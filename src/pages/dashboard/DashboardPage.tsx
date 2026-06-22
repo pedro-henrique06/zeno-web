@@ -8,6 +8,7 @@ import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { EntryKindColors, EntryKindLetters } from '@/utils/entryKind';
 import { EconomizedHorizonDialog } from '@/components/EconomizedHorizonDialog';
 import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog';
+import { CostOfLivingHorizonDialog } from '@/components/CostOfLivingHorizonDialog';
 
 function StatCard({
   label,
@@ -70,6 +71,7 @@ export default function DashboardPage() {
   const [year, setYear] = useState(now.getFullYear());
   const [economizedOpen, setEconomizedOpen] = useState(false);
   const [performanceOpen, setPerformanceOpen] = useState(false);
+  const [costOfLivingOpen, setCostOfLivingOpen] = useState(false);
 
   const { data, isLoading, isError } = useSummary(month, year);
 
@@ -118,6 +120,7 @@ export default function DashboardPage() {
           value={formatCurrency(costOfLiving)}
           subLabel="Custo de vida"
           subColor="text.secondary"
+          onClick={() => setCostOfLivingOpen(true)}
         />
         <StatCard
           label="Diário médio"
@@ -155,6 +158,13 @@ export default function DashboardPage() {
         key={`performance-${year}`}
         open={performanceOpen}
         onClose={() => setPerformanceOpen(false)}
+        initialYear={year}
+      />
+
+      <CostOfLivingHorizonDialog
+        key={`cost-of-living-${year}`}
+        open={costOfLivingOpen}
+        onClose={() => setCostOfLivingOpen(false)}
         initialYear={year}
       />
     </Box>
