@@ -9,6 +9,7 @@ import { EntryKindColors, EntryKindLetters } from '@/utils/entryKind';
 import { EconomizedHorizonDialog } from '@/components/EconomizedHorizonDialog';
 import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog';
 import { CostOfLivingHorizonDialog } from '@/components/CostOfLivingHorizonDialog';
+import { DailyAverageHorizonDialog } from '@/components/DailyAverageHorizonDialog';
 
 function StatCard({
   label,
@@ -72,6 +73,7 @@ export default function DashboardPage() {
   const [economizedOpen, setEconomizedOpen] = useState(false);
   const [performanceOpen, setPerformanceOpen] = useState(false);
   const [costOfLivingOpen, setCostOfLivingOpen] = useState(false);
+  const [dailyAverageOpen, setDailyAverageOpen] = useState(false);
 
   const { data, isLoading, isError } = useSummary(month, year);
 
@@ -127,6 +129,7 @@ export default function DashboardPage() {
           value={formatCurrency(dailyAverageReal)}
           subLabel="Diário médio"
           subColor="text.secondary"
+          onClick={() => setDailyAverageOpen(true)}
         />
       </Box>
 
@@ -165,6 +168,13 @@ export default function DashboardPage() {
         key={`cost-of-living-${year}`}
         open={costOfLivingOpen}
         onClose={() => setCostOfLivingOpen(false)}
+        initialYear={year}
+      />
+
+      <DailyAverageHorizonDialog
+        key={`daily-average-${year}`}
+        open={dailyAverageOpen}
+        onClose={() => setDailyAverageOpen(false)}
         initialYear={year}
       />
     </Box>

@@ -31,3 +31,11 @@ export function useCostOfLivingHorizon(year: number, enabled: boolean) {
     enabled,
   });
 }
+
+export function useDailyAverageHorizon(year: number, enabled: boolean) {
+  return useQuery({
+    queryKey: ['daily-average-horizon', year],
+    queryFn: () => summaryApi.getDailyAverageHorizon(year),
+    enabled,
+  });
+}
