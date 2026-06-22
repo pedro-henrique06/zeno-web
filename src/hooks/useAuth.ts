@@ -11,11 +11,15 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: (response) => {
-      loginAuth(response.token, {
-        id: response.userId,
-        name: response.name,
-        email: response.email,
-      });
+      loginAuth(
+        response.token,
+        {
+          id: response.userId,
+          name: response.name,
+          email: response.email,
+        },
+        response.refreshToken,
+      );
       navigate('/');
     },
   });

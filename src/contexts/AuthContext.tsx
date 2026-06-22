@@ -4,7 +4,7 @@ import type { User } from '@/types';
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (token: string, user?: User) => void;
+  login: (token: string, user?: User, refreshToken?: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -46,14 +46,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.getItem('token'),
   );
 
-  const loginFn = useCallback((newToken: string, newUser?: User) => {
+  const loginFn = useCallback((newToken: string, newUser?: User, newRefreshToken?: string) => {
     localStorage.setItem('token', newToken);
+    if (newRefreshToken) {
+      localStorage.setItem('refreshToken', newRefreshToken);
+    }
     setToken(newToken);
     setUser(newUser ?? parseJwtPayload(newToken));
   }, []);
 
   const logoutFn = useCallback(() => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     setToken(null);
     setUser(null);
   }, []);
