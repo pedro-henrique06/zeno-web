@@ -26,6 +26,8 @@ function OAuthCallback() {
     if (token) {
       login(token, undefined, refreshToken ?? undefined);
       window.location.href = '/';
+    } else {
+      window.location.href = '/login?oauthError=1';
     }
   }, [token, refreshToken, login]);
 
