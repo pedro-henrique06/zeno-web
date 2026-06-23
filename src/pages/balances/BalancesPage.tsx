@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from 'react';
+import { useRef, useState, type MouseEvent, type TouchEvent } from 'react';
 import dayjs from 'dayjs';
 import {
   Avatar,
@@ -38,6 +38,7 @@ import { EntryFormDialog } from '@/components/EntryFormDialog';
 
 const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
 const ALL_COLOR = '#3B82F6';
+const SWIPE_THRESHOLD = 60;
 type KindFilter = EntryKind | 'all';
 
 const KIND_FIELD: Record<EntryKind, keyof BalanceDay> = {
@@ -120,8 +121,33 @@ export default function BalancesPage() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [horizonOpen, setHorizonOpen] = useState(false);
   const [entryDate, setEntryDate] = useState<string | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const { data, isLoading, isError } = useBalances(month, year);
+
+  const shiftMonth = (delta: number) => {
+    const next = new Date(year, month - 1 + delta, 1);
+    setMonth(next.getMonth() + 1);
+    setYear(next.getFullYear());
+  };
+
+  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length > 1) return;
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!start) return;
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+      shiftMonth(deltaX < 0 ? 1 : -1);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -156,7 +182,12 @@ export default function BalancesPage() {
         }
       />
 
-      <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
+      <TableContainer
+        component={Paper}
+        sx={{ borderRadius: 3 }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <Table size="small">
           <TableHead>
             <TableRow>
