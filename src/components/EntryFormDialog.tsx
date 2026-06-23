@@ -25,6 +25,7 @@ interface EntryFormData {
   tagId: string;
   date: string;
   isRecurring: boolean;
+  hasRecurrenceEndDate: boolean;
   recurrenceEndDate: string;
 }
 
@@ -47,6 +48,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
     tagId: entry?.tagId ?? '',
     date: entry?.date ? dayjs(entry.date).format('YYYY-MM-DD') : defaultDate ?? dayjs().format('YYYY-MM-DD'),
     isRecurring: entry?.isRecurring ?? false,
+    hasRecurrenceEndDate: !!entry?.recurrenceEndDate,
     recurrenceEndDate: entry?.recurrenceEndDate ? dayjs(entry.recurrenceEndDate).format('YYYY-MM-DD') : '',
   });
 
@@ -59,7 +61,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
     const payload = {
       ...form,
       tagId: form.tagId || null,
-      recurrenceEndDate: form.isRecurring && form.recurrenceEndDate ? form.recurrenceEndDate : null,
+      recurrenceEndDate: form.isRecurring && form.hasRecurrenceEndDate && form.recurrenceEndDate ? form.recurrenceEndDate : null,
     };
     if (isEditing && entry) {
       const data: UpdateEntryRequest = { id: entry.id, ...payload };
@@ -79,6 +81,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
       tagId: '',
       date: defaultDate ?? dayjs().format('YYYY-MM-DD'),
       isRecurring: false,
+      hasRecurrenceEndDate: false,
       recurrenceEndDate: '',
     });
     onClose();
@@ -170,15 +173,29 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
         label={t('entryForm.recurring')}
       />
       {form.isRecurring && (
-        <TextField
-          fullWidth
-          label={t('entryForm.recurrenceEndDate')}
-          type="date"
-          margin="normal"
-          value={form.recurrenceEndDate}
-          onChange={(e) => setForm({ ...form, recurrenceEndDate: e.target.value })}
-          slotProps={{ inputLabel: { shrink: true } }}
-        />
+        <>
+          <FormControlLabel
+            sx={{ mt: 1 }}
+            control={
+              <Switch
+                checked={form.hasRecurrenceEndDate}
+                onChange={(e) => setForm({ ...form, hasRecurrenceEndDate: e.target.checked })}
+              />
+            }
+            label={t('entryForm.hasRecurrenceEndDate')}
+          />
+          {form.hasRecurrenceEndDate && (
+            <TextField
+              fullWidth
+              label={t('entryForm.recurrenceEndDate')}
+              type="date"
+              margin="normal"
+              value={form.recurrenceEndDate}
+              onChange={(e) => setForm({ ...form, recurrenceEndDate: e.target.value })}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+          )}
+        </>
       )}
       <TextField
         fullWidth

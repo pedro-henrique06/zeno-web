@@ -151,6 +151,7 @@
     "tag": "Tag",
     "date": "Data",
     "recurring": "Repetir todo mês",
+    "hasRecurrenceEndDate": "Possui data de término?",
     "recurrenceEndDate": "Encerrar recorrência em",
     "description": "Descrição"
   },
