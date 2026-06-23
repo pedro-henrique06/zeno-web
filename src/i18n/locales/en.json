@@ -151,6 +151,7 @@
     "tag": "Tag",
     "date": "Date",
     "recurring": "Repeat every month",
+    "recurrenceEndDate": "End recurrence on",
     "description": "Description"
   },
   "monthlyExpenseCategory": {

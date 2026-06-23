@@ -151,6 +151,7 @@
     "tag": "Etiqueta",
     "date": "Fecha",
     "recurring": "Repetir cada mes",
+    "recurrenceEndDate": "Finalizar recurrencia el",
     "description": "Descripción"
   },
   "monthlyExpenseCategory": {
