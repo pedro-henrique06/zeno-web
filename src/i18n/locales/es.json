@@ -151,6 +151,7 @@
     "tag": "Etiqueta",
     "date": "Fecha",
     "recurring": "Repetir cada mes",
+    "hasRecurrenceEndDate": "¿Tiene fecha de finalización?",
     "recurrenceEndDate": "Finalizar recurrencia el",
     "description": "Descripción"
   },
