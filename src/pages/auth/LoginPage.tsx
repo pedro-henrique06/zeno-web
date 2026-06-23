@@ -12,7 +12,7 @@ import {
   IconButton,
   Divider,
 } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import GoogleIcon from '@mui/icons-material/Google';
@@ -26,7 +26,8 @@ export default function LoginPage() {
     email: '',
     password: '',
   });
-  const [error, setError] = useState('');
+  const [searchParams] = useSearchParams();
+  const [error, setError] = useState(searchParams.get('oauthError') ? t('auth.login.genericError') : '');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -46,7 +47,8 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.assign('/api/auth/oauth/google');
+    const apiUrl = import.meta.env.VITE_API_URL || '';
+    window.location.assign(apiUrl ? `${apiUrl}/auth/oauth/google` : '/api/auth/oauth/google');
   };
 
   return (
