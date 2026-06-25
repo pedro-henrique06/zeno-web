@@ -30,6 +30,7 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 import { groupEntriesByDate } from '@/utils/groupEntriesByDate';
 import { EntryFormDialog } from '@/components/EntryFormDialog';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { StickyHeader } from '@/components/layout/StickyHeader';
 import type { Currency, Language } from '@/types';
 
 function EntryCard({
@@ -168,51 +169,54 @@ export default function EntriesPage() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700 }}>
-          {t('entries.title')}
-        </Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
-          {t('entries.new')}
-        </Button>
-      </Box>
+      <StickyHeader>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+          <Typography variant="h4" sx={{ fontWeight: 700 }}>
+            {t('entries.title')}
+          </Typography>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
+            {t('entries.new')}
+          </Button>
+        </Box>
 
-      <MonthSwitcher month={month} year={year} onChange={handleMonthChange} />
+        <MonthSwitcher month={month} year={year} onChange={handleMonthChange} />
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, mt: 1 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
-          {t('entries.filter')}
-        </Typography>
-        {ALL_KINDS.map((kind) => {
-          const active = activeKinds.includes(kind);
-          return (
-            <Box
-              key={kind}
-              onClick={() => toggleKind(kind)}
-              title={kindLabels[kind]}
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                bgcolor: EntryKindColors[kind],
-                color: '#fff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: 'pointer',
-                opacity: active ? 1 : 0.3,
-                border: active ? '2px solid' : 'none',
-                borderColor: 'text.primary',
-              }}
-            >
-              {EntryKindLetters[kind]}
-            </Box>
-          );
-        })}
-      </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 600 }}>
+            {t('entries.filter')}
+          </Typography>
+          {ALL_KINDS.map((kind) => {
+            const active = activeKinds.includes(kind);
+            return (
+              <Box
+                key={kind}
+                onClick={() => toggleKind(kind)}
+                title={kindLabels[kind]}
+                sx={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  bgcolor: EntryKindColors[kind],
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  opacity: active ? 1 : 0.3,
+                  border: active ? '2px solid' : 'none',
+                  borderColor: 'text.primary',
+                }}
+              >
+                {EntryKindLetters[kind]}
+              </Box>
+            );
+          })}
+        </Box>
+      </StickyHeader>
 
+      <Box sx={{ mt: 2 }}>
       {entries.length > 0 ? (
         isMobile ? (
           <Stack spacing={2.5}>
@@ -306,6 +310,7 @@ export default function EntriesPage() {
           </Button>
         </Box>
       )}
+      </Box>
 
       <EntryFormDialog
         key={editingEntry?.id ?? 'new'}
