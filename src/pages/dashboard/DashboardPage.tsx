@@ -8,6 +8,7 @@ import { formatCurrency } from '@/utils/currency';
 import { EntryKind } from '@/types';
 import type { Currency, Language } from '@/types';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { StickyHeader } from '@/components/layout/StickyHeader';
 import { EntryKindColors, EntryKindLetters } from '@/utils/entryKind';
 import { EconomizedHorizonDialog } from '@/components/EconomizedHorizonDialog';
 import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog';
@@ -106,9 +107,11 @@ export default function DashboardPage() {
 
   return (
     <Box>
-      <MonthSwitcher month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y); }} />
+      <StickyHeader>
+        <MonthSwitcher month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y); }} />
+      </StickyHeader>
 
-      <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700 }}>
+      <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700, mt: 2, display: 'block' }}>
         {t('dashboard.monthlyCalculations')}
       </Typography>
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, gap: 2, mb: 4, mt: 1 }}>

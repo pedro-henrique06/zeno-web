@@ -29,6 +29,7 @@ import { useBalances } from '@/hooks/useBalances';
 import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { StickyHeader } from '@/components/layout/StickyHeader';
 import { EntryKind } from '@/types';
 import type { BalanceDay, Currency, Language } from '@/types';
 import { EntryKindColors, EntryKindLetters, useEntryKindLabels } from '@/utils/entryKind';
@@ -171,16 +172,18 @@ export default function BalancesPage() {
 
   return (
     <Box>
-      <MonthSwitcher
-        month={month}
-        year={year}
-        onChange={(m, y) => { setMonth(m); setYear(y); }}
-        endAdornment={
-          <IconButton size="small" onClick={() => setHorizonOpen(true)} title={t('balances.horizonTooltip')}>
-            <InsightsIcon fontSize="small" />
-          </IconButton>
-        }
-      />
+      <StickyHeader>
+        <MonthSwitcher
+          month={month}
+          year={year}
+          onChange={(m, y) => { setMonth(m); setYear(y); }}
+          endAdornment={
+            <IconButton size="small" onClick={() => setHorizonOpen(true)} title={t('balances.horizonTooltip')}>
+              <InsightsIcon fontSize="small" />
+            </IconButton>
+          }
+        />
+      </StickyHeader>
 
       <TableContainer
         component={Paper}

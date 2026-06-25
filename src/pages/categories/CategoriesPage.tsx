@@ -23,6 +23,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { useTags, useCreateTag, useUpdateTag, useDeleteTag } from '@/hooks/useTags';
+import { StickyHeader } from '@/components/layout/StickyHeader';
 import type { Tag } from '@/types';
 
 export default function CategoriesPage() {
@@ -80,27 +81,30 @@ export default function CategoriesPage() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-        <TextField
-          fullWidth
-          placeholder={t('categories.searchPlaceholder')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-        <IconButton onClick={openCreate} sx={{ bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-          <AddIcon />
-        </IconButton>
-      </Box>
+      <StickyHeader>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <TextField
+            fullWidth
+            placeholder={t('categories.searchPlaceholder')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+          <IconButton onClick={openCreate} sx={{ bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+            <AddIcon />
+          </IconButton>
+        </Box>
+      </StickyHeader>
 
+      <Box sx={{ mt: 2 }}>
       {filtered.length > 0 ? (
         <Paper sx={{ borderRadius: 3 }}>
           <List>
@@ -130,6 +134,7 @@ export default function CategoriesPage() {
           <Typography variant="body2">{t('categories.emptySubtitle')}</Typography>
         </Box>
       )}
+      </Box>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editingTag ? t('categories.editTitle') : t('categories.newTitle')}</DialogTitle>
