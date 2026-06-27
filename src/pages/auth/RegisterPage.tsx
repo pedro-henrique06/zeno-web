@@ -30,9 +30,6 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    phone: '',
-    document: '',
-    birthDate: '',
     currency: 'BRL',
     language: 'PtBR',
   });
@@ -63,9 +60,6 @@ export default function RegisterPage() {
       email: form.email,
       password: form.password,
       confirmPassword: form.confirmPassword,
-      phone: form.phone || undefined,
-      document: form.document || undefined,
-      birthDate: form.birthDate || undefined,
       currency: form.currency,
       language: form.language,
     };
@@ -137,31 +131,6 @@ export default function RegisterPage() {
               autoComplete="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-            <TextField
-              fullWidth
-              label={t('auth.register.phone')}
-              margin="normal"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            />
-            <TextField
-              fullWidth
-              label={t('auth.register.document')}
-              margin="normal"
-              value={form.document}
-              onChange={(e) => setForm({ ...form, document: e.target.value })}
-            />
-            <TextField
-              fullWidth
-              label={t('auth.register.birthDate')}
-              type="date"
-              margin="normal"
-              slotProps={{
-                inputLabel: { shrink: true },
-              }}
-              value={form.birthDate}
-              onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
             />
             <TextField
               fullWidth
