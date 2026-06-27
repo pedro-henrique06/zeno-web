@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import dayjs from 'dayjs';
 import {
   Typography,
   Button,
@@ -115,6 +116,9 @@ export default function EntriesPage() {
   const year = Number(searchParams.get('year')) || now.getFullYear();
 
   const activeKinds = parseKinds(searchParams.get('kinds'));
+  const focusDate = searchParams.get('date');
+  const focusRowRef = useRef<HTMLDivElement & HTMLTableRowElement>(null);
+  const hasScrolledToFocusRef = useRef(false);
 
   const handleMonthChange = (m: number, y: number) => {
     setSearchParams((prev) => {
@@ -139,6 +143,13 @@ export default function EntriesPage() {
 
   const tagNameById = new Map((tags ?? []).map((tag) => [tag.id, tag.name]));
 
+  useEffect(() => {
+    if (!focusDate || hasScrolledToFocusRef.current) return;
+    if (!focusRowRef.current) return;
+    focusRowRef.current.scrollIntoView({ block: 'center' });
+    hasScrolledToFocusRef.current = true;
+  }, [data, focusDate]);
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -156,6 +167,9 @@ export default function EntriesPage() {
   }
 
   const entries = (data?.items ?? []).filter((entry) => activeKinds.includes(entry.kind));
+  const focusEntryId = focusDate
+    ? entries.find((entry) => dayjs(entry.date).format('YYYY-MM-DD') === focusDate)?.id
+    : undefined;
 
   const openEdit = (entry: Entry) => {
     setEditingEntry(entry);
@@ -221,7 +235,7 @@ export default function EntriesPage() {
         isMobile ? (
           <Stack spacing={2.5}>
             {groupEntriesByDate(entries).map((group) => (
-              <Box key={group.key}>
+              <Box key={group.key} ref={group.key === focusDate ? focusRowRef : undefined}>
                 <Typography variant="overline" color="text.secondary" sx={{ fontWeight: 700, letterSpacing: 0.5, pl: 0.5 }}>
                   {group.label}
                 </Typography>
@@ -260,6 +274,7 @@ export default function EntriesPage() {
                   return (
                     <TableRow
                       key={entry.id}
+                      ref={entry.id === focusEntryId ? focusRowRef : undefined}
                       sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
                       onClick={() => openEdit(entry)}
                     >
