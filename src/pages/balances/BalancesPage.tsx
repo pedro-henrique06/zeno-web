@@ -1,4 +1,5 @@
-import { useRef, useState, type MouseEvent, type TouchEvent } from 'react';
+import { useEffect, useRef, useState, type MouseEvent, type TouchEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import {
   Avatar,
@@ -35,7 +36,6 @@ import type { BalanceDay, Currency, Language } from '@/types';
 import { EntryKindColors, EntryKindLetters, useEntryKindLabels } from '@/utils/entryKind';
 import { getBalanceColor, getBalanceTone } from '@/utils/balanceColor';
 import { BalancesHorizonDialog } from '@/components/BalancesHorizonDialog';
-import { EntryFormDialog } from '@/components/EntryFormDialog';
 
 const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
 const ALL_COLOR = '#3B82F6';
@@ -121,10 +121,19 @@ export default function BalancesPage() {
   const [kind, setKind] = useState<KindFilter>(EntryKind.Diario);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [horizonOpen, setHorizonOpen] = useState(false);
-  const [entryDate, setEntryDate] = useState<string | null>(null);
+  const navigate = useNavigate();
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const todayRowRef = useRef<HTMLTableRowElement | null>(null);
+  const hasScrolledToTodayRef = useRef(false);
 
   const { data, isLoading, isError } = useBalances(month, year);
+
+  useEffect(() => {
+    if (hasScrolledToTodayRef.current) return;
+    if (!todayRowRef.current) return;
+    todayRowRef.current.scrollIntoView({ block: 'center' });
+    hasScrolledToTodayRef.current = true;
+  }, [data]);
 
   const shiftMonth = (delta: number) => {
     const next = new Date(year, month - 1 + delta, 1);
@@ -169,6 +178,10 @@ export default function BalancesPage() {
   const days = data?.days ?? [];
 
   const dayDateString = (day: BalanceDay) => dayjs(new Date(year, month - 1, day.day)).format('YYYY-MM-DD');
+
+  const goToEntriesForDay = (day: BalanceDay) => {
+    navigate(`/entries?month=${month}&year=${year}&date=${dayDateString(day)}`);
+  };
 
   return (
     <Box>
@@ -256,12 +269,16 @@ export default function BalancesPage() {
                     const value = day[KIND_FIELD[k]] as number;
                     const hasValue = value > 0;
                     return (
-                      <TableRow key={`${day.day}-${k}`} sx={rowSx}>
+                      <TableRow
+                        key={`${day.day}-${k}`}
+                        sx={rowSx}
+                        ref={idx === 0 && day.isToday ? todayRowRef : undefined}
+                      >
                         {idx === 0 && (
                           <TableCell
                             rowSpan={KINDS.length}
                             sx={{ cursor: 'pointer' }}
-                            onClick={() => setEntryDate(dayDateString(day))}
+                            onClick={() => goToEntriesForDay(day)}
                           >
                             <DayCell day={day} />
                           </TableCell>
@@ -295,8 +312,8 @@ export default function BalancesPage() {
                   const value = day[KIND_FIELD[kind]] as number;
                   const hasValue = value > 0;
                   return (
-                    <TableRow key={day.day} sx={rowSx}>
-                      <TableCell sx={{ cursor: 'pointer' }} onClick={() => setEntryDate(dayDateString(day))}>
+                    <TableRow key={day.day} sx={rowSx} ref={day.isToday ? todayRowRef : undefined}>
+                      <TableCell sx={{ cursor: 'pointer' }} onClick={() => goToEntriesForDay(day)}>
                         <DayCell day={day} />
                       </TableCell>
                       <TableCell align="right">
@@ -321,14 +338,6 @@ export default function BalancesPage() {
       </TableContainer>
 
       <BalancesHorizonDialog key={year} open={horizonOpen} onClose={() => setHorizonOpen(false)} initialYear={year} />
-
-      <EntryFormDialog
-        key={entryDate ?? 'closed'}
-        open={!!entryDate}
-        onClose={() => setEntryDate(null)}
-        defaultDate={entryDate ?? undefined}
-        fixedKind={kind === 'all' ? undefined : kind}
-      />
     </Box>
   );
 }
