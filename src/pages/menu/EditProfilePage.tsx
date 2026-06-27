@@ -17,9 +17,6 @@ function EditProfileForm({ profile }: { profile: UserProfile }) {
   const [form, setForm] = useState<UpdateProfileRequest>({
     name: profile.name,
     email: profile.email,
-    phone: profile.phone ?? '',
-    document: profile.document ?? '',
-    birthDate: profile.birthDate ?? '',
   });
 
   const handleSubmit = () => {
@@ -42,29 +39,6 @@ function EditProfileForm({ profile }: { profile: UserProfile }) {
         margin="normal"
         value={form.email}
         onChange={(e) => setForm({ ...form, email: e.target.value })}
-      />
-      <TextField
-        fullWidth
-        label={t('editProfile.phone')}
-        margin="normal"
-        value={form.phone}
-        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-      />
-      <TextField
-        fullWidth
-        label={t('editProfile.document')}
-        margin="normal"
-        value={form.document}
-        onChange={(e) => setForm({ ...form, document: e.target.value })}
-      />
-      <TextField
-        fullWidth
-        label={t('editProfile.birthDate')}
-        type="date"
-        margin="normal"
-        value={form.birthDate}
-        onChange={(e) => setForm({ ...form, birthDate: e.target.value })}
-        slotProps={{ inputLabel: { shrink: true } }}
       />
       <TextField
         fullWidth
