@@ -27,6 +27,7 @@ import InsightsIcon from '@mui/icons-material/Insights';
 import AppsIcon from '@mui/icons-material/Apps';
 import { useTranslation } from 'react-i18next';
 import { useBalances } from '@/hooks/useBalances';
+import { useIsMobile } from '@/hooks/useIsMobile';
 import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
@@ -115,6 +116,7 @@ export default function BalancesPage() {
   const { t } = useTranslation();
   const { data: profile } = useProfile();
   const kindLabels = useEntryKindLabels();
+  const isMobile = useIsMobile();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -208,61 +210,105 @@ export default function BalancesPage() {
           <TableHead>
             <TableRow>
               <TableCell>{t('balances.day')}</TableCell>
-              <TableCell align="right">
-                <Box
-                  onClick={(e: MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
-                  sx={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    cursor: 'pointer',
-                    px: 1,
-                    py: 0.25,
-                    borderRadius: 999,
-                    bgcolor: 'action.hover',
-                  }}
-                >
-                  {kind === 'all' ? <AllAvatar size={20} /> : <KindAvatar kind={kind} size={20} />}
-                  <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                    {kind === 'all' ? t('balances.all') : kindLabels[kind]}
-                  </Typography>
-                  <KeyboardArrowDownIcon fontSize="small" />
-                </Box>
-                <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
-                  <MenuItem
-                    selected={kind === 'all'}
-                    onClick={() => {
-                      setKind('all');
-                      setAnchorEl(null);
+              {isMobile ? (
+                <TableCell align="right">
+                  <Box
+                    onClick={(e: MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      cursor: 'pointer',
+                      px: 1,
+                      py: 0.25,
+                      borderRadius: 999,
+                      bgcolor: 'action.hover',
                     }}
                   >
-                    <ListItemIcon>
-                      <AllAvatar size={24} />
-                    </ListItemIcon>
-                    <ListItemText>{t('balances.all')}</ListItemText>
-                  </MenuItem>
-                  {KINDS.map((k) => (
+                    {kind === 'all' ? <AllAvatar size={20} /> : <KindAvatar kind={kind} size={20} />}
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                      {kind === 'all' ? t('balances.all') : kindLabels[kind]}
+                    </Typography>
+                    <KeyboardArrowDownIcon fontSize="small" />
+                  </Box>
+                  <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
                     <MenuItem
-                      key={k}
-                      selected={k === kind}
+                      selected={kind === 'all'}
                       onClick={() => {
-                        setKind(k);
+                        setKind('all');
                         setAnchorEl(null);
                       }}
                     >
                       <ListItemIcon>
-                        <KindAvatar kind={k} size={24} />
+                        <AllAvatar size={24} />
                       </ListItemIcon>
-                      <ListItemText>{kindLabels[k]}</ListItemText>
+                      <ListItemText>{t('balances.all')}</ListItemText>
                     </MenuItem>
-                  ))}
-                </Menu>
-              </TableCell>
+                    {KINDS.map((k) => (
+                      <MenuItem
+                        key={k}
+                        selected={k === kind}
+                        onClick={() => {
+                          setKind(k);
+                          setAnchorEl(null);
+                        }}
+                      >
+                        <ListItemIcon>
+                          <KindAvatar kind={k} size={24} />
+                        </ListItemIcon>
+                        <ListItemText>{kindLabels[k]}</ListItemText>
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </TableCell>
+              ) : (
+                KINDS.map((k) => (
+                  <TableCell key={k} align="right">
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75 }}>
+                      <KindAvatar kind={k} size={20} />
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                        {kindLabels[k]}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                ))
+              )}
               <TableCell align="right">{t('balances.balances')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {kind === 'all'
+            {!isMobile
+              ? days.map((day) => {
+                  const rowSx = dayRowSx(day);
+                  return (
+                    <TableRow key={day.day} sx={rowSx} ref={day.isToday ? todayRowRef : undefined}>
+                      <TableCell sx={{ cursor: 'pointer' }} onClick={() => goToEntriesForDay(day)}>
+                        <DayCell day={day} />
+                      </TableCell>
+                      {KINDS.map((k) => {
+                        const value = day[KIND_FIELD[k]] as number;
+                        const hasValue = value > 0;
+                        return (
+                          <TableCell key={k} align="right">
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[k] : 'text.disabled' }}
+                            >
+                              {formatCurrency(value, profile?.currency, profile?.language)}
+                            </Typography>
+                          </TableCell>
+                        );
+                      })}
+                      <TableCell
+                        align="right"
+                        sx={{ bgcolor: (theme: Theme) => alpha(theme.palette[getBalanceTone(day.balance)].main, 0.16) }}
+                      >
+                        <BalanceCell day={day} currency={profile?.currency} language={profile?.language} />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              : kind === 'all'
               ? days.flatMap((day) => {
                   const rowSx = dayRowSx(day);
                   return KINDS.map((k, idx) => {
