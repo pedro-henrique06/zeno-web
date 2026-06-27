@@ -1,4 +1,4 @@
-import { useRef, useState, type MouseEvent, type TouchEvent } from 'react';
+import { useEffect, useRef, useState, type MouseEvent, type TouchEvent } from 'react';
 import dayjs from 'dayjs';
 import {
   Avatar,
@@ -123,8 +123,17 @@ export default function BalancesPage() {
   const [horizonOpen, setHorizonOpen] = useState(false);
   const [entryDate, setEntryDate] = useState<string | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const todayRowRef = useRef<HTMLTableRowElement | null>(null);
+  const hasScrolledToTodayRef = useRef(false);
 
   const { data, isLoading, isError } = useBalances(month, year);
+
+  useEffect(() => {
+    if (hasScrolledToTodayRef.current) return;
+    if (!todayRowRef.current) return;
+    todayRowRef.current.scrollIntoView({ block: 'center' });
+    hasScrolledToTodayRef.current = true;
+  }, [data]);
 
   const shiftMonth = (delta: number) => {
     const next = new Date(year, month - 1 + delta, 1);
@@ -256,7 +265,11 @@ export default function BalancesPage() {
                     const value = day[KIND_FIELD[k]] as number;
                     const hasValue = value > 0;
                     return (
-                      <TableRow key={`${day.day}-${k}`} sx={rowSx}>
+                      <TableRow
+                        key={`${day.day}-${k}`}
+                        sx={rowSx}
+                        ref={idx === 0 && day.isToday ? todayRowRef : undefined}
+                      >
                         {idx === 0 && (
                           <TableCell
                             rowSpan={KINDS.length}
@@ -295,7 +308,7 @@ export default function BalancesPage() {
                   const value = day[KIND_FIELD[kind]] as number;
                   const hasValue = value > 0;
                   return (
-                    <TableRow key={day.day} sx={rowSx}>
+                    <TableRow key={day.day} sx={rowSx} ref={day.isToday ? todayRowRef : undefined}>
                       <TableCell sx={{ cursor: 'pointer' }} onClick={() => setEntryDate(dayDateString(day))}>
                         <DayCell day={day} />
                       </TableCell>
