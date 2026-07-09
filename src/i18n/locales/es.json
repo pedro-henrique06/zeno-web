@@ -72,7 +72,10 @@
     "title": "Configuración",
     "lightMode": "Modo claro",
     "darkMode": "Modo oscuro",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "notifications": "Notificaciones diarias",
+    "notificationsOn": "Activada — aviso a las 8h todos los días",
+    "notificationsOff": "Desactivada"
   },
   "editProfile": {
     "title": "Editar perfil",
