@@ -72,7 +72,10 @@
     "title": "Settings",
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
-    "logout": "Log out"
+    "logout": "Log out",
+    "notifications": "Daily notifications",
+    "notificationsOn": "On — alert at 8 AM every day",
+    "notificationsOff": "Off"
   },
   "editProfile": {
     "title": "Edit profile",

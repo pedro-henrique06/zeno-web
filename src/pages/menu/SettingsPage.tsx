@@ -3,16 +3,28 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from '@mui/icons-material/Logout';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '@/theme/ThemeContext';
 import { useLogout } from '@/hooks/useAuth';
+import { usePushNotification } from '@/hooks/usePushNotification';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { mode, toggleTheme } = useThemeContext();
   const logoutMutation = useLogout();
+  const { subscribed, loading, isSupported, permission, subscribe, unsubscribe } = usePushNotification();
+
+  const handleNotificationToggle = () => {
+    if (subscribed) {
+      unsubscribe();
+    } else {
+      subscribe();
+    }
+  };
 
   return (
     <Box>
@@ -32,6 +44,24 @@ export default function SettingsPage() {
             <ListItemText primary={mode === 'dark' ? t('settings.lightMode') : t('settings.darkMode')} />
             <Switch checked={mode === 'dark'} onChange={toggleTheme} />
           </ListItemButton>
+
+          {isSupported && permission !== 'denied' && (
+            <ListItemButton
+              onClick={handleNotificationToggle}
+              disabled={loading}
+              sx={{ mx: 1, borderRadius: 2 }}
+            >
+              <ListItemIcon>
+                {subscribed ? <NotificationsIcon /> : <NotificationsOffIcon />}
+              </ListItemIcon>
+              <ListItemText
+                primary={t('settings.notifications')}
+                secondary={subscribed ? t('settings.notificationsOn') : t('settings.notificationsOff')}
+              />
+              <Switch checked={subscribed} disabled={loading} />
+            </ListItemButton>
+          )}
+
           <ListItemButton onClick={() => logoutMutation.mutate()} sx={{ mx: 1, borderRadius: 2, color: 'error.main' }}>
             <ListItemIcon sx={{ color: 'error.main' }}>
               <LogoutIcon />
