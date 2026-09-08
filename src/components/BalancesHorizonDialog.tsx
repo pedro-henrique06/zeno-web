@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import {
+  Box,
+  CircularProgress,
   Dialog,
-  DialogTitle,
   DialogContent,
+  DialogTitle,
   IconButton,
   Table,
   TableBody,
@@ -12,105 +15,102 @@ import {
   Typography,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useLanguage } from '@/i18n/LanguageContext';
-import { formatCurrency } from '@/utils/currency';
-import type { Locale } from '@/i18n/translations';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useTranslation } from 'react-i18next';
+import { useBalancesHorizon } from '@/hooks/useBalances';
+import { useProfile } from '@/hooks/useUser';
+import { formatCurrency, LANGUAGE_LOCALES } from '@/utils/currency';
+import { getBalanceColor } from '@/utils/balanceColor';
 
 interface BalancesHorizonDialogProps {
   open: boolean;
   onClose: () => void;
-  month: number;
-  year: number;
-  baseline: number;
-  avgDailyNet: number;
-  locale: Locale;
+  initialYear: number;
 }
 
-function monthLabel(month: number, year: number, locale: Locale) {
-  const date = new Date(year, month - 1, 1);
-  return new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
-    month: 'short',
-    year: '2-digit',
-  }).format(date);
-}
+export function BalancesHorizonDialog({ open, onClose, initialYear }: BalancesHorizonDialogProps) {
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
+  const [year, setYear] = useState(initialYear);
 
-export function BalancesHorizonDialog({
-  open,
-  onClose,
-  month,
-  year,
-  baseline,
-  avgDailyNet,
-  locale,
-}: BalancesHorizonDialogProps) {
-  const { t } = useLanguage();
+  const { data, isLoading, isError } = useBalancesHorizon(year, open);
 
-  const months = [0, 1, 2].map((offset) => {
-    const date = new Date(year, month - 1 + offset, 1);
-    return { month: date.getMonth() + 1, year: date.getFullYear() };
-  });
+  const months = data?.months ?? [];
+  const maxDays = Math.max(0, ...months.map((m) => m.days.length));
 
-  const daysInMonth = (m: number, y: number) => new Date(y, m, 0).getDate();
-  const maxDays = Math.max(...months.map((m) => daysInMonth(m.month, m.year)));
-
-  let dayCursor = 0;
-  const monthDayOffsets = months.map((m) => {
-    const start = dayCursor;
-    dayCursor += daysInMonth(m.month, m.year);
-    return start;
-  });
-
-  const balanceFor = (monthIndex: number, day: number) => {
-    const totalDayIndex = monthDayOffsets[monthIndex] + (day - 1);
-    return baseline + avgDailyNet * totalDayIndex;
+  const monthLabel = (month: number) => {
+    const date = new Date(2000, month - 1, 1);
+    return new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], { month: 'short' }).format(date);
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        {t.balances.horizon}
-        <IconButton onClick={onClose} size="small">
-          <CloseIcon fontSize="small" />
-        </IconButton>
+        {t('horizon.balances.title')}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <IconButton size="small" onClick={() => setYear((y) => y - 1)}>
+              <ChevronLeftIcon />
+            </IconButton>
+            <Typography sx={{ fontWeight: 700, minWidth: 48, textAlign: 'center' }}>{year}</Typography>
+            <IconButton size="small" onClick={() => setYear((y) => y + 1)}>
+              <ChevronRightIcon />
+            </IconButton>
+          </Box>
+          <IconButton onClick={onClose} size="small">
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </Box>
       </DialogTitle>
       <DialogContent sx={{ p: 0 }}>
-        <TableContainer sx={{ maxHeight: '70vh' }}>
-          <Table size="small" stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>{t.balances.day}</TableCell>
-                {months.map((m, i) => (
-                  <TableCell key={i} align="right" sx={{ textTransform: 'capitalize', fontWeight: 700, whiteSpace: 'nowrap' }}>
-                    {monthLabel(m.month, m.year, locale)}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Array.from({ length: maxDays }, (_, i) => i + 1).map((day) => (
-                <TableRow key={day}>
-                  <TableCell>{day}</TableCell>
-                  {months.map((m, i) => {
-                    if (day > daysInMonth(m.month, m.year)) {
-                      return <TableCell key={i} align="right" />;
-                    }
-                    const value = balanceFor(i, day);
-                    return (
-                      <TableCell key={i} align="right" sx={{ whiteSpace: 'nowrap' }}>
-                        <Typography
-                          variant="body2"
-                          sx={{ fontWeight: 600, color: value >= 0 ? 'success.main' : 'error.main' }}
-                        >
-                          {formatCurrency(value)}
-                        </Typography>
-                      </TableCell>
-                    );
-                  })}
+        {isLoading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : isError ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography color="error">{t('horizon.balances.loadError')}</Typography>
+          </Box>
+        ) : (
+          <TableContainer sx={{ maxHeight: '70vh' }}>
+            <Table size="small" stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>{t('horizon.balances.day')}</TableCell>
+                  {months.map((m) => (
+                    <TableCell key={m.month} align="right" sx={{ textTransform: 'capitalize', fontWeight: 700, whiteSpace: 'nowrap' }}>
+                      {monthLabel(m.month)}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {Array.from({ length: maxDays }, (_, i) => i + 1).map((day) => (
+                  <TableRow key={day}>
+                    <TableCell>{day}</TableCell>
+                    {months.map((m) => {
+                      const dayData = m.days[day - 1];
+                      if (!dayData) {
+                        return <TableCell key={m.month} align="right" />;
+                      }
+                      return (
+                        <TableCell key={m.month} align="right" sx={{ whiteSpace: 'nowrap' }}>
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: 600, color: getBalanceColor(dayData.balance) }}
+                          >
+                            {formatCurrency(dayData.balance, profile?.currency, profile?.language)}
+                          </Typography>
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </DialogContent>
     </Dialog>
   );

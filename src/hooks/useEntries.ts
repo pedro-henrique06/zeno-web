@@ -1,77 +1,40 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import * as entryApi from '@/api/entry';
-import { useWallets } from '@/hooks/useWallets';
 import type { CreateEntryRequest, UpdateEntryRequest } from '@/types';
 
-export function useEntries(month: number, year: number, walletId: string) {
+export function useEntries(month: number, year: number, page = 1, pageSize = 50) {
   return useQuery({
-    queryKey: ['entries', walletId, month, year],
-    queryFn: () => entryApi.getEntries(month, year, walletId),
-    enabled: !!walletId,
+    queryKey: ['entries', month, year, page, pageSize],
+    queryFn: () => entryApi.getEntries(month, year, page, pageSize),
   });
 }
 
-/**
- * Aggregates entries across every wallet for a given month, since the API
- * only supports fetching entries one wallet at a time.
- */
-export function useAllEntries(month: number, year: number) {
-  const { data: wallets, isLoading: walletsLoading } = useWallets();
-  const walletIds = wallets?.map((w) => w.id) ?? [];
-
-  const query = useQuery({
-    queryKey: ['entries', 'all', walletIds.join(','), month, year],
-    queryFn: async () => {
-      const results = await Promise.all(
-        walletIds.map((id) => entryApi.getEntries(month, year, id)),
-      );
-      return results.flat();
-    },
-    enabled: walletIds.length > 0,
-  });
-
-  return {
-    ...query,
-    isLoading: walletsLoading || query.isLoading,
-    data: walletIds.length === 0 && !walletsLoading ? [] : query.data,
-  };
+function invalidateAll(queryClient: QueryClient) {
+  queryClient.invalidateQueries({ queryKey: ['entries'] });
+  queryClient.invalidateQueries({ queryKey: ['balances'] });
+  queryClient.invalidateQueries({ queryKey: ['summary'] });
 }
 
 export function useCreateEntry() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (data: CreateEntryRequest) => entryApi.createEntry(data),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['entries', variables.walletId] });
-      queryClient.invalidateQueries({ queryKey: ['wallets'] });
-      queryClient.invalidateQueries({ queryKey: ['wallet', variables.walletId] });
-    },
+    onSuccess: () => invalidateAll(queryClient),
   });
 }
 
 export function useUpdateEntry() {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (data: UpdateEntryRequest) => entryApi.updateEntry(data),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['entries', variables.walletId] });
-      queryClient.invalidateQueries({ queryKey: ['wallets'] });
-      queryClient.invalidateQueries({ queryKey: ['wallet', variables.walletId] });
-    },
+    onSuccess: () => invalidateAll(queryClient),
   });
 }
 
 export function useDeleteEntry() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: (args: { id: string; walletId: string }) =>
-      entryApi.deleteEntry(args.id),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['entries', variables.walletId] });
-      queryClient.invalidateQueries({ queryKey: ['wallets'] });
-    },
+    mutationFn: (id: string) => entryApi.deleteEntry(id),
+    onSuccess: () => invalidateAll(queryClient),
   });
 }

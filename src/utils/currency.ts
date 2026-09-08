@@ -1,24 +1,39 @@
-export {
-  LOCALE_MAP,
-  getCurrentLocale,
-  setCurrentLocale,
-  getLocaleFromCurrency,
-  getLocaleFromLanguage,
-  formatCurrency,
-  formatDate,
-  formatDateTime,
-  formatMonthYear,
-} from './settings';
+import type { Currency, Language } from '@/types';
 
-export const CURRENCIES = [
-  { code: 'BRL', label: 'BRL - Real Brasileiro' },
-  { code: 'USD', label: 'USD - Dólar Americano' },
-  { code: 'EUR', label: 'EUR - Euro' },
-  { code: 'GBP', label: 'GBP - Libra Esterlina' },
-  { code: 'JPY', label: 'JPY - Iene Japonês' },
-  { code: 'ARS', label: 'ARS - Peso Argentino' },
-  { code: 'MXN', label: 'MXN - Peso Mexicano' },
-  { code: 'CLP', label: 'CLP - Peso Chileno' },
-  { code: 'COP', label: 'COP - Peso Colombiano' },
-  { code: 'PEN', label: 'PEN - Sol Peruano' },
-] as const;
+export const CURRENCY_SYMBOLS: Record<Currency, string> = {
+  BRL: 'R$',
+  USD: '$',
+  EUR: '€',
+};
+
+export const LANGUAGE_LOCALES: Record<Language, string> = {
+  PtBR: 'pt-BR',
+  EnUS: 'en-US',
+  Es: 'es-ES',
+};
+
+export function formatCurrency(value: number, currency: Currency = 'BRL', language: Language = 'PtBR'): string {
+  return new Intl.NumberFormat(LANGUAGE_LOCALES[language], {
+    style: 'currency',
+    currency,
+    signDisplay: 'negative',
+  }).format(value);
+}
+
+export function formatDate(date: string | Date, language: Language = 'PtBR'): string {
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return '-';
+  return new Intl.DateTimeFormat(LANGUAGE_LOCALES[language], {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(d);
+}
+
+export function formatMonthYear(month: number, year: number, language: Language = 'PtBR'): string {
+  const date = new Date(year, month - 1, 1);
+  return new Intl.DateTimeFormat(LANGUAGE_LOCALES[language], {
+    month: 'short',
+    year: '2-digit',
+  }).format(date);
+}

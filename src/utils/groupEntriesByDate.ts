@@ -1,4 +1,3 @@
-import type { Locale } from '@/i18n/translations';
 import type { Entry } from '@/types';
 
 export interface EntryDateGroup {
@@ -11,11 +10,7 @@ function dateKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-export function groupEntriesByDate(
-  entries: Entry[],
-  locale: Locale,
-  labels: { today: string; yesterday: string },
-): EntryDateGroup[] {
+export function groupEntriesByDate(entries: Entry[]): EntryDateGroup[] {
   const today = dateKey(new Date());
   const yesterday = dateKey(new Date(Date.now() - 86400000));
 
@@ -27,17 +22,14 @@ export function groupEntriesByDate(
     groups.get(key)!.push(entry);
   }
 
-  const formatter = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
-    day: 'numeric',
-    month: 'long',
-  });
+  const formatter = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long' });
 
   return Array.from(groups.entries())
     .sort(([a], [b]) => (a < b ? 1 : -1))
     .map(([key, groupEntries]) => {
       let label: string;
-      if (key === today) label = labels.today;
-      else if (key === yesterday) label = labels.yesterday;
+      if (key === today) label = 'Hoje';
+      else if (key === yesterday) label = 'Ontem';
       else {
         const d = new Date(key);
         label = isNaN(d.getTime()) ? key : formatter.format(d);

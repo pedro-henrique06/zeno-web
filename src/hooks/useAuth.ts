@@ -11,22 +11,23 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: (response) => {
-      loginAuth(response.token);
+      loginAuth(
+        response.token,
+        {
+          id: response.userId,
+          name: response.name,
+          email: response.email,
+        },
+        response.refreshToken,
+      );
       navigate('/');
     },
   });
 }
 
 export function useRegister() {
-  const { login: loginAuth } = useAuth();
-  const navigate = useNavigate();
-
   return useMutation({
     mutationFn: (data: RegisterRequest) => authApi.register(data),
-    onSuccess: (response) => {
-      loginAuth(response.token);
-      navigate('/');
-    },
   });
 }
 

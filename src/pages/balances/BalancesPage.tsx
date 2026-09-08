@@ -1,8 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent, type TouchEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 import {
+  Avatar,
   Box,
   CircularProgress,
   IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   Paper,
   Table,
   TableBody,
@@ -12,27 +19,149 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import TimelineIcon from '@mui/icons-material/Timeline';
-import { useAllEntries } from '@/hooks/useEntries';
-import { useWallets } from '@/hooks/useWallets';
-import { useLanguage } from '@/i18n/LanguageContext';
+import { alpha, type Theme } from '@mui/material/styles';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import CallReceivedIcon from '@mui/icons-material/CallReceived';
+import CallMadeIcon from '@mui/icons-material/CallMade';
+import InsightsIcon from '@mui/icons-material/Insights';
+import AppsIcon from '@mui/icons-material/Apps';
+import { useTranslation } from 'react-i18next';
+import { useBalances } from '@/hooks/useBalances';
+import { useIsMobile } from '@/hooks/useIsMobile';
+import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
-import { EntryType } from '@/types';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { StickyHeader } from '@/components/layout/StickyHeader';
+import { EntryKind } from '@/types';
+import type { BalanceDay, Currency, Language } from '@/types';
+import { EntryKindColors, EntryKindLetters, useEntryKindLabels } from '@/utils/entryKind';
+import { getBalanceColor, getBalanceTone } from '@/utils/balanceColor';
 import { BalancesHorizonDialog } from '@/components/BalancesHorizonDialog';
-import { getEntryKind } from '@/utils/entryKind';
+
+const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
+const ALL_COLOR = '#3B82F6';
+const SWIPE_THRESHOLD = 60;
+type KindFilter = EntryKind | 'all';
+
+const KIND_FIELD: Record<EntryKind, keyof BalanceDay> = {
+  [EntryKind.Entrada]: 'entrada',
+  [EntryKind.Saida]: 'saida',
+  [EntryKind.Diario]: 'diario',
+  [EntryKind.Economia]: 'economia',
+  [EntryKind.Cartao]: 'cartao',
+};
+
+const KIND_ICONS: Partial<Record<EntryKind, typeof CallReceivedIcon>> = {
+  [EntryKind.Entrada]: CallReceivedIcon,
+  [EntryKind.Saida]: CallMadeIcon,
+};
+
+function KindAvatar({ kind, size }: { kind: EntryKind; size: number }) {
+  const Icon = KIND_ICONS[kind];
+  return (
+    <Avatar sx={{ bgcolor: EntryKindColors[kind], width: size, height: size, fontSize: size * 0.55, fontWeight: 700 }}>
+      {Icon ? <Icon sx={{ fontSize: size * 0.6 }} /> : EntryKindLetters[kind]}
+    </Avatar>
+  );
+}
+
+function AllAvatar({ size }: { size: number }) {
+  return (
+    <Avatar sx={{ bgcolor: ALL_COLOR, width: size, height: size }}>
+      <AppsIcon sx={{ fontSize: size * 0.6 }} />
+    </Avatar>
+  );
+}
+
+function DayCell({ day }: { day: BalanceDay }) {
+  return day.isToday ? (
+    <Box
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 24,
+        height: 24,
+        borderRadius: '50%',
+        bgcolor: 'primary.main',
+        color: 'primary.contrastText',
+        fontWeight: 700,
+        fontSize: 13,
+      }}
+    >
+      {day.day}
+    </Box>
+  ) : (
+    day.day
+  );
+}
+
+function BalanceCell({ day, currency, language }: { day: BalanceDay; currency?: Currency; language?: Language }) {
+  return (
+    <Typography variant="body2" sx={{ fontWeight: 700, color: getBalanceColor(day.balance) }}>
+      {formatCurrency(day.balance, currency, language)}
+    </Typography>
+  );
+}
+
+function dayRowSx(day: BalanceDay) {
+  return day.isToday
+    ? { bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.12) }
+    : day.isProjected
+      ? { opacity: 0.6 }
+      : {};
+}
 
 export default function BalancesPage() {
-  const { t, locale } = useLanguage();
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
+  const kindLabels = useEntryKindLabels();
+  const isMobile = useIsMobile();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
+  const [kind, setKind] = useState<KindFilter>(EntryKind.Diario);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [horizonOpen, setHorizonOpen] = useState(false);
+  const navigate = useNavigate();
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const todayRowRef = useRef<HTMLTableRowElement | null>(null);
+  const hasScrolledToTodayRef = useRef(false);
 
-  const { data: wallets, isLoading: walletsLoading } = useWallets();
-  const { data: entries, isLoading: entriesLoading } = useAllEntries(month, year);
+  const { data, isLoading, isError } = useBalances(month, year);
 
-  if (walletsLoading || entriesLoading) {
+  useEffect(() => {
+    if (hasScrolledToTodayRef.current) return;
+    if (!todayRowRef.current) return;
+    todayRowRef.current.scrollIntoView({ block: 'center' });
+    hasScrolledToTodayRef.current = true;
+  }, [data]);
+
+  const shiftMonth = (delta: number) => {
+    const next = new Date(year, month - 1 + delta, 1);
+    setMonth(next.getMonth() + 1);
+    setYear(next.getFullYear());
+  };
+
+  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length > 1) return;
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!start) return;
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+      shiftMonth(deltaX < 0 ? 1 : -1);
+    }
+  };
+
+  if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress />
@@ -40,91 +169,221 @@ export default function BalancesPage() {
     );
   }
 
-  const totalBalance = wallets?.reduce((sum, w) => sum + w.balance, 0) ?? 0;
-  const list = entries ?? [];
-  const monthNet = list.reduce(
-    (sum, e) => sum + (e.type === EntryType.Credit ? e.value : -e.value),
-    0,
-  );
-  const baseline = totalBalance - monthNet;
-
-  const daysInMonth = new Date(year, month, 0).getDate();
-  const dailyByDay = new Map<number, number>();
-  const netByDay = new Map<number, number>();
-  for (const entry of list) {
-    const d = new Date(entry.date);
-    if (isNaN(d.getTime())) continue;
-    const day = d.getDate();
-    netByDay.set(day, (netByDay.get(day) ?? 0) + (entry.type === EntryType.Credit ? entry.value : -entry.value));
-    if (getEntryKind(entry) === 'diario') {
-      dailyByDay.set(day, (dailyByDay.get(day) ?? 0) + entry.value);
-    }
+  if (isError) {
+    return (
+      <Box sx={{ textAlign: 'center', mt: 4 }}>
+        <Typography color="error">{t('balances.loadError')}</Typography>
+      </Box>
+    );
   }
 
-  const rows = Array.from({ length: daysInMonth }, (_, i) => i + 1).reduce<
-    { day: number; daily: number; balance: number }[]
-  >((acc, day) => {
-    const previousBalance = acc.length > 0 ? acc[acc.length - 1].balance : baseline;
-    const balance = previousBalance + (netByDay.get(day) ?? 0);
-    acc.push({ day, daily: dailyByDay.get(day) ?? 0, balance });
-    return acc;
-  }, []);
+  const days = data?.days ?? [];
 
-  const avgDailyNet = daysInMonth > 0 ? monthNet / daysInMonth : 0;
+  const dayDateString = (day: BalanceDay) => dayjs(new Date(year, month - 1, day.day)).format('YYYY-MM-DD');
+
+  const goToEntriesForDay = (day: BalanceDay) => {
+    navigate(`/entries?month=${month}&year=${year}&date=${dayDateString(day)}`);
+  };
 
   return (
     <Box>
-      <MonthSwitcher
-        month={month}
-        year={year}
-        onChange={(m, y) => { setMonth(m); setYear(y); }}
-        locale={locale}
-        endAdornment={
-          <IconButton size="small" onClick={() => setHorizonOpen(true)}>
-            <TimelineIcon fontSize="small" />
-          </IconButton>
-        }
-      />
+      <StickyHeader>
+        <MonthSwitcher
+          month={month}
+          year={year}
+          onChange={(m, y) => { setMonth(m); setYear(y); }}
+          endAdornment={
+            <IconButton size="small" onClick={() => setHorizonOpen(true)} title={t('balances.horizonTooltip')}>
+              <InsightsIcon fontSize="small" />
+            </IconButton>
+          }
+        />
+      </StickyHeader>
 
-      <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
+      <TableContainer
+        component={Paper}
+        sx={{ borderRadius: 3 }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>{t.balances.day}</TableCell>
-              <TableCell align="right">{t.totals.dailyLabel}</TableCell>
-              <TableCell align="right">{t.balances.balanceColumn}</TableCell>
+              <TableCell>{t('balances.day')}</TableCell>
+              {isMobile ? (
+                <TableCell align="right">
+                  <Box
+                    onClick={(e: MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      cursor: 'pointer',
+                      px: 1,
+                      py: 0.25,
+                      borderRadius: 999,
+                      bgcolor: 'action.hover',
+                    }}
+                  >
+                    {kind === 'all' ? <AllAvatar size={20} /> : <KindAvatar kind={kind} size={20} />}
+                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                      {kind === 'all' ? t('balances.all') : kindLabels[kind]}
+                    </Typography>
+                    <KeyboardArrowDownIcon fontSize="small" />
+                  </Box>
+                  <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
+                    <MenuItem
+                      selected={kind === 'all'}
+                      onClick={() => {
+                        setKind('all');
+                        setAnchorEl(null);
+                      }}
+                    >
+                      <ListItemIcon>
+                        <AllAvatar size={24} />
+                      </ListItemIcon>
+                      <ListItemText>{t('balances.all')}</ListItemText>
+                    </MenuItem>
+                    {KINDS.map((k) => (
+                      <MenuItem
+                        key={k}
+                        selected={k === kind}
+                        onClick={() => {
+                          setKind(k);
+                          setAnchorEl(null);
+                        }}
+                      >
+                        <ListItemIcon>
+                          <KindAvatar kind={k} size={24} />
+                        </ListItemIcon>
+                        <ListItemText>{kindLabels[k]}</ListItemText>
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </TableCell>
+              ) : (
+                KINDS.map((k) => (
+                  <TableCell key={k} align="right">
+                    <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75 }}>
+                      <KindAvatar kind={k} size={20} />
+                      <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                        {kindLabels[k]}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                ))
+              )}
+              <TableCell align="right">{t('balances.balances')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.day}>
-                <TableCell>{row.day}</TableCell>
-                <TableCell align="right">
-                  {row.daily > 0 ? formatCurrency(row.daily) : '-'}
-                </TableCell>
-                <TableCell align="right">
-                  <Typography
-                    variant="body2"
-                    sx={{ fontWeight: 700, color: row.balance >= 0 ? 'success.main' : 'error.main' }}
-                  >
-                    {formatCurrency(row.balance)}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ))}
+            {!isMobile
+              ? days.map((day) => {
+                  const rowSx = dayRowSx(day);
+                  return (
+                    <TableRow key={day.day} sx={rowSx} ref={day.isToday ? todayRowRef : undefined}>
+                      <TableCell sx={{ cursor: 'pointer' }} onClick={() => goToEntriesForDay(day)}>
+                        <DayCell day={day} />
+                      </TableCell>
+                      {KINDS.map((k) => {
+                        const value = day[KIND_FIELD[k]] as number;
+                        const hasValue = value > 0;
+                        return (
+                          <TableCell key={k} align="right">
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[k] : 'text.disabled' }}
+                            >
+                              {formatCurrency(value, profile?.currency, profile?.language)}
+                            </Typography>
+                          </TableCell>
+                        );
+                      })}
+                      <TableCell
+                        align="right"
+                        sx={{ bgcolor: (theme: Theme) => alpha(theme.palette[getBalanceTone(day.balance)].main, 0.16) }}
+                      >
+                        <BalanceCell day={day} currency={profile?.currency} language={profile?.language} />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              : kind === 'all'
+              ? days.flatMap((day) => {
+                  const rowSx = dayRowSx(day);
+                  return KINDS.map((k, idx) => {
+                    const value = day[KIND_FIELD[k]] as number;
+                    const hasValue = value > 0;
+                    return (
+                      <TableRow
+                        key={`${day.day}-${k}`}
+                        sx={rowSx}
+                        ref={idx === 0 && day.isToday ? todayRowRef : undefined}
+                      >
+                        {idx === 0 && (
+                          <TableCell
+                            rowSpan={KINDS.length}
+                            sx={{ cursor: 'pointer' }}
+                            onClick={() => goToEntriesForDay(day)}
+                          >
+                            <DayCell day={day} />
+                          </TableCell>
+                        )}
+                        <TableCell align="right">
+                          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                            <KindAvatar kind={k} size={20} />
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[k] : 'text.disabled' }}
+                            >
+                              {formatCurrency(value, profile?.currency, profile?.language)}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        {idx === 0 && (
+                          <TableCell
+                            align="right"
+                            rowSpan={KINDS.length}
+                            sx={{ bgcolor: (theme: Theme) => alpha(theme.palette[getBalanceTone(day.balance)].main, 0.16) }}
+                          >
+                            <BalanceCell day={day} currency={profile?.currency} language={profile?.language} />
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    );
+                  });
+                })
+              : days.map((day) => {
+                  const rowSx = dayRowSx(day);
+                  const value = day[KIND_FIELD[kind]] as number;
+                  const hasValue = value > 0;
+                  return (
+                    <TableRow key={day.day} sx={rowSx} ref={day.isToday ? todayRowRef : undefined}>
+                      <TableCell sx={{ cursor: 'pointer' }} onClick={() => goToEntriesForDay(day)}>
+                        <DayCell day={day} />
+                      </TableCell>
+                      <TableCell align="right">
+                        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+                          <KindAvatar kind={kind} size={20} />
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[kind] : 'text.disabled' }}
+                          >
+                            {formatCurrency(value, profile?.currency, profile?.language)}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell align="right">
+                        <BalanceCell day={day} currency={profile?.currency} language={profile?.language} />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
           </TableBody>
         </Table>
       </TableContainer>
 
-      <BalancesHorizonDialog
-        open={horizonOpen}
-        onClose={() => setHorizonOpen(false)}
-        month={month}
-        year={year}
-        baseline={baseline}
-        avgDailyNet={avgDailyNet}
-        locale={locale}
-      />
+      <BalancesHorizonDialog key={year} open={horizonOpen} onClose={() => setHorizonOpen(false)} initialYear={year} />
     </Box>
   );
 }

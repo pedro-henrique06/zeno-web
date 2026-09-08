@@ -1,20 +1,20 @@
 import { Box, IconButton, Typography } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import type { Locale } from '@/i18n/translations';
+import { useProfile } from '@/hooks/useUser';
+import { LANGUAGE_LOCALES } from '@/utils/currency';
 
 interface MonthSwitcherProps {
   month: number;
   year: number;
   onChange: (month: number, year: number) => void;
-  locale: Locale;
   endAdornment?: React.ReactNode;
 }
 
-export function MonthSwitcher({ month, year, onChange, locale, endAdornment }: MonthSwitcherProps) {
+export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwitcherProps) {
+  const { data: profile } = useProfile();
   const date = new Date(year, month - 1, 1);
-  const label = new Intl.DateTimeFormat(locale === 'pt' ? 'pt-BR' : 'en-US', {
+  const label = new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], {
     month: 'short',
     year: '2-digit',
   }).format(date);
@@ -24,9 +24,12 @@ export function MonthSwitcher({ month, year, onChange, locale, endAdornment }: M
     onChange(next.getMonth() + 1, next.getFullYear());
   };
 
+  const today = new Date();
+
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
       <Box
+        onClick={() => onChange(today.getMonth() + 1, today.getFullYear())}
         sx={{
           width: 36,
           height: 36,
@@ -37,9 +40,12 @@ export function MonthSwitcher({ month, year, onChange, locale, endAdornment }: M
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          cursor: 'pointer',
         }}
       >
-        <CalendarTodayIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+        <Typography sx={{ fontWeight: 700, fontSize: 14, color: 'text.secondary', lineHeight: 1 }}>
+          {today.getDate()}
+        </Typography>
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

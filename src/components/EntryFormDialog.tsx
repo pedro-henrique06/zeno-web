@@ -1,215 +1,231 @@
-import { useState, useEffect } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import dayjs from 'dayjs';
 import {
-  Box,
   Button,
   FormControl,
+  FormControlLabel,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
+  Switch,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useCreateEntry, useUpdateEntry } from '@/hooks/useEntries';
-import type { CreateEntryRequest, Entry, UpdateEntryRequest } from '@/types';
-import { EntryType, Category, CategoryLabels } from '@/types';
-import { useLanguage } from '@/i18n/LanguageContext';
+import { useTags } from '@/hooks/useTags';
+import { useProfile } from '@/hooks/useUser';
+import type { CreateEntryRequest, Entry, EntryKind, UpdateEntryRequest } from '@/types';
+import { useEntryKindLabels } from '@/utils/entryKind';
+import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
 import { ResponsiveFormDialog } from '@/components/ResponsiveFormDialog';
 
+const MAX_VALUE_CENTS = 99_999_999_99;
+
 interface EntryFormData {
-  walletId: string;
   title: string;
   value: number;
-  type: EntryType;
+  kind: EntryKind;
   description: string;
-  category: Category;
+  tagId: string;
   date: string;
+  isRecurring: boolean;
+  hasRecurrenceEndDate: boolean;
+  recurrenceEndDate: string;
 }
 
 interface EntryFormDialogProps {
   open: boolean;
   onClose: () => void;
-  wallets: { id: string; name: string }[];
-  fixedWalletId?: string;
-  defaultWalletId?: string;
   entry?: Entry | null;
-  defaultType?: EntryType;
-  defaultCategory?: Category;
+  fixedKind?: EntryKind;
+  defaultDate?: string;
 }
 
-export function EntryFormDialog({
-  open,
-  onClose,
-  wallets,
-  fixedWalletId,
-  defaultWalletId,
-  entry,
-  defaultType,
-  defaultCategory,
-}: EntryFormDialogProps) {
+export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }: EntryFormDialogProps) {
+  const { t } = useTranslation();
+  const kindLabels = useEntryKindLabels();
+  const { data: profile } = useProfile();
   const [form, setForm] = useState<EntryFormData>({
-    walletId: entry?.walletId ?? fixedWalletId ?? defaultWalletId ?? wallets[0]?.id ?? '',
     title: entry?.title ?? '',
     value: entry?.value ?? 0,
-    type: entry?.type ?? defaultType ?? EntryType.Credit,
+    kind: entry?.kind ?? fixedKind ?? 0,
     description: entry?.description ?? '',
-    category: entry?.category ?? defaultCategory ?? Category.None,
-    date: entry?.date ? dayjs(entry.date).format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD'),
+    tagId: entry?.tagId ?? '',
+    date: entry?.date ? dayjs(entry.date).format('YYYY-MM-DD') : defaultDate ?? dayjs().format('YYYY-MM-DD'),
+    isRecurring: entry?.isRecurring ?? false,
+    hasRecurrenceEndDate: !!entry?.recurrenceEndDate,
+    recurrenceEndDate: entry?.recurrenceEndDate ? dayjs(entry.recurrenceEndDate).format('YYYY-MM-DD') : '',
   });
+  const [valueCents, setValueCents] = useState(Math.round((entry?.value ?? 0) * 100));
 
   const createMutation = useCreateEntry();
   const updateMutation = useUpdateEntry();
+  const { data: tags } = useTags();
   const isEditing = !!entry;
-  const { t } = useLanguage();
 
-  useEffect(() => {
-    if (!fixedWalletId && form.walletId === '' && wallets.length > 0) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setForm((prev) => ({ ...prev, walletId: wallets[0].id }));
-    }
-    // Only sync on initial wallet load, not on form changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wallets, fixedWalletId]);
+  const handleValueChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '');
+    const next = Math.min(Number(digits || '0'), MAX_VALUE_CENTS);
+    setValueCents(next);
+    setForm((f) => ({ ...f, value: next / 100 }));
+  };
+
+  const displayValue = (valueCents / 100).toLocaleString(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
   const handleSubmit = () => {
+    const payload = {
+      ...form,
+      tagId: form.tagId || null,
+      recurrenceEndDate: form.isRecurring && form.hasRecurrenceEndDate && form.recurrenceEndDate ? form.recurrenceEndDate : null,
+    };
     if (isEditing && entry) {
-      const data: UpdateEntryRequest = { id: entry.id, ...form };
+      const data: UpdateEntryRequest = { id: entry.id, ...payload };
       updateMutation.mutate(data, { onSuccess: onClose });
     } else {
-      const data: CreateEntryRequest = { ...form };
+      const data: CreateEntryRequest = payload;
       createMutation.mutate(data, { onSuccess: onClose });
     }
   };
 
   const handleClose = () => {
     setForm({
-      walletId: fixedWalletId ?? defaultWalletId ?? wallets[0]?.id ?? '',
       title: '',
       value: 0,
-      type: defaultType ?? EntryType.Credit,
+      kind: fixedKind ?? 0,
       description: '',
-      category: defaultCategory ?? Category.None,
-      date: dayjs().format('YYYY-MM-DD'),
+      tagId: '',
+      date: defaultDate ?? dayjs().format('YYYY-MM-DD'),
+      isRecurring: false,
+      hasRecurrenceEndDate: false,
+      recurrenceEndDate: '',
     });
+    setValueCents(0);
     onClose();
-  };
-
-  const handleTypeChange = (_: React.MouseEvent<HTMLElement>, newType: EntryType | null) => {
-    if (newType !== null) {
-      setForm({ ...form, type: newType });
-    }
   };
 
   return (
     <ResponsiveFormDialog
       open={open}
       onClose={handleClose}
-      title={isEditing ? t.wallet.editEntry : t.wallet.newEntry}
+      title={isEditing ? t('entryForm.editTitle') : t('entryForm.newTitle')}
       actions={
         <>
-          <Button onClick={handleClose}>{t.common.cancel}</Button>
+          <Button onClick={handleClose}>{t('common.cancel')}</Button>
           <Button
             onClick={handleSubmit}
             variant="contained"
-            disabled={
-              !form.walletId || !form.title || !form.value || createMutation.isPending || updateMutation.isPending
-            }
+            disabled={!form.title || !form.value || createMutation.isPending || updateMutation.isPending}
           >
-            {isEditing ? t.common.save : t.common.create}
+            {isEditing ? t('entryForm.save') : t('entryForm.create')}
           </Button>
         </>
       }
     >
-      {!fixedWalletId && (
-        <FormControl fullWidth margin="normal">
-          <InputLabel>{t.common.wallet}</InputLabel>
-          <Select
-            value={form.walletId}
-            label={t.common.wallet}
-            onChange={(e) => setForm({ ...form, walletId: e.target.value })}
-          >
-            {wallets.map((w) => (
-              <MenuItem key={w.id} value={w.id}>
-                {w.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      {fixedKind === undefined && (
+        <TextField
+          fullWidth
+          select
+          label={t('entryForm.type')}
+          margin="normal"
+          value={form.kind}
+          onChange={(e) => setForm({ ...form, kind: Number(e.target.value) as EntryKind })}
+        >
+          {Object.entries(kindLabels).map(([value, label]) => (
+            <MenuItem key={value} value={Number(value)}>
+              {label}
+            </MenuItem>
+          ))}
+        </TextField>
       )}
 
-      <Box sx={{ mb: 2, mt: 1 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          {t.common.type}
-        </Typography>
-        <ToggleButtonGroup
-          value={form.type}
-          exclusive
-          onChange={handleTypeChange}
-          fullWidth
-          sx={{
-            '& .MuiToggleButton-root': {
-              py: 1.5,
-              textTransform: 'none',
-              fontWeight: 600,
-            },
-          }}
-        >
-          <ToggleButton value={EntryType.Credit} color="success">
-            {t.common.credit}
-          </ToggleButton>
-          <ToggleButton value={EntryType.Debit} color="error">
-            {t.common.debit}
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </Box>
-
       <TextField
         fullWidth
-        label={t.common.value}
-        type="number"
-        margin="normal"
-        value={form.value || ''}
-        onChange={(e) => setForm({ ...form, value: Number(e.target.value) })}
-        slotProps={{ htmlInput: { min: 0 } }}
-      />
-      <TextField
-        fullWidth
-        label={t.common.title}
+        label={t('entryForm.titleField')}
         margin="normal"
         value={form.title}
         onChange={(e) => setForm({ ...form, title: e.target.value })}
       />
       <TextField
         fullWidth
-        select
-        label={t.common.category}
+        label={t('entryForm.value')}
         margin="normal"
-        value={form.category}
-        onChange={(e) => setForm({ ...form, category: Number(e.target.value) as Category })}
-      >
-        <MenuItem value={Category.None}>{t.category.selectCategory}</MenuItem>
-        {Object.entries(CategoryLabels)
-          .filter(([key]) => key !== '0')
-          .map(([value, label]) => (
-            <MenuItem key={value} value={Number(value)}>
-              {label}
+        value={displayValue}
+        onChange={handleValueChange}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">{CURRENCY_SYMBOLS[profile?.currency ?? 'BRL']}</InputAdornment>
+            ),
+          },
+          htmlInput: { inputMode: 'numeric' },
+        }}
+      />
+      <FormControl fullWidth margin="normal">
+        <InputLabel>{t('entryForm.tag')}</InputLabel>
+        <Select
+          value={form.tagId}
+          label={t('entryForm.tag')}
+          onChange={(e) => setForm({ ...form, tagId: e.target.value })}
+        >
+          <MenuItem value="">{t('common.noTag')}</MenuItem>
+          {tags?.map((tag) => (
+            <MenuItem key={tag.id} value={tag.id}>
+              {tag.name}
             </MenuItem>
           ))}
-      </TextField>
+        </Select>
+      </FormControl>
       <TextField
         fullWidth
-        label={t.common.date}
+        label={t('entryForm.date')}
         type="date"
         margin="normal"
         value={form.date}
         onChange={(e) => setForm({ ...form, date: e.target.value })}
         slotProps={{ inputLabel: { shrink: true } }}
       />
+      <FormControlLabel
+        sx={{ mt: 1 }}
+        control={
+          <Switch
+            checked={form.isRecurring}
+            onChange={(e) => setForm({ ...form, isRecurring: e.target.checked })}
+          />
+        }
+        label={t('entryForm.recurring')}
+      />
+      {form.isRecurring && (
+        <>
+          <FormControlLabel
+            sx={{ mt: 1 }}
+            control={
+              <Switch
+                checked={form.hasRecurrenceEndDate}
+                onChange={(e) => setForm({ ...form, hasRecurrenceEndDate: e.target.checked })}
+              />
+            }
+            label={t('entryForm.hasRecurrenceEndDate')}
+          />
+          {form.hasRecurrenceEndDate && (
+            <TextField
+              fullWidth
+              label={t('entryForm.recurrenceEndDate')}
+              type="date"
+              margin="normal"
+              value={form.recurrenceEndDate}
+              onChange={(e) => setForm({ ...form, recurrenceEndDate: e.target.value })}
+              slotProps={{ inputLabel: { shrink: true } }}
+            />
+          )}
+        </>
+      )}
       <TextField
         fullWidth
-        label={t.common.description}
+        label={t('entryForm.description')}
         margin="normal"
         multiline
         rows={2}

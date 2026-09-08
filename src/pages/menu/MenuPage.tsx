@@ -1,61 +1,64 @@
+import { useState } from 'react';
 import {
   Avatar,
   Box,
   Button,
-  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Divider,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Paper,
-  Switch,
   Typography,
 } from '@mui/material';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import HomeIcon from '@mui/icons-material/Home';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
-import AssessmentIcon from '@mui/icons-material/Assessment';
 import PersonIcon from '@mui/icons-material/Person';
 import EventNoteIcon from '@mui/icons-material/EventNote';
-import LanguageIcon from '@mui/icons-material/Language';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
+import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined';
+import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
-import { useState } from 'react';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLogout, useResetAccount } from '@/hooks/useAuth';
-import { useLanguage } from '@/i18n/LanguageContext';
-import { useThemeContext } from '@/theme/ThemeContext';
+import { useResetAccount } from '@/hooks/useAuth';
+
+const APP_VERSION = '1.0.0';
 
 export default function MenuPage() {
   const [resetOpen, setResetOpen] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const logoutMutation = useLogout();
+  const { t } = useTranslation();
+  const { user, logout } = useAuth();
   const resetMutation = useResetAccount();
-  const { t, locale, setLocale } = useLanguage();
-  const { mode, toggleTheme } = useThemeContext();
 
-  const secondaryLinks = [
-    { label: t.nav.wallets, path: '/wallets', icon: <AccountBalanceWalletIcon /> },
-    { label: t.nav.entries, path: '/entries', icon: <ReceiptLongIcon /> },
-    { label: t.nav.homes, path: '/homes', icon: <HomeIcon /> },
-    { label: t.nav.salaries, path: '/salaries', icon: <AutorenewIcon /> },
-    { label: t.nav.reports, path: '/reports', icon: <AssessmentIcon /> },
+  const items = [
+    { label: t('menu.editProfile'), path: '/menu/perfil', icon: <PersonIcon /> },
+    { label: t('menu.dailyBudget'), path: '/menu/previsao-diario', icon: <EventNoteIcon /> },
+    { label: t('menu.settings'), path: '/menu/configuracoes', icon: <SettingsIcon /> },
   ];
+
+  const placeholderItems = [
+    { label: t('menu.suggestions'), icon: <ChatBubbleOutlinedIcon /> },
+    { label: t('menu.help'), icon: <HelpOutlinedIcon /> },
+    { label: t('menu.terms'), icon: <ArticleOutlinedIcon /> },
+    { label: t('menu.privacy'), icon: <ArticleOutlinedIcon /> },
+  ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <Box>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
-        {t.menu.title}
+        {t('menu.title')}
       </Typography>
 
       <Paper sx={{ p: 2, borderRadius: 3, mb: 3 }}>
@@ -76,81 +79,57 @@ export default function MenuPage() {
 
       <Paper sx={{ borderRadius: 3, mb: 3 }}>
         <List sx={{ py: 1 }}>
-          <ListItemButton disabled sx={{ mx: 1, borderRadius: 2 }}>
-            <ListItemIcon>
-              <PersonIcon />
-            </ListItemIcon>
-            <ListItemText primary={t.menu.editProfile} />
-            <Chip label={t.menu.comingSoon} size="small" variant="outlined" />
-          </ListItemButton>
-          <ListItemButton disabled sx={{ mx: 1, borderRadius: 2 }}>
-            <ListItemIcon>
-              <EventNoteIcon />
-            </ListItemIcon>
-            <ListItemText primary={t.menu.dailyForecast} />
-            <Chip label={t.menu.comingSoon} size="small" variant="outlined" />
-          </ListItemButton>
-        </List>
-      </Paper>
-
-      <Typography variant="overline" color="text.secondary" sx={{ pl: 1, fontWeight: 700 }}>
-        {t.menu.more}
-      </Typography>
-      <Paper sx={{ borderRadius: 3, mb: 3, mt: 1 }}>
-        <List sx={{ py: 1 }}>
-          {secondaryLinks.map((link) => (
-            <ListItemButton key={link.path} sx={{ mx: 1, borderRadius: 2 }} onClick={() => navigate(link.path)}>
-              <ListItemIcon>{link.icon}</ListItemIcon>
-              <ListItemText primary={link.label} />
+          {items.map((item) => (
+            <ListItemButton key={item.path} sx={{ mx: 1, borderRadius: 2 }} onClick={() => navigate(item.path)}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.label} />
+              <ChevronRightIcon fontSize="small" sx={{ color: 'text.secondary' }} />
             </ListItemButton>
           ))}
-        </List>
-      </Paper>
-
-      <Paper sx={{ borderRadius: 3 }}>
-        <List sx={{ py: 1 }}>
-          <ListItemButton onClick={() => setLocale(locale === 'pt' ? 'en' : 'pt')} sx={{ mx: 1, borderRadius: 2 }}>
+          {placeholderItems.map((item) => (
+            <ListItemButton key={item.label} sx={{ mx: 1, borderRadius: 2 }}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.label} />
+              <ChevronRightIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+            </ListItemButton>
+          ))}
+          <ListItemButton sx={{ mx: 1, borderRadius: 2 }} onClick={handleLogout}>
             <ListItemIcon>
-              <LanguageIcon />
-            </ListItemIcon>
-            <ListItemText primary={t.nav.language} />
-          </ListItemButton>
-          <ListItemButton onClick={toggleTheme} sx={{ mx: 1, borderRadius: 2 }}>
-            <ListItemIcon>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
-            <ListItemText primary={mode === 'dark' ? t.nav.lightMode : t.nav.darkMode} />
-            <Switch checked={mode === 'dark'} onChange={toggleTheme} />
-          </ListItemButton>
-          <Divider sx={{ my: 0.5 }} />
-          <ListItemButton onClick={() => logoutMutation.mutate()} sx={{ mx: 1, borderRadius: 2, color: 'error.main' }}>
-            <ListItemIcon sx={{ color: 'error.main' }}>
               <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary={t.nav.logout} />
+            <ListItemText primary={t('menu.logout')} />
           </ListItemButton>
-          <ListItemButton onClick={() => setResetOpen(true)} sx={{ mx: 1, borderRadius: 2, color: 'error.main' }}>
+          <ListItemButton
+            sx={{ mx: 1, borderRadius: 2, color: 'error.main' }}
+            onClick={() => setResetOpen(true)}
+          >
             <ListItemIcon sx={{ color: 'error.main' }}>
               <DeleteSweepIcon />
             </ListItemIcon>
-            <ListItemText primary={t.menu.resetAccount} />
+            <ListItemText primary={t('menu.resetAccount')} />
           </ListItemButton>
         </List>
       </Paper>
 
+      <Typography variant="caption" color="text.secondary" sx={{ pl: 0.5 }}>
+        {t('menu.version', { version: APP_VERSION })}
+      </Typography>
+
       <Dialog open={resetOpen} onClose={() => setResetOpen(false)}>
         <DialogTitle sx={{ color: 'error.main', fontWeight: 700 }}>
-          {t.menu.resetAccountTitle}
+          {t('menu.resetAccountTitle')}
         </DialogTitle>
         <DialogContent>
           <Typography sx={{ mb: 2 }}>
-            {t.menu.resetAccountWarning}
+            {t('menu.resetAccountWarning')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {t.menu.resetAccountInfo}
+            {t('menu.resetAccountInfo')}
           </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setResetOpen(false)}>
-            {t.common.cancel}
+            {t('common.cancel')}
           </Button>
           <Button
             onClick={() => resetMutation.mutate()}
@@ -158,7 +137,7 @@ export default function MenuPage() {
             variant="contained"
             disabled={resetMutation.isPending}
           >
-            {t.menu.resetAccount}
+            {t('menu.resetAccount')}
           </Button>
         </DialogActions>
       </Dialog>
