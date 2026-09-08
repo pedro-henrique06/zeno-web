@@ -1,7 +1,12 @@
 import {
   Avatar,
   Box,
+  Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   List,
   ListItemButton,
@@ -22,16 +27,20 @@ import LanguageIcon from '@mui/icons-material/Language';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from '@mui/icons-material/Logout';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useLogout } from '@/hooks/useAuth';
+import { useLogout, useResetAccount } from '@/hooks/useAuth';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { useThemeContext } from '@/theme/ThemeContext';
 
 export default function MenuPage() {
+  const [resetOpen, setResetOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
   const logoutMutation = useLogout();
+  const resetMutation = useResetAccount();
   const { t, locale, setLocale } = useLanguage();
   const { mode, toggleTheme } = useThemeContext();
 
@@ -118,8 +127,41 @@ export default function MenuPage() {
             </ListItemIcon>
             <ListItemText primary={t.nav.logout} />
           </ListItemButton>
+          <ListItemButton onClick={() => setResetOpen(true)} sx={{ mx: 1, borderRadius: 2, color: 'error.main' }}>
+            <ListItemIcon sx={{ color: 'error.main' }}>
+              <DeleteSweepIcon />
+            </ListItemIcon>
+            <ListItemText primary={t.menu.resetAccount} />
+          </ListItemButton>
         </List>
       </Paper>
+
+      <Dialog open={resetOpen} onClose={() => setResetOpen(false)}>
+        <DialogTitle sx={{ color: 'error.main', fontWeight: 700 }}>
+          {t.menu.resetAccountTitle}
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ mb: 2 }}>
+            {t.menu.resetAccountWarning}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t.menu.resetAccountInfo}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResetOpen(false)}>
+            {t.common.cancel}
+          </Button>
+          <Button
+            onClick={() => resetMutation.mutate()}
+            color="error"
+            variant="contained"
+            disabled={resetMutation.isPending}
+          >
+            {t.menu.resetAccount}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

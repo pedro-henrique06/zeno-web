@@ -132,6 +132,10 @@ en: {
       dailyForecast: 'Daily forecast',
       more: 'More',
       comingSoon: 'Soon',
+      resetAccount: 'Reset account',
+      resetAccountTitle: 'Reset account?',
+      resetAccountWarning: 'This action will delete all your data and cannot be undone.',
+      resetAccountInfo: 'All wallets, entries, salaries, and categories will be permanently deleted. Your account will be empty and you can start fresh.',
     },
     addEntry: {
       title: 'Add',
@@ -447,6 +451,10 @@ en: {
       dailyForecast: 'Previsão de diário',
       more: 'Mais',
       comingSoon: 'Em breve',
+      resetAccount: 'Resetar conta',
+      resetAccountTitle: 'Resetar conta?',
+      resetAccountWarning: 'Esta ação vai deletar todos seus dados e não pode ser desfeita.',
+      resetAccountInfo: 'Todas as carteiras, lançamentos, recebimentos recorrentes e categorias serão permanentemente deletadas. Sua conta ficará vazia e você poderá começar do zero.',
     },
     addEntry: {
       title: 'Adicionar',
