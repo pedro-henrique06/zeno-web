@@ -66,6 +66,10 @@
     "terms": "Termos de uso",
     "privacy": "Política de privacidade",
     "logout": "Sair",
+    "resetAccount": "Resetar conta",
+    "resetAccountTitle": "Resetar conta?",
+    "resetAccountWarning": "Esta ação vai deletar todos seus dados e não pode ser desfeita.",
+    "resetAccountInfo": "Todas as carteiras, lançamentos, recebimentos recorrentes e categorias serão permanentemente deletadas. Sua conta ficará vazia e você poderá começar do zero.",
     "version": "Versão {{version}}"
   },
   "settings": {

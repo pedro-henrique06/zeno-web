@@ -66,6 +66,10 @@
     "terms": "Terms of use",
     "privacy": "Privacy policy",
     "logout": "Log out",
+    "resetAccount": "Reset account",
+    "resetAccountTitle": "Reset account?",
+    "resetAccountWarning": "This action will delete all your data and cannot be undone.",
+    "resetAccountInfo": "All wallets, entries, recurring income, and categories will be permanently deleted. Your account will be empty and you can start fresh.",
     "version": "Version {{version}}"
   },
   "settings": {

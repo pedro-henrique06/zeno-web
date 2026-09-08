@@ -50,3 +50,23 @@ export function useLogout() {
     },
   });
 }
+
+export function useResetAccount() {
+  const { logout: logoutAuth } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => authApi.resetAccount(),
+    onSuccess: () => {
+      logoutAuth();
+      queryClient.clear();
+      navigate('/login');
+    },
+    onError: () => {
+      logoutAuth();
+      queryClient.clear();
+      navigate('/login');
+    },
+  });
+}

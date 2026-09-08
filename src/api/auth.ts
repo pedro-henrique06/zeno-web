@@ -14,3 +14,7 @@ export async function register(data: RegisterRequest): Promise<AuthResponse> {
 export async function logout(): Promise<void> {
   await apiClient.post('/auth/logout');
 }
+
+export async function resetAccount(): Promise<void> {
+  await apiClient.post('/auth/reset-account');
+}

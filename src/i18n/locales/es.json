@@ -66,6 +66,10 @@
     "terms": "Términos de uso",
     "privacy": "Política de privacidad",
     "logout": "Cerrar sesión",
+    "resetAccount": "Restablecer cuenta",
+    "resetAccountTitle": "¿Restablecer cuenta?",
+    "resetAccountWarning": "Esta acción eliminará todos tus datos y no se puede deshacer.",
+    "resetAccountInfo": "Todas las carteras, lanzamientos, ingresos recurrentes y categorías serán eliminados permanentemente. Tu cuenta estará vacía y podrás comenzar de nuevo.",
     "version": "Versión {{version}}"
   },
   "settings": {
