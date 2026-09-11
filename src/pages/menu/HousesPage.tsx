@@ -319,44 +319,75 @@ export default function HousesPage() {
       </Box>
 
       {(houses ?? []).length > 0 ? (
-        <Paper sx={{ borderRadius: 3 }}>
-          <List disablePadding>
-            {(houses ?? []).map((house, i) => (
-              <Box key={house.id}>
-                {i > 0 && <Divider />}
-                <ListItemButton
-                  sx={{ px: 2, py: 1.5 }}
-                  onClick={() => setDetailHouse(house)}
-                >
-                  <ListItemText
-                    primary={house.name}
-                    secondary={house.description || undefined}
-                  />
-                  <ListItemSecondaryAction>
-                    <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
-                      {(house.members ?? []).length > 0 && (
-                        <Chip
-                          icon={<GroupIcon />}
-                          label={(house.members ?? []).length}
-                          size="small"
-                          variant="outlined"
-                          sx={{ mr: 0.5 }}
-                        />
-                      )}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          {(houses ?? []).map((house) => {
+            const members = house.members ?? [];
+            const AVATAR_COLORS = ['#1B3D6B', '#1E8A5E', '#E08B42', '#7C5CBF', '#0CB89E', '#D94F3D'];
+            return (
+              <Paper
+                key={house.id}
+                sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: 'none', overflow: 'hidden', cursor: 'pointer' }}
+                onClick={() => setDetailHouse(house)}
+              >
+                {/* Card top */}
+                <Box sx={{ px: 2, pt: 2, pb: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '1rem', color: 'text.primary', mb: 0.75 }}>
+                      {house.name}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 0.25 }}>
                       <IconButton size="small" onClick={(e) => openEdit(e, house)}>
                         <EditIcon fontSize="small" />
                       </IconButton>
                       <IconButton size="small" onClick={(e) => handleDelete(e, house.id)}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
-                      <ChevronRightIcon fontSize="small" sx={{ color: 'text.secondary', ml: 0.5 }} />
                     </Box>
-                  </ListItemSecondaryAction>
-                </ListItemButton>
-              </Box>
-            ))}
-          </List>
-        </Paper>
+                  </Box>
+                  {/* Overlapping avatars */}
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    {members.slice(0, 4).map((m, idx) => (
+                      <Box
+                        key={m.userId}
+                        sx={{
+                          width: 28, height: 28, borderRadius: '50%',
+                          bgcolor: AVATAR_COLORS[idx % AVATAR_COLORS.length],
+                          border: '2px solid white',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          fontSize: '11px', fontWeight: 700, color: 'white',
+                          ml: idx === 0 ? 0 : -0.75,
+                          zIndex: members.length - idx,
+                        }}
+                      >
+                        {m.name.charAt(0).toUpperCase()}
+                      </Box>
+                    ))}
+                    {members.length === 0 && (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <GroupIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+                        <Typography variant="caption" color="text.disabled">{t('houses.noMembers')}</Typography>
+                      </Box>
+                    )}
+                    {members.length > 0 && (
+                      <Typography sx={{ ml: 1, fontSize: '11px', color: 'text.disabled' }}>
+                        {members.length} {members.length === 1 ? 'membro' : 'membros'}
+                      </Typography>
+                    )}
+                  </Box>
+                  {house.description && (
+                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.75 }}>
+                      {house.description}
+                    </Typography>
+                  )}
+                </Box>
+                {/* Card bottom */}
+                <Box sx={{ px: 2, py: 1.25, bgcolor: 'action.hover', borderTop: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                  <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
+                </Box>
+              </Paper>
+            );
+          })}
+        </Box>
       ) : (
         <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
           <HomeWorkIcon sx={{ fontSize: 64, mb: 2, opacity: 0.4 }} />

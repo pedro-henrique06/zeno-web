@@ -123,7 +123,10 @@
     "expenses": "Expenses",
     "daily": "Daily",
     "savings": "Savings",
-    "cardSpending": "Card spending"
+    "cardSpending": "Card spending",
+    "title": "Totals",
+    "subtitle": "Summary for {{month}}",
+    "monthBalance": "Month balance"
   },
   "entries": {
     "title": "Entries",
@@ -144,6 +147,8 @@
     "day": "Day",
     "balances": "Balances",
     "all": "All",
+    "currentBalance": "Current balance",
+    "upcoming": "Upcoming entries",
     "statsIncome": "Income",
     "statsExpenses": "Expenses",
     "statsForecast": "Projected balance"
