@@ -75,7 +75,16 @@
     "logout": "Cerrar sesión",
     "notifications": "Notificaciones diarias",
     "notificationsOn": "Activada — aviso a las 8h todos los días",
-    "notificationsOff": "Desactivada"
+    "notificationsOff": "Desactivada",
+    "resetBalance": "Resetear saldo a cero",
+    "resetBalanceLoading": "Cargando saldo...",
+    "resetBalanceCurrent": "Saldo actual: {{balance}}",
+    "resetBalanceTitle": "Resetear saldo a cero",
+    "resetBalanceConfirm": "Su saldo actual es {{sign}}{{balance}}. Se creará un movimiento de ajuste para llevarlo a $0,00.",
+    "resetBalanceAlreadyZero": "Su saldo ya está en $0,00. No se necesita ningún ajuste.",
+    "resetBalanceConfirmBtn": "Resetear ahora",
+    "balanceResetEntryTitle": "Ajuste de saldo",
+    "balanceResetEntryDesc": "Movimiento automático para llevar el saldo a cero"
   },
   "editProfile": {
     "title": "Editar perfil",
