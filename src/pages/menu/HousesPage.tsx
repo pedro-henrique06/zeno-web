@@ -325,7 +325,6 @@ export default function HousesPage() {
       {(houses ?? []).length > 0 ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           {(houses ?? []).map((house) => {
-
             const members = house.members ?? [];
             const AVATAR_COLORS = ['#1B3D6B', '#1E8A5E', '#E08B42', '#7C5CBF', '#0CB89E', '#D94F3D'];
             return (
