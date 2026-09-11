@@ -1,5 +1,5 @@
 import apiClient, { unwrap } from './client';
-import type { House, CreateHouseRequest, UpdateHouseRequest } from '@/types';
+import type { House, CreateHouseRequest, UpdateHouseRequest, Entry } from '@/types';
 
 export async function getHouses(): Promise<House[]> {
   return unwrap(apiClient.get('/houses'));
@@ -15,4 +15,8 @@ export async function updateHouse(data: UpdateHouseRequest): Promise<void> {
 
 export async function deleteHouse(id: string): Promise<void> {
   await apiClient.delete(`/houses/${id}`);
+}
+
+export async function getHouseEntries(houseId: string): Promise<Entry[]> {
+  return unwrap(apiClient.get(`/houses/${houseId}/entries`));
 }
