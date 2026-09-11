@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { Box, BottomNavigation, BottomNavigationAction, Paper, useTheme } from '@mui/material';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -20,7 +20,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     { label: t('appLayout.balances'), path: '/', icon: <AccountBalanceIcon /> },
     { label: t('appLayout.totals'), path: '/totais', icon: <AssessmentIcon /> },
     { label: '', path: 'add', icon: <AddIcon /> },
-    { label: t('appLayout.tags'), path: '/tags', icon: <LocalOfferIcon /> },
+    { label: t('appLayout.houses'), path: '/menu/casas', icon: <HomeWorkIcon /> },
     { label: t('appLayout.menu'), path: '/menu', icon: <MenuIcon /> },
   ];
 
