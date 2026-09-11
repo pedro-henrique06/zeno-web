@@ -15,9 +15,12 @@ import {
   Select,
   Switch,
   TextField,
+  Tooltip,
 } from '@mui/material';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { useTranslation } from 'react-i18next';
 import { useCreateEntry, useUpdateEntry, useDeleteEntry } from '@/hooks/useEntries';
+import { generateIcsForRecurringEntry, downloadIcs } from '@/utils/calendar';
 import { useTags } from '@/hooks/useTags';
 import { useProfile } from '@/hooks/useUser';
 import type { CreateEntryRequest, Entry, EntryKind, UpdateEntryRequest } from '@/types';
@@ -238,6 +241,28 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
               onChange={(e) => setForm({ ...form, recurrenceEndDate: e.target.value })}
               slotProps={{ inputLabel: { shrink: true } }}
             />
+          )}
+          {isEditing && entry && (
+            <Tooltip title={t('entryForm.addToCalendarHint')}>
+              <Button
+                startIcon={<CalendarMonthIcon />}
+                variant="outlined"
+                size="small"
+                sx={{ mt: 1 }}
+                onClick={() => {
+                  const ics = generateIcsForRecurringEntry({
+                    id: entry.id,
+                    title: form.title || entry.title,
+                    date: form.date,
+                    recurrenceEndDate: form.hasRecurrenceEndDate ? form.recurrenceEndDate : null,
+                    description: form.description,
+                  });
+                  downloadIcs(form.title || entry.title, ics);
+                }}
+              >
+                {t('entryForm.addToCalendar')}
+              </Button>
+            </Tooltip>
           )}
         </>
       )}

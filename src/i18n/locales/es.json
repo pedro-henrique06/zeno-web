@@ -66,10 +66,6 @@
     "terms": "Términos de uso",
     "privacy": "Política de privacidad",
     "logout": "Cerrar sesión",
-    "resetAccount": "Restablecer cuenta",
-    "resetAccountTitle": "¿Restablecer cuenta?",
-    "resetAccountWarning": "Esta acción eliminará todos tus datos y no se puede deshacer.",
-    "resetAccountInfo": "Todas las carteras, lanzamientos, ingresos recurrentes y categorías serán eliminados permanentemente. Tu cuenta estará vacía y podrás comenzar de nuevo.",
     "version": "Versión {{version}}"
   },
   "settings": {
@@ -164,7 +160,9 @@
     "delete": "Eliminar",
     "deleteConfirmTitle": "Eliminar movimiento",
     "deleteConfirmMessage": "¿Está seguro de que desea eliminar este movimiento? Esta acción no se puede deshacer.",
-    "deleteRecurringMessage": "Este es un movimiento recurrente. Al eliminarlo, se eliminarán permanentemente todas las ocurrencias (pasadas y futuras)."
+    "deleteRecurringMessage": "Este es un movimiento recurrente. Al eliminarlo, se eliminarán permanentemente todas las ocurrencias (pasadas y futuras).",
+    "addToCalendar": "Agregar al calendario",
+    "addToCalendarHint": "Descarga un archivo .ics con un recordatorio 2 días antes. Ábralo en Apple Calendar o Google Calendar para agregar a su agenda."
   },
   "monthlyExpenseCategory": {
     "descriptionPlaceholder": "Descripción",
