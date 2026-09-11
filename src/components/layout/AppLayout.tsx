@@ -45,7 +45,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
       </Box>
 
       <Paper
-        elevation={3}
+        elevation={0}
         sx={{
           position: 'fixed',
           bottom: 0,
@@ -55,6 +55,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           borderTop: '1px solid',
           borderColor: 'divider',
           pb: 'env(safe-area-inset-bottom)',
+          backdropFilter: 'blur(12px)',
+          bgcolor: 'rgba(248,249,251,0.94)',
         }}
       >
         <BottomNavigation
@@ -67,7 +69,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               navigate(newValue);
             }
           }}
-          sx={{ height: 64 }}
+          sx={{
+            height: 64,
+            bgcolor: 'transparent',
+          }}
         >
           {tabs.map((item) =>
             item.path === 'add' ? (
@@ -77,14 +82,15 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 icon={
                   <Box
                     sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      bgcolor: 'text.primary',
-                      color: 'background.paper',
+                      width: 44,
+                      height: 44,
+                      borderRadius: 2.5,
+                      bgcolor: '#1B3D6B',
+                      color: '#FFFFFF',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
+                      boxShadow: '0 4px 14px rgba(27,61,107,0.35)',
                     }}
                   >
                     {item.icon}
@@ -98,6 +104,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 label={item.label}
                 value={item.path}
                 icon={item.icon}
+                sx={{
+                  '&.Mui-selected': { color: '#1B3D6B' },
+                  color: 'text.secondary',
+                }}
               />
             ),
           )}

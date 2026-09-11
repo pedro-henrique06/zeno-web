@@ -143,8 +143,10 @@ function HouseDetailDialog({ house, open, onClose }: { house: House; open: boole
                 <ListItemText
                   primary={isOwner ? (user?.name ?? '') : ''}
                   secondary={isOwner ? user?.email : ''}
-                  primaryTypographyProps={{ variant: 'body2', fontWeight: 600 }}
-                  secondaryTypographyProps={{ variant: 'caption' }}
+                  slotProps={{
+                    primary: { style: { fontSize: '0.875rem', fontWeight: 600 } },
+                    secondary: { style: { fontSize: '0.75rem' } },
+                  }}
                 />
                 <Chip label={t('houses.owner')} size="small" color="primary" variant="outlined" />
               </ListItem>
@@ -165,8 +167,10 @@ function HouseDetailDialog({ house, open, onClose }: { house: House; open: boole
                       <ListItemText
                         primary={member.name}
                         secondary={member.email}
-                        primaryTypographyProps={{ variant: 'body2' }}
-                        secondaryTypographyProps={{ variant: 'caption' }}
+                        slotProps={{
+                          primary: { style: { fontSize: '0.875rem' } },
+                          secondary: { style: { fontSize: '0.75rem' } },
+                        }}
                       />
                       {isOwner && (
                         <IconButton

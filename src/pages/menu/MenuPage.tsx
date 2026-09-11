@@ -7,6 +7,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   List,
   ListItemButton,
   ListItemIcon,
@@ -59,19 +60,41 @@ export default function MenuPage() {
     navigate('/login');
   };
 
+  const initial = user?.name?.charAt(0).toUpperCase() ?? 'U';
+
   return (
     <Box>
       <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
         {t('menu.title')}
       </Typography>
 
-      <Paper sx={{ p: 2, borderRadius: 3, mb: 3 }}>
+      {/* Profile card */}
+      <Paper
+        sx={{
+          p: 2.5,
+          borderRadius: 3,
+          mb: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: 'none',
+        }}
+      >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ width: 56, height: 56, bgcolor: 'primary.main', fontSize: 22 }}>
-            {user?.name?.charAt(0).toUpperCase() ?? 'U'}
+          <Avatar
+            sx={{
+              width: 56,
+              height: 56,
+              bgcolor: '#1B3D6B',
+              fontSize: 24,
+              fontFamily: '"Fraunces", serif',
+              fontWeight: 700,
+              letterSpacing: -0.5,
+            }}
+          >
+            {initial}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ fontWeight: 700 }} noWrap>
+            <Typography sx={{ fontWeight: 700, fontSize: '1rem' }} noWrap>
               {user?.name}
             </Typography>
             <Typography variant="body2" color="text.secondary" noWrap>
@@ -81,41 +104,104 @@ export default function MenuPage() {
         </Box>
       </Paper>
 
-      <Paper sx={{ borderRadius: 3, mb: 3 }}>
-        <List sx={{ py: 1 }}>
-          {items.map((item) => (
-            <ListItemButton key={item.path} sx={{ mx: 1, borderRadius: 2 }} onClick={() => navigate(item.path)}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-              <ChevronRightIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-            </ListItemButton>
+      {/* Main nav items */}
+      <Paper
+        sx={{
+          borderRadius: 3,
+          mb: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: 'none',
+        }}
+      >
+        <List sx={{ py: 1 }} disablePadding>
+          {items.map((item, idx) => (
+            <Box key={item.path}>
+              <ListItemButton
+                sx={{ mx: 1, borderRadius: 2, py: 1.25 }}
+                onClick={() => navigate(item.path)}
+              >
+                <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>{item.icon}</ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  slotProps={{ primary: { style: { fontWeight: 500 } } }}
+                />
+                <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
+              </ListItemButton>
+              {idx < items.length - 1 && (
+                <Divider sx={{ mx: 2, borderColor: 'divider' }} />
+              )}
+            </Box>
           ))}
-          {placeholderItems.map((item) => (
-            <ListItemButton key={item.label} sx={{ mx: 1, borderRadius: 2 }}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-              <ChevronRightIcon fontSize="small" sx={{ color: 'text.secondary' }} />
-            </ListItemButton>
+        </List>
+      </Paper>
+
+      {/* Secondary items */}
+      <Paper
+        sx={{
+          borderRadius: 3,
+          mb: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: 'none',
+        }}
+      >
+        <List sx={{ py: 1 }} disablePadding>
+          {placeholderItems.map((item, idx) => (
+            <Box key={item.label}>
+              <ListItemButton sx={{ mx: 1, borderRadius: 2, py: 1.25 }}>
+                <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>{item.icon}</ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  slotProps={{ primary: { style: { fontWeight: 500 } } }}
+                />
+                <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
+              </ListItemButton>
+              {idx < placeholderItems.length - 1 && (
+                <Divider sx={{ mx: 2, borderColor: 'divider' }} />
+              )}
+            </Box>
           ))}
-          <ListItemButton sx={{ mx: 1, borderRadius: 2 }} onClick={handleLogout}>
-            <ListItemIcon>
+        </List>
+      </Paper>
+
+      {/* Logout + danger */}
+      <Paper
+        sx={{
+          borderRadius: 3,
+          mb: 3,
+          border: '1px solid',
+          borderColor: 'divider',
+          boxShadow: 'none',
+        }}
+      >
+        <List sx={{ py: 1 }} disablePadding>
+          <ListItemButton sx={{ mx: 1, borderRadius: 2, py: 1.25 }} onClick={handleLogout}>
+            <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
               <LogoutIcon />
             </ListItemIcon>
-            <ListItemText primary={t('menu.logout')} />
+            <ListItemText
+              primary={t('menu.logout')}
+              slotProps={{ primary: { style: { fontWeight: 500 } } }}
+            />
           </ListItemButton>
+          <Divider sx={{ mx: 2, borderColor: 'divider' }} />
           <ListItemButton
-            sx={{ mx: 1, borderRadius: 2, color: 'error.main' }}
+            sx={{ mx: 1, borderRadius: 2, py: 1.25, color: 'error.main' }}
             onClick={() => setResetOpen(true)}
           >
-            <ListItemIcon sx={{ color: 'error.main' }}>
+            <ListItemIcon sx={{ minWidth: 40, color: 'error.main' }}>
               <DeleteSweepIcon />
             </ListItemIcon>
-            <ListItemText primary={t('menu.resetAccount')} />
+            <ListItemText
+              primary={t('menu.resetAccount')}
+              slotProps={{ primary: { style: { fontWeight: 500 } } }}
+            />
           </ListItemButton>
         </List>
       </Paper>
 
-      <Typography variant="caption" color="text.secondary" sx={{ pl: 0.5 }}>
+      <Typography variant="caption" color="text.disabled" sx={{ pl: 0.5 }}>
         {t('menu.version', { version: APP_VERSION })}
       </Typography>
 
@@ -124,17 +210,13 @@ export default function MenuPage() {
           {t('menu.resetAccountTitle')}
         </DialogTitle>
         <DialogContent>
-          <Typography sx={{ mb: 2 }}>
-            {t('menu.resetAccountWarning')}
-          </Typography>
+          <Typography sx={{ mb: 2 }}>{t('menu.resetAccountWarning')}</Typography>
           <Typography variant="body2" color="text.secondary">
             {t('menu.resetAccountInfo')}
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setResetOpen(false)}>
-            {t('common.cancel')}
-          </Button>
+          <Button onClick={() => setResetOpen(false)}>{t('common.cancel')}</Button>
           <Button
             onClick={() => resetMutation.mutate()}
             color="error"

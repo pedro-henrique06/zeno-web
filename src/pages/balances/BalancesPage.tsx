@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type MouseEvent, type TouchEvent } from 'r
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import {
-  Avatar,
   Box,
   CircularProgress,
   IconButton,
@@ -37,6 +36,7 @@ import type { BalanceDay, Currency, Language } from '@/types';
 import { EntryKindColors, EntryKindLetters, useEntryKindLabels } from '@/utils/entryKind';
 import { getBalanceColor, getBalanceTone } from '@/utils/balanceColor';
 import { BalancesHorizonDialog } from '@/components/BalancesHorizonDialog';
+import { BalanceChart } from '@/components/BalanceChart';
 
 const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
 const ALL_COLOR = '#3B82F6';
@@ -55,6 +55,8 @@ const KIND_ICONS: Partial<Record<EntryKind, typeof CallReceivedIcon>> = {
   [EntryKind.Entrada]: CallReceivedIcon,
   [EntryKind.Saida]: CallMadeIcon,
 };
+
+import { Avatar } from '@mui/material';
 
 function KindAvatar({ kind, size }: { kind: EntryKind; size: number }) {
   const Icon = KIND_ICONS[kind];
@@ -98,7 +100,10 @@ function DayCell({ day }: { day: BalanceDay }) {
 
 function BalanceCell({ day, currency, language }: { day: BalanceDay; currency?: Currency; language?: Language }) {
   return (
-    <Typography variant="body2" sx={{ fontWeight: 700, color: getBalanceColor(day.balance) }}>
+    <Typography
+      variant="body2"
+      sx={{ fontWeight: 700, color: getBalanceColor(day.balance), fontVariantNumeric: 'tabular-nums' }}
+    >
       {formatCurrency(day.balance, currency, language)}
     </Typography>
   );
@@ -106,10 +111,66 @@ function BalanceCell({ day, currency, language }: { day: BalanceDay; currency?: 
 
 function dayRowSx(day: BalanceDay) {
   return day.isToday
-    ? { bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.12) }
+    ? { bgcolor: (theme: Theme) => alpha(theme.palette.primary.main, 0.07) }
     : day.isProjected
-      ? { opacity: 0.6 }
+      ? { opacity: 0.65 }
       : {};
+}
+
+/** Three summary chips shown above the day list */
+function StatsRow({
+  days,
+  currency,
+  language,
+}: {
+  days: BalanceDay[];
+  currency?: Currency;
+  language?: Language;
+}) {
+  const { t } = useTranslation();
+  const totalEntradas = days.reduce((s, d) => s + d.entrada, 0);
+  const totalSaidas = days.reduce((s, d) => s + d.saida + d.cartao + d.diario, 0);
+  const lastBalance = days.length ? days[days.length - 1].balance : 0;
+
+  const stats = [
+    { label: t('balances.statsIncome'), value: totalEntradas, color: '#1E8A5E' },
+    { label: t('balances.statsExpenses'), value: totalSaidas, color: '#D94F3D' },
+    { label: t('balances.statsForecast'), value: lastBalance, color: lastBalance >= 0 ? '#1B3D6B' : '#D94F3D' },
+  ];
+
+  return (
+    <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
+      {stats.map((s) => (
+        <Box
+          key={s.label}
+          sx={{
+            flex: 1,
+            p: 1.5,
+            borderRadius: 3,
+            bgcolor: 'background.paper',
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 'none',
+          }}
+        >
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25, lineHeight: 1.2 }}>
+            {s.label}
+          </Typography>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              fontSize: '0.8rem',
+              color: s.color,
+              fontVariantNumeric: 'tabular-nums',
+              lineHeight: 1.3,
+            }}
+          >
+            {formatCurrency(s.value, currency, language)}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  );
 }
 
 export default function BalancesPage() {
@@ -191,7 +252,10 @@ export default function BalancesPage() {
         <MonthSwitcher
           month={month}
           year={year}
-          onChange={(m, y) => { setMonth(m); setYear(y); }}
+          onChange={(m, y) => {
+            setMonth(m);
+            setYear(y);
+          }}
           endAdornment={
             <IconButton size="small" onClick={() => setHorizonOpen(true)} title={t('balances.horizonTooltip')}>
               <InsightsIcon fontSize="small" />
@@ -200,9 +264,33 @@ export default function BalancesPage() {
         />
       </StickyHeader>
 
+      {/* Balance trend chart */}
+      {days.length > 1 && (
+        <Paper
+          sx={{
+            borderRadius: 3,
+            mb: 1.5,
+            overflow: 'hidden',
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 'none',
+            px: 1,
+            pt: 1,
+            pb: 0.5,
+          }}
+        >
+          <BalanceChart days={days} height={88} />
+        </Paper>
+      )}
+
+      {/* Stats chips */}
+      {days.length > 0 && (
+        <StatsRow days={days} currency={profile?.currency} language={profile?.language} />
+      )}
+
       <TableContainer
         component={Paper}
-        sx={{ borderRadius: 3 }}
+        sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -292,7 +380,11 @@ export default function BalancesPage() {
                           <TableCell key={k} align="right">
                             <Typography
                               variant="body2"
-                              sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[k] : 'text.disabled' }}
+                              sx={{
+                                fontWeight: 700,
+                                color: hasValue ? EntryKindColors[k] : 'text.disabled',
+                                fontVariantNumeric: 'tabular-nums',
+                              }}
                             >
                               {formatCurrency(value, profile?.currency, profile?.language)}
                             </Typography>
@@ -301,7 +393,7 @@ export default function BalancesPage() {
                       })}
                       <TableCell
                         align="right"
-                        sx={{ bgcolor: (theme: Theme) => alpha(theme.palette[getBalanceTone(day.balance)].main, 0.16) }}
+                        sx={{ bgcolor: (theme: Theme) => alpha(theme.palette[getBalanceTone(day.balance)].main, 0.1) }}
                       >
                         <BalanceCell day={day} currency={profile?.currency} language={profile?.language} />
                       </TableCell>
@@ -334,7 +426,11 @@ export default function BalancesPage() {
                             <KindAvatar kind={k} size={20} />
                             <Typography
                               variant="body2"
-                              sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[k] : 'text.disabled' }}
+                              sx={{
+                                fontWeight: 700,
+                                color: hasValue ? EntryKindColors[k] : 'text.disabled',
+                                fontVariantNumeric: 'tabular-nums',
+                              }}
                             >
                               {formatCurrency(value, profile?.currency, profile?.language)}
                             </Typography>
@@ -344,7 +440,7 @@ export default function BalancesPage() {
                           <TableCell
                             align="right"
                             rowSpan={KINDS.length}
-                            sx={{ bgcolor: (theme: Theme) => alpha(theme.palette[getBalanceTone(day.balance)].main, 0.16) }}
+                            sx={{ bgcolor: (theme: Theme) => alpha(theme.palette[getBalanceTone(day.balance)].main, 0.1) }}
                           >
                             <BalanceCell day={day} currency={profile?.currency} language={profile?.language} />
                           </TableCell>
@@ -367,7 +463,11 @@ export default function BalancesPage() {
                           <KindAvatar kind={kind} size={20} />
                           <Typography
                             variant="body2"
-                            sx={{ fontWeight: 700, color: hasValue ? EntryKindColors[kind] : 'text.disabled' }}
+                            sx={{
+                              fontWeight: 700,
+                              color: hasValue ? EntryKindColors[kind] : 'text.disabled',
+                              fontVariantNumeric: 'tabular-nums',
+                            }}
                           >
                             {formatCurrency(value, profile?.currency, profile?.language)}
                           </Typography>
