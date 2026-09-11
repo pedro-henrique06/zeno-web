@@ -75,7 +75,16 @@
     "logout": "Log out",
     "notifications": "Daily notifications",
     "notificationsOn": "On — alert at 8 AM every day",
-    "notificationsOff": "Off"
+    "notificationsOff": "Off",
+    "resetBalance": "Reset balance to zero",
+    "resetBalanceLoading": "Loading balance...",
+    "resetBalanceCurrent": "Current balance: {{balance}}",
+    "resetBalanceTitle": "Reset balance to zero",
+    "resetBalanceConfirm": "Your current balance is {{sign}}{{balance}}. An adjustment entry will be created to bring it to $0.00.",
+    "resetBalanceAlreadyZero": "Your balance is already $0.00. No adjustment needed.",
+    "resetBalanceConfirmBtn": "Reset now",
+    "balanceResetEntryTitle": "Balance adjustment",
+    "balanceResetEntryDesc": "Automatic entry to zero out the balance"
   },
   "editProfile": {
     "title": "Edit profile",

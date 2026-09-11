@@ -75,7 +75,16 @@
     "logout": "Sair",
     "notifications": "Notificações diárias",
     "notificationsOn": "Ativa — aviso às 8h todo dia",
-    "notificationsOff": "Desativada"
+    "notificationsOff": "Desativada",
+    "resetBalance": "Zerar saldo",
+    "resetBalanceLoading": "Carregando saldo...",
+    "resetBalanceCurrent": "Saldo atual: {{balance}}",
+    "resetBalanceTitle": "Zerar saldo",
+    "resetBalanceConfirm": "Seu saldo atual é {{sign}}{{balance}}. Será criado um lançamento de ajuste para levá-lo a R$ 0,00.",
+    "resetBalanceAlreadyZero": "Seu saldo já está em R$ 0,00. Nenhum ajuste necessário.",
+    "resetBalanceConfirmBtn": "Zerar agora",
+    "balanceResetEntryTitle": "Ajuste de saldo",
+    "balanceResetEntryDesc": "Lançamento automático para zerar o saldo"
   },
   "editProfile": {
     "title": "Editar perfil",
