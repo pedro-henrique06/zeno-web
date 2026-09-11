@@ -81,11 +81,12 @@ function StatCard({
         border: '1px solid',
         borderColor: 'divider',
         boxShadow: 'none',
+        transition: 'background-color 0.15s',
         '&:hover': onClick ? { bgcolor: 'action.hover' } : {},
       }}
       onClick={onClick}
     >
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+      <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
         {label}
       </Typography>
       <Typography
@@ -95,11 +96,12 @@ function StatCard({
           fontWeight: 700,
           mb: 0.5,
           fontVariantNumeric: 'tabular-nums',
+          lineHeight: 1.2,
         }}
       >
         {value}
       </Typography>
-      <Typography variant="caption" sx={{ color: subColor, fontWeight: 600 }}>
+      <Typography sx={{ fontSize: '11px', color: subColor, fontWeight: 600 }}>
         {subLabel}
       </Typography>
     </Paper>
@@ -217,7 +219,7 @@ export default function DashboardPage() {
       </Box>
 
       {/* Big income / expense tiles */}
-      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+      <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
         <BigTile
           label={t('dashboard.income')}
           value={movements.entrada}
@@ -251,21 +253,21 @@ export default function DashboardPage() {
         <StatCard
           label={t('dashboard.saved')}
           value={`${economizedPercent.toFixed(1)}%`}
-          subLabel={economizedPercent > 0 ? t('dashboard.saved') : t('dashboard.nothingSaved')}
+          subLabel={economizedPercent > 0 ? t('dashboard.savedHint') : t('dashboard.nothingSaved')}
           subColor={economizedPercent > 0 ? 'success.main' : 'text.secondary'}
           onClick={() => setEconomizedOpen(true)}
         />
         <StatCard
           label={t('dashboard.costOfLiving')}
           value={formatCurrency(costOfLiving, profile?.currency, profile?.language)}
-          subLabel={t('dashboard.costOfLiving')}
+          subLabel={t('dashboard.costOfLivingHint')}
           subColor="text.secondary"
           onClick={() => setCostOfLivingOpen(true)}
         />
         <StatCard
           label={t('dashboard.dailyAverage')}
           value={formatCurrency(dailyAverageReal, profile?.currency, profile?.language)}
-          subLabel={t('dashboard.dailyAverage')}
+          subLabel={t('dashboard.dailyAverageHint')}
           subColor="text.secondary"
           onClick={() => setDailyAverageOpen(true)}
         />

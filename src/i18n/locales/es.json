@@ -130,7 +130,10 @@
     "cardSpending": "Gastos con tarjeta",
     "title": "Totales",
     "subtitle": "Resumen de {{month}}",
-    "monthBalance": "Saldo del mes"
+    "monthBalance": "Saldo del mes",
+    "savedHint": "del total de ingresos",
+    "costOfLivingHint": "gastos para vivir",
+    "dailyAverageHint": "promedio por día"
   },
   "entries": {
     "title": "Movimientos",
