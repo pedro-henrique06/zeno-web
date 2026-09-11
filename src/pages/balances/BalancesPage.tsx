@@ -146,7 +146,7 @@ function StatsRow({
           sx={{
             flex: 1,
             px: 1.25,
-            py: 1,
+            py: 1.25,
             borderRadius: 2.5,
             bgcolor: 'background.paper',
             border: '1px solid',
@@ -154,17 +154,18 @@ function StatsRow({
           }}
         >
           <Typography
-            sx={{ display: 'block', mb: 0.5, fontSize: '9.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px', color: 'text.disabled' }}
+            sx={{ display: 'block', mb: 0.6, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.6px', color: 'text.disabled' }}
           >
             {s.label}
           </Typography>
           <Typography
             sx={{
-              fontWeight: 600,
-              fontSize: '0.78rem',
+              fontFamily: '"Fraunces", serif',
+              fontWeight: 700,
+              fontSize: '0.85rem',
               color: s.color,
               fontVariantNumeric: 'tabular-nums',
-              lineHeight: 1.3,
+              lineHeight: 1.2,
             }}
           >
             {formatCurrency(s.value, currency, language)}
