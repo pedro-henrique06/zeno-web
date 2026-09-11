@@ -132,6 +132,7 @@ export interface Entry {
   date: string;
   isRecurring: boolean;
   recurrenceEndDate: string | null;
+  houseId?: string | null;
 }
 
 export interface CreateEntryRequest {
@@ -143,10 +144,30 @@ export interface CreateEntryRequest {
   date: string;
   isRecurring: boolean;
   recurrenceEndDate?: string | null;
+  houseId?: string | null;
 }
 
 export interface UpdateEntryRequest extends CreateEntryRequest {
   id: string;
+}
+
+export interface House {
+  id: string;
+  userId: string;
+  name: string;
+  description: string;
+  createdAt: string;
+}
+
+export interface CreateHouseRequest {
+  name: string;
+  description?: string;
+}
+
+export interface UpdateHouseRequest {
+  id: string;
+  name: string;
+  description?: string;
 }
 
 export interface BalanceDay {

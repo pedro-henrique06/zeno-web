@@ -60,6 +60,7 @@
     "title": "Menu",
     "editProfile": "Edit profile",
     "dailyBudget": "Daily budget",
+    "houses": "My homes",
     "settings": "Settings",
     "suggestions": "Send suggestions",
     "help": "Help",
@@ -152,6 +153,16 @@
     "newTitle": "New tag",
     "name": "Name"
   },
+  "houses": {
+    "title": "My homes",
+    "loadError": "Could not load homes. Try again.",
+    "emptyTitle": "No homes registered",
+    "emptySubtitle": "Register a home to link it to your recurring entries.",
+    "newTitle": "New home",
+    "editTitle": "Edit home",
+    "name": "Name",
+    "description": "Description"
+  },
   "entryForm": {
     "editTitle": "Edit entry",
     "newTitle": "New entry",
@@ -161,6 +172,8 @@
     "titleField": "Title",
     "value": "Value",
     "tag": "Tag",
+    "house": "Home",
+    "noHouse": "No home",
     "date": "Date",
     "recurring": "Repeat every month",
     "hasRecurrenceEndDate": "Has an end date?",

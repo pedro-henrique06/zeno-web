@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { useCreateEntry, useUpdateEntry, useDeleteEntry } from '@/hooks/useEntries';
 import { generateIcsForRecurringEntry, downloadIcs } from '@/utils/calendar';
 import { useTags } from '@/hooks/useTags';
+import { useHouses } from '@/hooks/useHouses';
 import { useProfile } from '@/hooks/useUser';
 import type { CreateEntryRequest, Entry, EntryKind, UpdateEntryRequest } from '@/types';
 import { useEntryKindLabels } from '@/utils/entryKind';
@@ -40,6 +41,7 @@ interface EntryFormData {
   isRecurring: boolean;
   hasRecurrenceEndDate: boolean;
   recurrenceEndDate: string;
+  houseId: string;
 }
 
 interface EntryFormDialogProps {
@@ -64,6 +66,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
     isRecurring: entry?.isRecurring ?? false,
     hasRecurrenceEndDate: !!entry?.recurrenceEndDate,
     recurrenceEndDate: entry?.recurrenceEndDate ? dayjs(entry.recurrenceEndDate).format('YYYY-MM-DD') : '',
+    houseId: entry?.houseId ?? '',
   });
   const [valueCents, setValueCents] = useState(Math.round((entry?.value ?? 0) * 100));
 
@@ -73,6 +76,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
   const updateMutation = useUpdateEntry();
   const deleteMutation = useDeleteEntry();
   const { data: tags } = useTags();
+  const { data: houses } = useHouses();
   const isEditing = !!entry;
 
   const handleValueChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -92,6 +96,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
       ...form,
       tagId: form.tagId || null,
       recurrenceEndDate: form.isRecurring && form.hasRecurrenceEndDate && form.recurrenceEndDate ? form.recurrenceEndDate : null,
+      houseId: form.houseId || null,
     };
     if (isEditing && entry) {
       const data: UpdateEntryRequest = { id: entry.id, ...payload };
@@ -113,6 +118,7 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
       isRecurring: false,
       hasRecurrenceEndDate: false,
       recurrenceEndDate: '',
+      houseId: '',
     });
     setValueCents(0);
     onClose();
@@ -242,6 +248,22 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
               slotProps={{ inputLabel: { shrink: true } }}
             />
           )}
+          <FormControl fullWidth margin="normal">
+            <InputLabel>{t('entryForm.house')}</InputLabel>
+            <Select
+              value={form.houseId}
+              label={t('entryForm.house')}
+              onChange={(e) => setForm({ ...form, houseId: e.target.value })}
+            >
+              <MenuItem value="">{t('entryForm.noHouse')}</MenuItem>
+              {(houses ?? []).map((house) => (
+                <MenuItem key={house.id} value={house.id}>
+                  {house.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           {isEditing && entry && (
             <Tooltip title={t('entryForm.addToCalendarHint')}>
               <Button

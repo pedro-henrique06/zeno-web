@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import EventNoteIcon from '@mui/icons-material/EventNote';
+import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined';
@@ -40,6 +41,7 @@ export default function MenuPage() {
   const items = [
     { label: t('menu.editProfile'), path: '/menu/perfil', icon: <PersonIcon /> },
     { label: t('menu.dailyBudget'), path: '/menu/previsao-diario', icon: <EventNoteIcon /> },
+    { label: t('menu.houses'), path: '/menu/casas', icon: <HomeWorkIcon /> },
     { label: t('menu.settings'), path: '/menu/configuracoes', icon: <SettingsIcon /> },
   ];
 
