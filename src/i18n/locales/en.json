@@ -164,7 +164,19 @@
     "name": "Name",
     "description": "Description",
     "noEntries": "No recurring entries linked",
-    "noEntriesHint": "Create a recurring entry and link it to this home."
+    "noEntriesHint": "Create a recurring entry and link it to this home.",
+    "members": "Members",
+    "membersTab": "Members",
+    "entriesTab": "Entries",
+    "owner": "Owner",
+    "addMember": "Invite member",
+    "memberEmail": "Member email",
+    "invite": "Invite",
+    "noMembers": "No members invited",
+    "noMembersHint": "Invite other users to share this home.",
+    "memberNotFound": "No user found with this email.",
+    "alreadyMember": "This user is already a member.",
+    "inviteError": "Could not invite the member."
   },
   "entryForm": {
     "editTitle": "Edit entry",
