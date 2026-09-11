@@ -26,17 +26,19 @@ import InsightsIcon from '@mui/icons-material/Insights';
 import AppsIcon from '@mui/icons-material/Apps';
 import { useTranslation } from 'react-i18next';
 import { useBalances } from '@/hooks/useBalances';
+import { useEntries } from '@/hooks/useEntries';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { StickyHeader } from '@/components/layout/StickyHeader';
 import { EntryKind } from '@/types';
-import type { BalanceDay, Currency, Language } from '@/types';
-import { EntryKindColors, EntryKindLetters, useEntryKindLabels } from '@/utils/entryKind';
+import type { BalanceDay, Currency, Language, Entry } from '@/types';
+import { EntryKindColors, EntryKindLetters, useEntryKindLabels, isCredit } from '@/utils/entryKind';
 import { getBalanceColor, getBalanceTone } from '@/utils/balanceColor';
 import { BalancesHorizonDialog } from '@/components/BalancesHorizonDialog';
 import { BalanceChart } from '@/components/BalanceChart';
+import { Avatar } from '@mui/material';
 
 const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
 const ALL_COLOR = '#3B82F6';
@@ -55,8 +57,6 @@ const KIND_ICONS: Partial<Record<EntryKind, typeof CallReceivedIcon>> = {
   [EntryKind.Entrada]: CallReceivedIcon,
   [EntryKind.Saida]: CallMadeIcon,
 };
-
-import { Avatar } from '@mui/material';
 
 function KindAvatar({ kind, size }: { kind: EntryKind; size: number }) {
   const Icon = KIND_ICONS[kind];
@@ -135,31 +135,33 @@ function StatsRow({
   const stats = [
     { label: t('balances.statsIncome'), value: totalEntradas, color: '#1E8A5E' },
     { label: t('balances.statsExpenses'), value: totalSaidas, color: '#D94F3D' },
-    { label: t('balances.statsForecast'), value: lastBalance, color: lastBalance >= 0 ? '#1B3D6B' : '#D94F3D' },
+    { label: t('balances.statsForecast'), value: lastBalance, color: lastBalance >= 0 ? '#0CB89E' : '#D94F3D' },
   ];
 
   return (
-    <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
+    <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
       {stats.map((s) => (
         <Box
           key={s.label}
           sx={{
             flex: 1,
-            p: 1.5,
-            borderRadius: 3,
+            px: 1.25,
+            py: 1,
+            borderRadius: 2.5,
             bgcolor: 'background.paper',
             border: '1px solid',
             borderColor: 'divider',
-            boxShadow: 'none',
           }}
         >
-          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.25, lineHeight: 1.2 }}>
+          <Typography
+            sx={{ display: 'block', mb: 0.5, fontSize: '9.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px', color: 'text.disabled' }}
+          >
             {s.label}
           </Typography>
           <Typography
             sx={{
-              fontWeight: 700,
-              fontSize: '0.8rem',
+              fontWeight: 600,
+              fontSize: '0.78rem',
               color: s.color,
               fontVariantNumeric: 'tabular-nums',
               lineHeight: 1.3,
@@ -170,6 +172,136 @@ function StatsRow({
         </Box>
       ))}
     </Box>
+  );
+}
+
+/** Today's balance big display */
+function BalanceHeader({
+  days,
+  currency,
+  language,
+}: {
+  days: BalanceDay[];
+  currency?: Currency;
+  language?: Language;
+}) {
+  const { t } = useTranslation();
+
+  // Find today's balance (last non-projected day, or first day)
+  const todayDay = days.find((d) => d.isToday);
+  const lastPastDay = [...days].reverse().find((d) => !d.isProjected);
+  const currentBalance = (todayDay ?? lastPastDay ?? days[0])?.balance ?? 0;
+
+  const formatted = formatCurrency(Math.abs(currentBalance), currency, language);
+  const isNegative = currentBalance < 0;
+
+  // Split integer and decimal parts for styling
+  const parts = formatted.split(',');
+  const intPart = parts[0] ?? formatted;
+  const decPart = parts[1];
+
+  return (
+    <Box sx={{ pb: 1 }}>
+      <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.8px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
+        {t('balances.currentBalance')}
+      </Typography>
+      <Typography
+        sx={{
+          fontFamily: '"Fraunces", serif',
+          fontSize: '2.2rem',
+          fontWeight: 700,
+          letterSpacing: '-1.5px',
+          lineHeight: 1,
+          color: isNegative ? '#D94F3D' : 'text.primary',
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {isNegative ? '−' : ''}
+        {intPart}
+        {decPart && (
+          <span style={{ fontSize: '1.4rem', opacity: 0.55 }}>,{decPart}</span>
+        )}
+      </Typography>
+    </Box>
+  );
+}
+
+/** Open-ring dot for upcoming entry */
+function UpcomingDot({ kind }: { kind: EntryKind }) {
+  const color = EntryKindColors[kind];
+  return (
+    <Box
+      sx={{
+        width: 8,
+        height: 8,
+        borderRadius: '50%',
+        flexShrink: 0,
+        border: `2px solid ${color}`,
+      }}
+    />
+  );
+}
+
+/** Próximos lançamentos — upcoming future entries */
+function UpcomingEntries({
+  entries,
+  currency,
+  language,
+}: {
+  entries: Entry[];
+  currency?: Currency;
+  language?: Language;
+}) {
+  const { t } = useTranslation();
+  const today = dayjs().startOf('day');
+  const upcoming = entries
+    .filter((e) => dayjs(e.date).startOf('day').isAfter(today))
+    .sort((a, b) => (a.date > b.date ? 1 : -1))
+    .slice(0, 5);
+
+  if (upcoming.length === 0) return null;
+
+  return (
+    <Paper sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: 'none', mb: 1.5, overflow: 'hidden' }}>
+      <Typography sx={{ px: 2, pt: 1.5, pb: 0.5, fontSize: '10px', fontWeight: 700, letterSpacing: '.7px', textTransform: 'uppercase', color: 'text.disabled' }}>
+        {t('balances.upcoming')}
+      </Typography>
+      {upcoming.map((entry, i) => {
+        const credit = isCredit(entry.kind);
+        const diff = dayjs(entry.date).startOf('day').diff(today, 'day');
+        const dayLabel = dayjs(entry.date).format('DD MMM').toLowerCase();
+        return (
+          <Box
+            key={entry.id}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.25,
+              px: 2,
+              py: 1.25,
+              borderTop: i > 0 ? '1px solid' : 'none',
+              borderColor: 'divider',
+            }}
+          >
+            <UpcomingDot kind={entry.kind} />
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 500, fontSize: '0.84rem', color: 'text.primary' }} noWrap>
+                {entry.title}
+              </Typography>
+              <Typography sx={{ fontSize: '11px', color: 'text.disabled', mt: '1px' }}>
+                em {diff} dia{diff !== 1 ? 's' : ''} · {dayLabel}
+              </Typography>
+            </Box>
+            <Typography
+              sx={{ fontWeight: 700, fontSize: '0.84rem', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}
+              color={credit ? 'success.main' : 'error.main'}
+            >
+              {credit ? '+' : '−'}{formatCurrency(entry.value, currency, language)}
+            </Typography>
+          </Box>
+        );
+      })}
+    </Paper>
   );
 }
 
@@ -190,6 +322,7 @@ export default function BalancesPage() {
   const hasScrolledToTodayRef = useRef(false);
 
   const { data, isLoading, isError } = useBalances(month, year);
+  const { data: entriesData } = useEntries(month, year);
 
   useEffect(() => {
     if (hasScrolledToTodayRef.current) return;
@@ -239,6 +372,7 @@ export default function BalancesPage() {
   }
 
   const days = data?.days ?? [];
+  const entries = entriesData?.items ?? [];
 
   const dayDateString = (day: BalanceDay) => dayjs(new Date(year, month - 1, day.day)).format('YYYY-MM-DD');
 
@@ -264,6 +398,11 @@ export default function BalancesPage() {
         />
       </StickyHeader>
 
+      {/* Current balance header */}
+      {days.length > 0 && (
+        <BalanceHeader days={days} currency={profile?.currency} language={profile?.language} />
+      )}
+
       {/* Balance trend chart */}
       {days.length > 1 && (
         <Paper
@@ -274,18 +413,23 @@ export default function BalancesPage() {
             border: '1px solid',
             borderColor: 'divider',
             boxShadow: 'none',
-            px: 1,
-            pt: 1,
-            pb: 0.5,
+            px: 0.5,
+            pt: 0.5,
+            pb: 0,
           }}
         >
-          <BalanceChart days={days} height={88} />
+          <BalanceChart days={days} height={90} />
         </Paper>
       )}
 
       {/* Stats chips */}
       {days.length > 0 && (
         <StatsRow days={days} currency={profile?.currency} language={profile?.language} />
+      )}
+
+      {/* Próximos lançamentos */}
+      {entries.length > 0 && (
+        <UpcomingEntries entries={entries} currency={profile?.currency} language={profile?.language} />
       )}
 
       <TableContainer

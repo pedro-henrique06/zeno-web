@@ -35,14 +35,12 @@ function BigTile({
     <Box
       sx={{
         flex: 1,
-        p: 2,
+        p: 1.75,
         borderRadius: 3,
         bgcolor: bgColor,
-        border: '1px solid',
-        borderColor: 'divider',
       }}
     >
-      <Typography variant="caption" sx={{ color, fontWeight: 600, opacity: 0.75, display: 'block', mb: 0.5 }}>
+      <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'text.disabled', display: 'block', mb: 0.75 }}>
         {label}
       </Typography>
       <Typography
@@ -52,7 +50,7 @@ function BigTile({
           fontWeight: 700,
           color,
           fontVariantNumeric: 'tabular-nums',
-          lineHeight: 1.2,
+          lineHeight: 1.1,
         }}
       >
         {formatCurrency(value, currency, language)}
@@ -208,13 +206,23 @@ export default function DashboardPage() {
         <MonthSwitcher month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y); }} />
       </StickyHeader>
 
+      {/* Page header */}
+      <Box sx={{ mb: 2, mt: 0.5 }}>
+        <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.5rem', fontWeight: 600, color: 'text.primary', lineHeight: 1.2 }}>
+          {t('dashboard.title')}
+        </Typography>
+        <Typography sx={{ fontSize: '12px', color: 'text.disabled', mt: 0.25 }}>
+          {t('dashboard.subtitle', { month: new Date(year, month - 1).toLocaleString('default', { month: 'long' }) })}
+        </Typography>
+      </Box>
+
       {/* Big income / expense tiles */}
-      <Box sx={{ display: 'flex', gap: 1.5, mb: 2, mt: 1 }}>
+      <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
         <BigTile
           label={t('dashboard.income')}
           value={movements.entrada}
           color="#1E8A5E"
-          bgColor="rgba(30,138,94,.07)"
+          bgColor="#E8F5EE"
           currency={profile?.currency}
           language={profile?.language}
         />
@@ -222,7 +230,7 @@ export default function DashboardPage() {
           label={t('dashboard.expenses')}
           value={movements.saida + movements.cartao}
           color="#D94F3D"
-          bgColor="rgba(217,79,61,.07)"
+          bgColor="#FBEAE8"
           currency={profile?.currency}
           language={profile?.language}
         />
@@ -279,6 +287,16 @@ export default function DashboardPage() {
         <MovementBar kind={EntryKind.Diario} label={t('dashboard.daily')} total={movements.diario} max={totalMovement} currency={profile?.currency} language={profile?.language} />
         <MovementBar kind={EntryKind.Economia} label={t('dashboard.savings')} total={movements.economia} max={totalMovement} currency={profile?.currency} language={profile?.language} />
         <MovementBar kind={EntryKind.Cartao} label={t('dashboard.cardSpending')} total={movements.cartao} max={totalMovement} currency={profile?.currency} language={profile?.language} />
+      </Paper>
+
+      {/* Saldo do mês */}
+      <Paper sx={{ borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider', boxShadow: 'none', mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Typography sx={{ fontSize: '13px', color: 'text.secondary', fontWeight: 500 }}>
+          {t('dashboard.monthBalance')}
+        </Typography>
+        <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.35rem', fontWeight: 700, color: performance >= 0 ? '#1E8A5E' : '#D94F3D', fontVariantNumeric: 'tabular-nums' }}>
+          {performance >= 0 ? '+' : ''}{formatCurrency(performance, profile?.currency, profile?.language)}
+        </Typography>
       </Paper>
 
       <EconomizedHorizonDialog

@@ -15,6 +15,9 @@ import {
   Paper,
   Typography,
 } from '@mui/material';
+import { useProfile } from '@/hooks/useUser';
+import { useSummary } from '@/hooks/useSummary';
+import { formatCurrency } from '@/utils/currency';
 import PersonIcon from '@mui/icons-material/Person';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import HomeWorkIcon from '@mui/icons-material/HomeWork';
@@ -39,6 +42,9 @@ export default function MenuPage() {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
   const resetMutation = useResetAccount();
+  const { data: profile } = useProfile();
+  const now = new Date();
+  const { data: summary } = useSummary(now.getMonth() + 1, now.getFullYear());
 
   const items = [
     { label: t('menu.editProfile'), path: '/menu/perfil', icon: <PersonIcon /> },
@@ -71,9 +77,9 @@ export default function MenuPage() {
       {/* Profile card */}
       <Paper
         sx={{
-          p: 2.5,
+          p: 2,
           borderRadius: 3,
-          mb: 2,
+          mb: 1.5,
           border: '1px solid',
           borderColor: 'divider',
           boxShadow: 'none',
@@ -82,10 +88,10 @@ export default function MenuPage() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar
             sx={{
-              width: 56,
-              height: 56,
+              width: 52,
+              height: 52,
               bgcolor: '#1B3D6B',
-              fontSize: 24,
+              fontSize: 20,
               fontFamily: '"Fraunces", serif',
               fontWeight: 700,
               letterSpacing: -0.5,
@@ -94,7 +100,7 @@ export default function MenuPage() {
             {initial}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ fontWeight: 700, fontSize: '1rem' }} noWrap>
+            <Typography sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600, fontSize: '1.1rem' }} noWrap>
               {user?.name}
             </Typography>
             <Typography variant="body2" color="text.secondary" noWrap>
@@ -103,6 +109,50 @@ export default function MenuPage() {
           </Box>
         </Box>
       </Paper>
+
+      {/* Daily budget card */}
+      {profile?.dailyBudget != null && profile.dailyBudget > 0 && (
+        <Paper
+          sx={{
+            p: 2,
+            borderRadius: 3,
+            mb: 1.5,
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 'none',
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate('/menu/previsao-diario')}
+        >
+          <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
+            {t('menu.dailyBudget')}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', mb: 1 }}>
+            <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.3rem', fontWeight: 700, color: 'text.primary', fontVariantNumeric: 'tabular-nums' }}>
+              {formatCurrency(profile.dailyBudget, profile.currency, profile.language)}
+              <span style={{ fontSize: '0.85rem', opacity: 0.5, marginLeft: 2 }}>/dia</span>
+            </Typography>
+            {summary && (
+              <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#1E8A5E' }}>
+                {Math.round((summary.movements.diario / Math.max(profile.dailyBudget, 1)) * 100)}% usado hoje
+              </Typography>
+            )}
+          </Box>
+          <Box sx={{ height: 6, borderRadius: 3, bgcolor: 'action.hover', overflow: 'hidden' }}>
+            {summary && (
+              <Box
+                sx={{
+                  height: '100%',
+                  width: `${Math.min(Math.round((summary.movements.diario / Math.max(profile.dailyBudget, 1)) * 100), 100)}%`,
+                  background: 'linear-gradient(90deg, #1E8A5E, #3DBF8A)',
+                  borderRadius: 3,
+                  transition: 'width 0.4s ease',
+                }}
+              />
+            )}
+          </Box>
+        </Paper>
+      )}
 
       {/* Main nav items */}
       <Paper

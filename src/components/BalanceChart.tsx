@@ -36,7 +36,7 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
   const W = 400;
   const H = height;
   const PX = 6;
-  const PY = 12;
+  const PY = 14;
 
   // Position X by actual day number (day 1..maxDay)
   const maxDay = Math.max(...days.map((d) => d.day));
@@ -54,6 +54,11 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
 
   const yOf = (v: number) => H - PY - ((v - minV) / range) * (H - PY * 2);
   const zeroY = yOf(0);
+
+  // Horizontal grid lines at 25%, 50%, 75% of drawing area
+  const gridY1 = PY + (H - PY * 2) * 0.25;
+  const gridY2 = PY + (H - PY * 2) * 0.50;
+  const gridY3 = PY + (H - PY * 2) * 0.75;
 
   // Split at today (inclusive) / first projected
   const todayI = days.findIndex((d) => d.isToday);
@@ -93,6 +98,11 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
           <stop offset="100%" stopColor="#0CB89E" stopOpacity="0.01" />
         </linearGradient>
       </defs>
+
+      {/* Horizontal grid lines */}
+      <line x1={PX} y1={gridY1.toFixed(2)} x2={W - PX} y2={gridY1.toFixed(2)} stroke="#E8EBF0" strokeWidth={1} />
+      <line x1={PX} y1={gridY2.toFixed(2)} x2={W - PX} y2={gridY2.toFixed(2)} stroke="#E8EBF0" strokeWidth={1} />
+      <line x1={PX} y1={gridY3.toFixed(2)} x2={W - PX} y2={gridY3.toFixed(2)} stroke="#E8EBF0" strokeWidth={1} />
 
       {/* Zero baseline */}
       <line
@@ -143,25 +153,39 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
         />
       )}
 
-      {/* Today vertical marker */}
+      {/* Today vertical marker — teal */}
       {todayX !== null && (
         <line
           x1={todayX.toFixed(2)}
           y1={PY}
           x2={todayX.toFixed(2)}
           y2={H - PY}
-          stroke="#1B3D6B"
-          strokeWidth={1.5}
+          stroke="rgba(12,184,158,.35)"
+          strokeWidth={1}
           strokeDasharray="3 3"
-          strokeOpacity={0.4}
         />
       )}
 
-      {/* Today dot */}
+      {/* HOJE label */}
+      {todayX !== null && (
+        <text
+          x={(todayX + 4).toFixed(2)}
+          y={(PY + 2).toFixed(2)}
+          fontSize="9"
+          fill="rgba(12,184,158,.75)"
+          fontFamily="DM Sans, sans-serif"
+          fontWeight="700"
+          letterSpacing=".06em"
+        >
+          HOJE
+        </text>
+      )}
+
+      {/* Today dot — teal */}
       {todayX !== null && todayY !== null && (
         <>
-          <circle cx={todayX} cy={todayY} r={5} fill="#1E8A5E" />
-          <circle cx={todayX} cy={todayY} r={3} fill="white" />
+          <circle cx={todayX} cy={todayY} r={8} fill="rgba(12,184,158,.15)" />
+          <circle cx={todayX} cy={todayY} r={4} fill="#0CB89E" />
         </>
       )}
     </svg>

@@ -123,7 +123,10 @@
     "expenses": "Saídas",
     "daily": "Diários",
     "savings": "Economias",
-    "cardSpending": "Gastos com cartão"
+    "cardSpending": "Gastos com cartão",
+    "title": "Totais",
+    "subtitle": "Resumo de {{month}}",
+    "monthBalance": "Saldo do mês"
   },
   "entries": {
     "title": "Lançamentos",
@@ -146,7 +149,9 @@
     "all": "Todas",
     "statsIncome": "Entradas",
     "statsExpenses": "Saídas",
-    "statsForecast": "Saldo previsto"
+    "statsForecast": "Saldo previsto",
+    "currentBalance": "Saldo atual",
+    "upcoming": "Próximos lançamentos"
   },
   "categories": {
     "searchPlaceholder": "Buscar tags",

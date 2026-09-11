@@ -123,7 +123,10 @@
     "expenses": "Gastos",
     "daily": "Diarios",
     "savings": "Ahorros",
-    "cardSpending": "Gastos con tarjeta"
+    "cardSpending": "Gastos con tarjeta",
+    "title": "Totales",
+    "subtitle": "Resumen de {{month}}",
+    "monthBalance": "Saldo del mes"
   },
   "entries": {
     "title": "Movimientos",
@@ -144,6 +147,8 @@
     "day": "Día",
     "balances": "Saldos",
     "all": "Todos",
+    "currentBalance": "Saldo actual",
+    "upcoming": "Próximos movimientos",
     "statsIncome": "Ingresos",
     "statsExpenses": "Gastos",
     "statsForecast": "Saldo previsto"
