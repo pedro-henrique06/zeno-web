@@ -60,6 +60,7 @@
     "title": "Menu",
     "editProfile": "Editar perfil",
     "dailyBudget": "Previsão de diário",
+    "houses": "Minhas casas",
     "settings": "Configurações",
     "suggestions": "Mandar sugestões",
     "help": "Ajuda",
@@ -152,6 +153,16 @@
     "newTitle": "Nova tag",
     "name": "Nome"
   },
+  "houses": {
+    "title": "Minhas casas",
+    "loadError": "Não foi possível carregar as casas. Tente novamente.",
+    "emptyTitle": "Nenhuma casa cadastrada",
+    "emptySubtitle": "Cadastre uma casa para vincular aos seus lançamentos recorrentes.",
+    "newTitle": "Nova casa",
+    "editTitle": "Editar casa",
+    "name": "Nome",
+    "description": "Descrição"
+  },
   "entryForm": {
     "editTitle": "Editar lançamento",
     "newTitle": "Novo lançamento",
@@ -161,6 +172,8 @@
     "titleField": "Título",
     "value": "Valor",
     "tag": "Tag",
+    "house": "Casa",
+    "noHouse": "Nenhuma casa",
     "date": "Data",
     "recurring": "Repetir todo mês",
     "hasRecurrenceEndDate": "Possui data de término?",

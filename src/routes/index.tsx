@@ -10,6 +10,7 @@ import MenuPage from '@/pages/menu/MenuPage';
 import EditProfilePage from '@/pages/menu/EditProfilePage';
 import DailyBudgetPage from '@/pages/menu/DailyBudgetPage';
 import SettingsPage from '@/pages/menu/SettingsPage';
+import HousesPage from '@/pages/menu/HousesPage';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -72,6 +73,7 @@ export default function AppRoutes() {
           <Route path="menu" element={<MenuPage />} />
           <Route path="menu/perfil" element={<EditProfilePage />} />
           <Route path="menu/previsao-diario" element={<DailyBudgetPage />} />
+          <Route path="menu/casas" element={<HousesPage />} />
           <Route path="menu/configuracoes" element={<SettingsPage />} />
         </Route>
       </Routes>

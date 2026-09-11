@@ -60,6 +60,7 @@
     "title": "Menú",
     "editProfile": "Editar perfil",
     "dailyBudget": "Presupuesto diario",
+    "houses": "Mis casas",
     "settings": "Configuración",
     "suggestions": "Enviar sugerencias",
     "help": "Ayuda",
@@ -152,6 +153,16 @@
     "newTitle": "Nueva etiqueta",
     "name": "Nombre"
   },
+  "houses": {
+    "title": "Mis casas",
+    "loadError": "No se pudieron cargar las casas. Intenta de nuevo.",
+    "emptyTitle": "Sin casas registradas",
+    "emptySubtitle": "Registra una casa para vincularla a tus movimientos recurrentes.",
+    "newTitle": "Nueva casa",
+    "editTitle": "Editar casa",
+    "name": "Nombre",
+    "description": "Descripción"
+  },
   "entryForm": {
     "editTitle": "Editar movimiento",
     "newTitle": "Nuevo movimiento",
@@ -161,6 +172,8 @@
     "titleField": "Título",
     "value": "Valor",
     "tag": "Etiqueta",
+    "house": "Casa",
+    "noHouse": "Sin casa",
     "date": "Fecha",
     "recurring": "Repetir cada mes",
     "hasRecurrenceEndDate": "¿Tiene fecha de finalización?",
