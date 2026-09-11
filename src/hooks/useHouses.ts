@@ -6,6 +6,14 @@ export function useHouses() {
   return useQuery({ queryKey: ['houses'], queryFn: houseApi.getHouses });
 }
 
+export function useHouseEntries(houseId: string | null) {
+  return useQuery({
+    queryKey: ['house-entries', houseId],
+    queryFn: () => houseApi.getHouseEntries(houseId!),
+    enabled: !!houseId,
+  });
+}
+
 export function useCreateHouse() {
   const queryClient = useQueryClient();
   return useMutation({

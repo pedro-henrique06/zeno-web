@@ -161,7 +161,9 @@
     "newTitle": "New home",
     "editTitle": "Edit home",
     "name": "Name",
-    "description": "Description"
+    "description": "Description",
+    "noEntries": "No recurring entries linked",
+    "noEntriesHint": "Create a recurring entry and link it to this home."
   },
   "entryForm": {
     "editTitle": "Edit entry",

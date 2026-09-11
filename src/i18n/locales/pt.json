@@ -161,7 +161,9 @@
     "newTitle": "Nova casa",
     "editTitle": "Editar casa",
     "name": "Nome",
-    "description": "Descrição"
+    "description": "Descrição",
+    "noEntries": "Nenhum lançamento recorrente vinculado",
+    "noEntriesHint": "Crie um lançamento recorrente e vincule a esta casa."
   },
   "entryForm": {
     "editTitle": "Editar lançamento",

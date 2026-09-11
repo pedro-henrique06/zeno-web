@@ -161,7 +161,9 @@
     "newTitle": "Nueva casa",
     "editTitle": "Editar casa",
     "name": "Nombre",
-    "description": "Descripción"
+    "description": "Descripción",
+    "noEntries": "Sin movimientos recurrentes vinculados",
+    "noEntriesHint": "Crea un movimiento recurrente y vincúlalo a esta casa."
   },
   "entryForm": {
     "editTitle": "Editar movimiento",
