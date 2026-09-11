@@ -164,7 +164,19 @@
     "name": "Nombre",
     "description": "Descripción",
     "noEntries": "Sin movimientos recurrentes vinculados",
-    "noEntriesHint": "Crea un movimiento recurrente y vincúlalo a esta casa."
+    "noEntriesHint": "Crea un movimiento recurrente y vincúlalo a esta casa.",
+    "members": "Miembros",
+    "membersTab": "Miembros",
+    "entriesTab": "Movimientos",
+    "owner": "Propietario",
+    "addMember": "Invitar miembro",
+    "memberEmail": "Email del miembro",
+    "invite": "Invitar",
+    "noMembers": "Ningún miembro invitado",
+    "noMembersHint": "Invita a otros usuarios a compartir esta casa.",
+    "memberNotFound": "No se encontró ningún usuario con este correo.",
+    "alreadyMember": "Este usuario ya es miembro.",
+    "inviteError": "No se pudo invitar al miembro."
   },
   "entryForm": {
     "editTitle": "Editar movimiento",

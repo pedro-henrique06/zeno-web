@@ -164,7 +164,19 @@
     "name": "Nome",
     "description": "Descrição",
     "noEntries": "Nenhum lançamento recorrente vinculado",
-    "noEntriesHint": "Crie um lançamento recorrente e vincule a esta casa."
+    "noEntriesHint": "Crie um lançamento recorrente e vincule a esta casa.",
+    "members": "Membros",
+    "membersTab": "Membros",
+    "entriesTab": "Lançamentos",
+    "owner": "Proprietário",
+    "addMember": "Convidar membro",
+    "memberEmail": "E-mail do membro",
+    "invite": "Convidar",
+    "noMembers": "Nenhum membro convidado",
+    "noMembersHint": "Convide outros usuários para compartilhar esta casa.",
+    "memberNotFound": "Usuário não encontrado com este e-mail.",
+    "alreadyMember": "Este usuário já é membro.",
+    "inviteError": "Não foi possível convidar o membro."
   },
   "entryForm": {
     "editTitle": "Editar lançamento",

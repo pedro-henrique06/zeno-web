@@ -37,3 +37,19 @@ export function useDeleteHouse() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['houses'] }),
   });
 }
+
+export function useAddHouseMember(houseId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (email: string) => houseApi.addHouseMember(houseId, email),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['houses'] }),
+  });
+}
+
+export function useRemoveHouseMember(houseId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (memberId: string) => houseApi.removeHouseMember(houseId, memberId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['houses'] }),
+  });
+}

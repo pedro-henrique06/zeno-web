@@ -151,12 +151,20 @@ export interface UpdateEntryRequest extends CreateEntryRequest {
   id: string;
 }
 
+export interface HouseMember {
+  userId: string;
+  email: string;
+  name: string;
+  joinedAt: string;
+}
+
 export interface House {
   id: string;
   userId: string;
   name: string;
   description: string;
   createdAt: string;
+  members: HouseMember[];
 }
 
 export interface CreateHouseRequest {
@@ -168,6 +176,10 @@ export interface UpdateHouseRequest {
   id: string;
   name: string;
   description?: string;
+}
+
+export interface AddHouseMemberRequest {
+  email: string;
 }
 
 export interface BalanceDay {
