@@ -68,6 +68,10 @@
     "terms": "Termos de uso",
     "privacy": "Política de privacidade",
     "logout": "Sair",
+    "resetAccount": "Zerar conta",
+    "resetAccountTitle": "Zerar conta",
+    "resetAccountWarning": "Tem certeza que deseja zerar sua conta? Todos os lançamentos e saldos serão removidos.",
+    "resetAccountInfo": "Esta ação não pode ser desfeita.",
     "version": "Versão {{version}}"
   },
   "settings": {
@@ -184,7 +188,9 @@
     "noMembersHint": "Convide outros usuários para compartilhar esta casa.",
     "memberNotFound": "Usuário não encontrado com este e-mail.",
     "alreadyMember": "Este usuário já é membro.",
-    "inviteError": "Não foi possível convidar o membro."
+    "inviteError": "Não foi possível convidar o membro.",
+    "activeGroup": "grupo ativo",
+    "activeGroups": "grupos ativos"
   },
   "entryForm": {
     "editTitle": "Editar lançamento",

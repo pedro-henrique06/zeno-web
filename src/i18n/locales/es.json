@@ -68,6 +68,10 @@
     "terms": "Términos de uso",
     "privacy": "Política de privacidad",
     "logout": "Cerrar sesión",
+    "resetAccount": "Resetear cuenta",
+    "resetAccountTitle": "Resetear cuenta",
+    "resetAccountWarning": "¿Estás seguro de que deseas resetear tu cuenta? Todos los movimientos y saldos serán eliminados.",
+    "resetAccountInfo": "Esta acción no se puede deshacer.",
     "version": "Versión {{version}}"
   },
   "settings": {
@@ -184,7 +188,9 @@
     "noMembersHint": "Invita a otros usuarios a compartir esta casa.",
     "memberNotFound": "No se encontró ningún usuario con este correo.",
     "alreadyMember": "Este usuario ya es miembro.",
-    "inviteError": "No se pudo invitar al miembro."
+    "inviteError": "No se pudo invitar al miembro.",
+    "activeGroup": "grupo activo",
+    "activeGroups": "grupos activos"
   },
   "entryForm": {
     "editTitle": "Editar movimiento",
