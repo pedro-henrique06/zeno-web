@@ -1,4 +1,19 @@
-import { Avatar, Box, List, ListItemButton, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material';
+import { useState } from 'react';
+import {
+  Avatar,
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Typography,
+} from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -6,17 +21,21 @@ import ChatBubbleOutlinedIcon from '@mui/icons-material/ChatBubbleOutlined';
 import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import LogoutIcon from '@mui/icons-material/Logout';
+import DeleteSweepIcon from '@mui/icons-material/DeleteSweep';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
+import { useResetAccount } from '@/hooks/useAuth';
 
 const APP_VERSION = '1.0.0';
 
 export default function MenuPage() {
+  const [resetOpen, setResetOpen] = useState(false);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, logout } = useAuth();
+  const resetMutation = useResetAccount();
 
   const items = [
     { label: t('menu.editProfile'), path: '/menu/perfil', icon: <PersonIcon /> },
@@ -80,12 +99,48 @@ export default function MenuPage() {
             </ListItemIcon>
             <ListItemText primary={t('menu.logout')} />
           </ListItemButton>
+          <ListItemButton
+            sx={{ mx: 1, borderRadius: 2, color: 'error.main' }}
+            onClick={() => setResetOpen(true)}
+          >
+            <ListItemIcon sx={{ color: 'error.main' }}>
+              <DeleteSweepIcon />
+            </ListItemIcon>
+            <ListItemText primary={t('menu.resetAccount')} />
+          </ListItemButton>
         </List>
       </Paper>
 
       <Typography variant="caption" color="text.secondary" sx={{ pl: 0.5 }}>
         {t('menu.version', { version: APP_VERSION })}
       </Typography>
+
+      <Dialog open={resetOpen} onClose={() => setResetOpen(false)}>
+        <DialogTitle sx={{ color: 'error.main', fontWeight: 700 }}>
+          {t('menu.resetAccountTitle')}
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ mb: 2 }}>
+            {t('menu.resetAccountWarning')}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t('menu.resetAccountInfo')}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setResetOpen(false)}>
+            {t('common.cancel')}
+          </Button>
+          <Button
+            onClick={() => resetMutation.mutate()}
+            color="error"
+            variant="contained"
+            disabled={resetMutation.isPending}
+          >
+            {t('menu.resetAccount')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
