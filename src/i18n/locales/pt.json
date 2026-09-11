@@ -160,7 +160,11 @@
     "recurring": "Repetir todo mês",
     "hasRecurrenceEndDate": "Possui data de término?",
     "recurrenceEndDate": "Encerrar recorrência em",
-    "description": "Descrição"
+    "description": "Descrição",
+    "delete": "Excluir",
+    "deleteConfirmTitle": "Excluir lançamento",
+    "deleteConfirmMessage": "Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.",
+    "deleteRecurringMessage": "Este é um lançamento recorrente. Ao excluir, todas as ocorrências (passadas e futuras) serão removidas permanentemente."
   },
   "monthlyExpenseCategory": {
     "descriptionPlaceholder": "Descrição",
