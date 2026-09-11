@@ -192,16 +192,16 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
         }}
       />
       <FormControl fullWidth margin="normal">
-        <InputLabel>{t('entryForm.tag')}</InputLabel>
+        <InputLabel>{t('entryForm.house')}</InputLabel>
         <Select
-          value={form.tagId}
-          label={t('entryForm.tag')}
-          onChange={(e) => setForm({ ...form, tagId: e.target.value })}
+          value={form.houseId}
+          label={t('entryForm.house')}
+          onChange={(e) => setForm({ ...form, houseId: e.target.value })}
         >
-          <MenuItem value="">{t('common.noTag')}</MenuItem>
-          {tags?.map((tag) => (
-            <MenuItem key={tag.id} value={tag.id}>
-              {tag.name}
+          <MenuItem value="">{t('entryForm.noHouse')}</MenuItem>
+          {(houses ?? []).map((house) => (
+            <MenuItem key={house.id} value={house.id}>
+              {house.name}
             </MenuItem>
           ))}
         </Select>
@@ -249,16 +249,16 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
             />
           )}
           <FormControl fullWidth margin="normal">
-            <InputLabel>{t('entryForm.house')}</InputLabel>
+            <InputLabel>{t('entryForm.tag')}</InputLabel>
             <Select
-              value={form.houseId}
-              label={t('entryForm.house')}
-              onChange={(e) => setForm({ ...form, houseId: e.target.value })}
+              value={form.tagId}
+              label={t('entryForm.tag')}
+              onChange={(e) => setForm({ ...form, tagId: e.target.value })}
             >
-              <MenuItem value="">{t('entryForm.noHouse')}</MenuItem>
-              {(houses ?? []).map((house) => (
-                <MenuItem key={house.id} value={house.id}>
-                  {house.name}
+              <MenuItem value="">{t('common.noTag')}</MenuItem>
+              {tags?.map((tag) => (
+                <MenuItem key={tag.id} value={tag.id}>
+                  {tag.name}
                 </MenuItem>
               ))}
             </Select>
