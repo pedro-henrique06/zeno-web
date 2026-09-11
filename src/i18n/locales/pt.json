@@ -143,7 +143,10 @@
     "horizonTooltip": "Horizonte de saldos",
     "day": "Dia",
     "balances": "Saldos",
-    "all": "Todas"
+    "all": "Todas",
+    "statsIncome": "Entradas",
+    "statsExpenses": "Saídas",
+    "statsForecast": "Saldo previsto"
   },
   "categories": {
     "searchPlaceholder": "Buscar tags",

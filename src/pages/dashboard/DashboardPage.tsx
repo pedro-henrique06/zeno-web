@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Typography, Paper, Avatar, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSummary } from '@/hooks/useSummary';
@@ -9,11 +9,57 @@ import { EntryKind } from '@/types';
 import type { Currency, Language } from '@/types';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { StickyHeader } from '@/components/layout/StickyHeader';
-import { EntryKindColors, EntryKindLetters } from '@/utils/entryKind';
+import { EntryKindColors } from '@/utils/entryKind';
 import { EconomizedHorizonDialog } from '@/components/EconomizedHorizonDialog';
 import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog';
 import { CostOfLivingHorizonDialog } from '@/components/CostOfLivingHorizonDialog';
 import { DailyAverageHorizonDialog } from '@/components/DailyAverageHorizonDialog';
+
+/** Large two-tone income / expense tile */
+function BigTile({
+  label,
+  value,
+  color,
+  bgColor,
+  currency,
+  language,
+}: {
+  label: string;
+  value: number;
+  color: string;
+  bgColor: string;
+  currency?: Currency;
+  language?: Language;
+}) {
+  return (
+    <Box
+      sx={{
+        flex: 1,
+        p: 2,
+        borderRadius: 3,
+        bgcolor: bgColor,
+        border: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
+      <Typography variant="caption" sx={{ color, fontWeight: 600, opacity: 0.75, display: 'block', mb: 0.5 }}>
+        {label}
+      </Typography>
+      <Typography
+        sx={{
+          fontFamily: '"Fraunces", serif',
+          fontSize: '1.55rem',
+          fontWeight: 700,
+          color,
+          fontVariantNumeric: 'tabular-nums',
+          lineHeight: 1.2,
+        }}
+      >
+        {formatCurrency(value, currency, language)}
+      </Typography>
+    </Box>
+  );
+}
 
 function StatCard({
   label,
@@ -29,11 +75,30 @@ function StatCard({
   onClick?: () => void;
 }) {
   return (
-    <Paper sx={{ p: 2, borderRadius: 3, cursor: onClick ? 'pointer' : 'default' }} onClick={onClick}>
+    <Paper
+      sx={{
+        p: 2,
+        borderRadius: 3,
+        cursor: onClick ? 'pointer' : 'default',
+        border: '1px solid',
+        borderColor: 'divider',
+        boxShadow: 'none',
+        '&:hover': onClick ? { bgcolor: 'action.hover' } : {},
+      }}
+      onClick={onClick}
+    >
       <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
         {label}
       </Typography>
-      <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5 }}>
+      <Typography
+        sx={{
+          fontFamily: '"Fraunces", serif',
+          fontSize: '1.2rem',
+          fontWeight: 700,
+          mb: 0.5,
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
         {value}
       </Typography>
       <Typography variant="caption" sx={{ color: subColor, fontWeight: 600 }}>
@@ -43,32 +108,56 @@ function StatCard({
   );
 }
 
-function MovementRow({
+/** Horizontal bar showing a movement kind as a proportion of total */
+function MovementBar({
   kind,
   label,
   total,
+  max,
   currency,
   language,
 }: {
   kind: number;
   label: string;
   total: number;
+  max: number;
   currency?: Currency;
   language?: Language;
 }) {
+  const pct = max > 0 ? Math.min((total / max) * 100, 100) : 0;
+  const color = EntryKindColors[kind as 0 | 1 | 2 | 3 | 4];
+
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1.25 }}>
-      <Avatar sx={{ bgcolor: EntryKindColors[kind as 0 | 1 | 2 | 3 | 4], width: 36, height: 36, fontSize: 14, fontWeight: 700 }}>
-        {EntryKindLetters[kind as 0 | 1 | 2 | 3 | 4]}
-      </Avatar>
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Typography sx={{ fontWeight: 600 }} noWrap>
+    <Box sx={{ py: 1 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+        <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
           {label}
         </Typography>
+        <Typography
+          variant="body2"
+          sx={{ fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}
+        >
+          {formatCurrency(total, currency, language)}
+        </Typography>
       </Box>
-      <Typography sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>
-        {formatCurrency(total, currency, language)}
-      </Typography>
+      <Box
+        sx={{
+          height: 6,
+          borderRadius: 3,
+          bgcolor: 'action.hover',
+          overflow: 'hidden',
+        }}
+      >
+        <Box
+          sx={{
+            height: '100%',
+            width: `${pct}%`,
+            borderRadius: 3,
+            bgcolor: color,
+            transition: 'width 0.4s ease',
+          }}
+        />
+      </Box>
     </Box>
   );
 }
@@ -104,6 +193,14 @@ export default function DashboardPage() {
   }
 
   const { performance, economizedPercent, costOfLiving, dailyAverageReal, movements } = data;
+  const totalMovement = Math.max(
+    movements.entrada,
+    movements.saida,
+    movements.diario,
+    movements.economia,
+    movements.cartao,
+    1,
+  );
 
   return (
     <Box>
@@ -111,10 +208,31 @@ export default function DashboardPage() {
         <MonthSwitcher month={month} year={year} onChange={(m, y) => { setMonth(m); setYear(y); }} />
       </StickyHeader>
 
-      <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700, mt: 2, display: 'block' }}>
+      {/* Big income / expense tiles */}
+      <Box sx={{ display: 'flex', gap: 1.5, mb: 2, mt: 1 }}>
+        <BigTile
+          label={t('dashboard.income')}
+          value={movements.entrada}
+          color="#1E8A5E"
+          bgColor="rgba(30,138,94,.07)"
+          currency={profile?.currency}
+          language={profile?.language}
+        />
+        <BigTile
+          label={t('dashboard.expenses')}
+          value={movements.saida + movements.cartao}
+          color="#D94F3D"
+          bgColor="rgba(217,79,61,.07)"
+          currency={profile?.currency}
+          language={profile?.language}
+        />
+      </Box>
+
+      {/* Stat cards */}
+      <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700, display: 'block', mb: 1 }}>
         {t('dashboard.monthlyCalculations')}
       </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, gap: 2, mb: 4, mt: 1 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, gap: 1.5, mb: 3 }}>
         <StatCard
           label={t('dashboard.performance')}
           value={formatCurrency(performance, profile?.currency, profile?.language)}
@@ -145,8 +263,9 @@ export default function DashboardPage() {
         />
       </Box>
 
-      <Paper sx={{ borderRadius: 3, p: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+      {/* Movement bars */}
+      <Paper sx={{ borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
           <Typography variant="h6" sx={{ fontWeight: 700 }}>
             {t('dashboard.monthMovements')}
           </Typography>
@@ -155,11 +274,11 @@ export default function DashboardPage() {
           </Button>
         </Box>
 
-        <MovementRow kind={EntryKind.Entrada} label={t('dashboard.income')} total={movements.entrada} currency={profile?.currency} language={profile?.language} />
-        <MovementRow kind={EntryKind.Saida} label={t('dashboard.expenses')} total={movements.saida} currency={profile?.currency} language={profile?.language} />
-        <MovementRow kind={EntryKind.Diario} label={t('dashboard.daily')} total={movements.diario} currency={profile?.currency} language={profile?.language} />
-        <MovementRow kind={EntryKind.Economia} label={t('dashboard.savings')} total={movements.economia} currency={profile?.currency} language={profile?.language} />
-        <MovementRow kind={EntryKind.Cartao} label={t('dashboard.cardSpending')} total={movements.cartao} currency={profile?.currency} language={profile?.language} />
+        <MovementBar kind={EntryKind.Entrada} label={t('dashboard.income')} total={movements.entrada} max={totalMovement} currency={profile?.currency} language={profile?.language} />
+        <MovementBar kind={EntryKind.Saida} label={t('dashboard.expenses')} total={movements.saida} max={totalMovement} currency={profile?.currency} language={profile?.language} />
+        <MovementBar kind={EntryKind.Diario} label={t('dashboard.daily')} total={movements.diario} max={totalMovement} currency={profile?.currency} language={profile?.language} />
+        <MovementBar kind={EntryKind.Economia} label={t('dashboard.savings')} total={movements.economia} max={totalMovement} currency={profile?.currency} language={profile?.language} />
+        <MovementBar kind={EntryKind.Cartao} label={t('dashboard.cardSpending')} total={movements.cartao} max={totalMovement} currency={profile?.currency} language={profile?.language} />
       </Paper>
 
       <EconomizedHorizonDialog
@@ -168,21 +287,18 @@ export default function DashboardPage() {
         onClose={() => setEconomizedOpen(false)}
         initialYear={year}
       />
-
       <PerformanceHorizonDialog
         key={`performance-${year}`}
         open={performanceOpen}
         onClose={() => setPerformanceOpen(false)}
         initialYear={year}
       />
-
       <CostOfLivingHorizonDialog
         key={`cost-of-living-${year}`}
         open={costOfLivingOpen}
         onClose={() => setCostOfLivingOpen(false)}
         initialYear={year}
       />
-
       <DailyAverageHorizonDialog
         key={`daily-average-${year}`}
         open={dailyAverageOpen}

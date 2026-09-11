@@ -143,7 +143,10 @@
     "horizonTooltip": "Balance horizon",
     "day": "Day",
     "balances": "Balances",
-    "all": "All"
+    "all": "All",
+    "statsIncome": "Income",
+    "statsExpenses": "Expenses",
+    "statsForecast": "Projected balance"
   },
   "categories": {
     "searchPlaceholder": "Search tags",
