@@ -206,6 +206,21 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
           ))}
         </Select>
       </FormControl>
+      <FormControl fullWidth margin="normal">
+        <InputLabel>{t('entryForm.tag')}</InputLabel>
+        <Select
+          value={form.tagId}
+          label={t('entryForm.tag')}
+          onChange={(e) => setForm({ ...form, tagId: e.target.value })}
+        >
+          <MenuItem value="">{t('common.noTag')}</MenuItem>
+          {tags?.map((tag) => (
+            <MenuItem key={tag.id} value={tag.id}>
+              {tag.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <TextField
         fullWidth
         label={t('entryForm.date')}
@@ -248,21 +263,6 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
               slotProps={{ inputLabel: { shrink: true } }}
             />
           )}
-          <FormControl fullWidth margin="normal">
-            <InputLabel>{t('entryForm.tag')}</InputLabel>
-            <Select
-              value={form.tagId}
-              label={t('entryForm.tag')}
-              onChange={(e) => setForm({ ...form, tagId: e.target.value })}
-            >
-              <MenuItem value="">{t('common.noTag')}</MenuItem>
-              {tags?.map((tag) => (
-                <MenuItem key={tag.id} value={tag.id}>
-                  {tag.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
 
           {isEditing && entry && (
             <Tooltip title={t('entryForm.addToCalendarHint')}>
