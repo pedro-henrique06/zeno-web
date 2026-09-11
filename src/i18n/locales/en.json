@@ -68,6 +68,10 @@
     "terms": "Terms of use",
     "privacy": "Privacy policy",
     "logout": "Log out",
+    "resetAccount": "Reset account",
+    "resetAccountTitle": "Reset account",
+    "resetAccountWarning": "Are you sure you want to reset your account? All entries and balances will be removed.",
+    "resetAccountInfo": "This action cannot be undone.",
     "version": "Version {{version}}"
   },
   "settings": {
@@ -184,7 +188,9 @@
     "noMembersHint": "Invite other users to share this home.",
     "memberNotFound": "No user found with this email.",
     "alreadyMember": "This user is already a member.",
-    "inviteError": "Could not invite the member."
+    "inviteError": "Could not invite the member.",
+    "activeGroup": "active group",
+    "activeGroups": "active groups"
   },
   "entryForm": {
     "editTitle": "Edit entry",

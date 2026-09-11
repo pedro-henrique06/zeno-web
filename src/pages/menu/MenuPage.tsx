@@ -66,7 +66,11 @@ export default function MenuPage() {
     navigate('/login');
   };
 
-  const initial = user?.name?.charAt(0).toUpperCase() ?? 'U';
+  const nameParts = (user?.name ?? '').trim().split(/\s+/);
+  const initial =
+    nameParts.length >= 2
+      ? (nameParts[0].charAt(0) + nameParts[1].charAt(0)).toUpperCase()
+      : (nameParts[0]?.charAt(0) ?? 'U').toUpperCase();
 
   return (
     <Box>
@@ -171,7 +175,11 @@ export default function MenuPage() {
                 sx={{ mx: 1, borderRadius: 2, py: 1.25 }}
                 onClick={() => navigate(item.path)}
               >
-                <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 44 }}>
+                  <Box sx={{ width: 32, height: 32, borderRadius: '9px', bgcolor: '#F5F6F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1B3D6B' }}>
+                    {item.icon}
+                  </Box>
+                </ListItemIcon>
                 <ListItemText
                   primary={item.label}
                   slotProps={{ primary: { style: { fontWeight: 500 } } }}
@@ -200,7 +208,11 @@ export default function MenuPage() {
           {placeholderItems.map((item, idx) => (
             <Box key={item.label}>
               <ListItemButton sx={{ mx: 1, borderRadius: 2, py: 1.25 }}>
-                <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>{item.icon}</ListItemIcon>
+                <ListItemIcon sx={{ minWidth: 44 }}>
+                  <Box sx={{ width: 32, height: 32, borderRadius: '9px', bgcolor: '#F5F6F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7A8699' }}>
+                    {item.icon}
+                  </Box>
+                </ListItemIcon>
                 <ListItemText
                   primary={item.label}
                   slotProps={{ primary: { style: { fontWeight: 500 } } }}
@@ -227,25 +239,29 @@ export default function MenuPage() {
       >
         <List sx={{ py: 1 }} disablePadding>
           <ListItemButton sx={{ mx: 1, borderRadius: 2, py: 1.25 }} onClick={handleLogout}>
-            <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
-              <LogoutIcon />
+            <ListItemIcon sx={{ minWidth: 44 }}>
+              <Box sx={{ width: 32, height: 32, borderRadius: '9px', bgcolor: '#FBEAE8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D94F3D' }}>
+                <LogoutIcon sx={{ fontSize: 18 }} />
+              </Box>
             </ListItemIcon>
             <ListItemText
               primary={t('menu.logout')}
-              slotProps={{ primary: { style: { fontWeight: 500 } } }}
+              slotProps={{ primary: { style: { fontWeight: 500, color: '#D94F3D' } } }}
             />
           </ListItemButton>
           <Divider sx={{ mx: 2, borderColor: 'divider' }} />
           <ListItemButton
-            sx={{ mx: 1, borderRadius: 2, py: 1.25, color: 'error.main' }}
+            sx={{ mx: 1, borderRadius: 2, py: 1.25 }}
             onClick={() => setResetOpen(true)}
           >
-            <ListItemIcon sx={{ minWidth: 40, color: 'error.main' }}>
-              <DeleteSweepIcon />
+            <ListItemIcon sx={{ minWidth: 44 }}>
+              <Box sx={{ width: 32, height: 32, borderRadius: '9px', bgcolor: '#FBEAE8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D94F3D' }}>
+                <DeleteSweepIcon sx={{ fontSize: 18 }} />
+              </Box>
             </ListItemIcon>
             <ListItemText
               primary={t('menu.resetAccount')}
-              slotProps={{ primary: { style: { fontWeight: 500 } } }}
+              slotProps={{ primary: { style: { fontWeight: 500, color: '#D94F3D' } } }}
             />
           </ListItemButton>
         </List>

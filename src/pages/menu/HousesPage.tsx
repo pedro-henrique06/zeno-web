@@ -306,16 +306,20 @@ export default function HousesPage() {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
         <IconButton onClick={() => navigate('/menu')}>
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h5" sx={{ fontWeight: 700, flex: 1 }}>
-          {t('houses.title')}
-        </Typography>
-        <IconButton onClick={openCreate} sx={{ bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-          <AddIcon />
-        </IconButton>
+        <Box sx={{ flex: 1 }}>
+          <Typography sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600, fontSize: '1.5rem', color: 'text.primary', lineHeight: 1.2 }}>
+            {t('houses.title')}
+          </Typography>
+          {(houses ?? []).length > 0 && (
+            <Typography sx={{ fontSize: '12px', color: 'text.disabled', mt: 0.25 }}>
+              {(houses ?? []).length} {(houses ?? []).length === 1 ? t('houses.activeGroup') : t('houses.activeGroups')}
+            </Typography>
+          )}
+        </Box>
       </Box>
 
       {(houses ?? []).length > 0 ? (
@@ -387,12 +391,51 @@ export default function HousesPage() {
               </Paper>
             );
           })}
+          {/* "+ Nova casa" dashed button */}
+          <Box
+            onClick={openCreate}
+            sx={{
+              border: '1.5px dashed',
+              borderColor: 'divider',
+              borderRadius: 3,
+              py: 1.75,
+              textAlign: 'center',
+              cursor: 'pointer',
+              color: 'text.disabled',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              '&:hover': { borderColor: 'primary.main', color: 'primary.main', bgcolor: 'rgba(27,61,107,0.03)' },
+              transition: 'all 0.15s',
+            }}
+          >
+            + {t('houses.newTitle')}
+          </Box>
         </Box>
       ) : (
-        <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
-          <HomeWorkIcon sx={{ fontSize: 64, mb: 2, opacity: 0.4 }} />
-          <Typography variant="h6">{t('houses.emptyTitle')}</Typography>
-          <Typography variant="body2">{t('houses.emptySubtitle')}</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
+            <HomeWorkIcon sx={{ fontSize: 56, mb: 1.5, opacity: 0.3 }} />
+            <Typography variant="h6" sx={{ mb: 0.5 }}>{t('houses.emptyTitle')}</Typography>
+            <Typography variant="body2">{t('houses.emptySubtitle')}</Typography>
+          </Box>
+          <Box
+            onClick={openCreate}
+            sx={{
+              border: '1.5px dashed',
+              borderColor: 'divider',
+              borderRadius: 3,
+              py: 1.75,
+              textAlign: 'center',
+              cursor: 'pointer',
+              color: 'text.disabled',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              '&:hover': { borderColor: 'primary.main', color: 'primary.main', bgcolor: 'rgba(27,61,107,0.03)' },
+              transition: 'all 0.15s',
+            }}
+          >
+            + {t('houses.newTitle')}
+          </Box>
         </Box>
       )}
 
