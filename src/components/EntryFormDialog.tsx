@@ -2,6 +2,11 @@ import { useState, type ChangeEvent } from 'react';
 import dayjs from 'dayjs';
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   FormControl,
   FormControlLabel,
   InputAdornment,
@@ -12,7 +17,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useCreateEntry, useUpdateEntry } from '@/hooks/useEntries';
+import { useCreateEntry, useUpdateEntry, useDeleteEntry } from '@/hooks/useEntries';
 import { useTags } from '@/hooks/useTags';
 import { useProfile } from '@/hooks/useUser';
 import type { CreateEntryRequest, Entry, EntryKind, UpdateEntryRequest } from '@/types';
@@ -59,8 +64,11 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
   });
   const [valueCents, setValueCents] = useState(Math.round((entry?.value ?? 0) * 100));
 
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+
   const createMutation = useCreateEntry();
   const updateMutation = useUpdateEntry();
+  const deleteMutation = useDeleteEntry();
   const { data: tags } = useTags();
   const isEditing = !!entry;
 
@@ -114,6 +122,16 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
       title={isEditing ? t('entryForm.editTitle') : t('entryForm.newTitle')}
       actions={
         <>
+          {isEditing && (
+            <Button
+              onClick={() => setConfirmDeleteOpen(true)}
+              color="error"
+              disabled={deleteMutation.isPending}
+              sx={{ mr: 'auto' }}
+            >
+              {t('entryForm.delete')}
+            </Button>
+          )}
           <Button onClick={handleClose}>{t('common.cancel')}</Button>
           <Button
             onClick={handleSubmit}
@@ -232,6 +250,37 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
         value={form.description}
         onChange={(e) => setForm({ ...form, description: e.target.value })}
       />
+
+      <Dialog open={confirmDeleteOpen} onClose={() => setConfirmDeleteOpen(false)}>
+        <DialogTitle>{t('entryForm.deleteConfirmTitle')}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {form.isRecurring
+              ? t('entryForm.deleteRecurringMessage')
+              : t('entryForm.deleteConfirmMessage')}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteOpen(false)}>{t('common.cancel')}</Button>
+          <Button
+            color="error"
+            variant="contained"
+            disabled={deleteMutation.isPending}
+            onClick={() => {
+              if (entry) {
+                deleteMutation.mutate(entry.id, {
+                  onSuccess: () => {
+                    setConfirmDeleteOpen(false);
+                    onClose();
+                  },
+                });
+              }
+            }}
+          >
+            {t('entryForm.delete')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ResponsiveFormDialog>
   );
 }

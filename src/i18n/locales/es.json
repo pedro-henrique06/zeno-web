@@ -156,7 +156,11 @@
     "recurring": "Repetir cada mes",
     "hasRecurrenceEndDate": "¿Tiene fecha de finalización?",
     "recurrenceEndDate": "Finalizar recurrencia el",
-    "description": "Descripción"
+    "description": "Descripción",
+    "delete": "Eliminar",
+    "deleteConfirmTitle": "Eliminar movimiento",
+    "deleteConfirmMessage": "¿Está seguro de que desea eliminar este movimiento? Esta acción no se puede deshacer.",
+    "deleteRecurringMessage": "Este es un movimiento recurrente. Al eliminarlo, se eliminarán permanentemente todas las ocurrencias (pasadas y futuras)."
   },
   "monthlyExpenseCategory": {
     "descriptionPlaceholder": "Descripción",
