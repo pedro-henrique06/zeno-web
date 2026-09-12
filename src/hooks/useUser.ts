@@ -28,6 +28,7 @@ export function useUpdateDailyBudget() {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['summary'] });
       queryClient.invalidateQueries({ queryKey: ['balances'] });
+      queryClient.invalidateQueries({ queryKey: ['balances-horizon'] });
     },
   });
 }
