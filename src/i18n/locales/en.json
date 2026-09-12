@@ -133,9 +133,7 @@
     "monthBalance": "Month balance",
     "savedHint": "of total income",
     "costOfLivingHint": "spending to live",
-    "dailyAverageHint": "average per day",
-    "lastSixMonths": "Last 6 months",
-    "byCategory": "By category"
+    "dailyAverageHint": "average per day"
   },
   "entries": {
     "title": "Entries",
