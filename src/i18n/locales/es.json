@@ -133,9 +133,7 @@
     "monthBalance": "Saldo del mes",
     "savedHint": "del total de ingresos",
     "costOfLivingHint": "gastos para vivir",
-    "dailyAverageHint": "promedio por día",
-    "lastSixMonths": "Últimos 6 meses",
-    "byCategory": "Por categoría"
+    "dailyAverageHint": "promedio por día"
   },
   "entries": {
     "title": "Movimientos",
