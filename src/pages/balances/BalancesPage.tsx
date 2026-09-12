@@ -204,27 +204,26 @@ function BalanceHeader({
   const decPart = parts[1];
 
   return (
-    <Box sx={{ pb: 1.5 }}>
-      <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.8px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
+    <Box sx={{ pb: 1 }}>
+      <Typography sx={{ fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', textTransform: 'uppercase', color: 'text.secondary', mb: 0.5 }}>
         {t('balances.currentBalance')}
       </Typography>
       <Typography
         sx={{
           fontFamily: '"Fraunces", serif',
-          fontSize: '2.6rem',
-          fontWeight: 300,
-          fontStyle: 'italic',
+          fontSize: '2.4rem',
+          fontWeight: 700,
           letterSpacing: '-2px',
           lineHeight: 1,
-          color: isNegative ? '#E86B52' : 'text.primary',
+          color: isNegative ? 'rgba(232,107,82,0.35)' : 'rgba(0,0,0,0.13)',
           fontVariantNumeric: 'tabular-nums',
-          opacity: 0.9,
+          mb: 0.75,
         }}
       >
         {isNegative ? '−' : ''}
         {intPart}
         {decPart && (
-          <span style={{ fontSize: '1.5rem', opacity: 0.45 }}>,{decPart}</span>
+          <span style={{ fontSize: '1.4rem', opacity: 0.7 }}>,{decPart}</span>
         )}
       </Typography>
     </Box>

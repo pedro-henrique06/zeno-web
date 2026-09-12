@@ -309,11 +309,10 @@ export default function HousesPage() {
             fontFamily: '"Fraunces", serif',
             fontWeight: 300,
             fontStyle: 'italic',
-            fontSize: '1.6rem',
-            color: 'text.primary',
-            lineHeight: 1.2,
-            letterSpacing: '-0.5px',
-            opacity: 0.85,
+            fontSize: '2rem',
+            color: 'rgba(0,0,0,0.15)',
+            lineHeight: 1,
+            letterSpacing: '-1px',
           }}>
             {t('houses.title')}
           </Typography>
