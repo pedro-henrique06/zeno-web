@@ -93,7 +93,7 @@ export default function MenuPage() {
           fontWeight: 300,
           fontStyle: 'italic',
           fontSize: '1.2rem',
-          color: 'rgba(0,0,0,0.25)',
+          color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)',
           lineHeight: 1.1,
           mb: 0.25,
         }} noWrap>

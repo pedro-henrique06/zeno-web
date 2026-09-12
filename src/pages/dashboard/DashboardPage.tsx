@@ -219,7 +219,7 @@ export default function DashboardPage() {
             fontSize: '2rem',
             fontWeight: 300,
             fontStyle: 'italic',
-            color: 'rgba(0,0,0,0.15)',
+            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.15)',
             lineHeight: 1,
             letterSpacing: '-1px',
           }}

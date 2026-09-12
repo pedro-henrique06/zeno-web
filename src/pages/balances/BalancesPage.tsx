@@ -215,7 +215,9 @@ function BalanceHeader({
           fontWeight: 700,
           letterSpacing: '-2px',
           lineHeight: 1,
-          color: isNegative ? 'rgba(232,107,82,0.35)' : 'rgba(0,0,0,0.13)',
+          color: isNegative
+            ? 'rgba(232,107,82,0.35)'
+            : (theme: Theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.13)',
           fontVariantNumeric: 'tabular-nums',
           mb: 0.75,
         }}
