@@ -66,7 +66,7 @@ function EntryCard({
 }) {
   const credit = isCredit(entry.kind);
   const today = dayjs().startOf('day');
-  const isFuture = dayjs(entry.date).startOf('day').isAfter(today);
+  const isFuture = dayjs(entry.date.substring(0, 10)).isAfter(today);
 
   return (
     <Box
@@ -230,7 +230,7 @@ export default function EntriesPage() {
 
   const entries = (data?.items ?? []).filter((entry) => activeKinds.includes(entry.kind));
   const focusEntryId = focusDate
-    ? entries.find((entry) => dayjs(entry.date).format('YYYY-MM-DD') === focusDate)?.id
+    ? entries.find((entry) => entry.date.substring(0, 10) === focusDate)?.id
     : undefined;
 
   const openEdit = (entry: Entry) => {
@@ -340,7 +340,7 @@ export default function EntriesPage() {
                     const credit = isCredit(entry.kind);
                     const tagName = entry.tagId ? tagNameById.get(entry.tagId) : undefined;
                     const today = dayjs().startOf('day');
-                    const isFuture = dayjs(entry.date).startOf('day').isAfter(today);
+                    const isFuture = dayjs(entry.date.substring(0, 10)).isAfter(today);
                     return (
                       <TableRow
                         key={entry.id}
