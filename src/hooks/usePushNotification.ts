@@ -16,6 +16,7 @@ export function usePushNotification() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const isSupported =
     typeof window !== 'undefined' &&
@@ -38,12 +39,32 @@ export function usePushNotification() {
   }, [isSupported]);
 
   const subscribe = useCallback(async () => {
-    if (!isSupported || !VAPID_PUBLIC_KEY) return;
+    setError(null);
+
+    if (!isSupported) {
+      setError('Notificações não suportadas neste navegador.');
+      return;
+    }
+
+    if (!VAPID_PUBLIC_KEY) {
+      setError('Configuração de notificações indisponível.');
+      return;
+    }
+
     setLoading(true);
     try {
       const perm = await Notification.requestPermission();
       setPermission(perm as NotificationPermission);
-      if (perm !== 'granted') return;
+
+      if (perm === 'denied') {
+        setError('Permissão de notificações negada. Habilite nas configurações do navegador.');
+        return;
+      }
+
+      if (perm !== 'granted') {
+        setError('Permissão de notificações não concedida.');
+        return;
+      }
 
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({
@@ -52,12 +73,17 @@ export function usePushNotification() {
       });
       await subscribePush(sub.toJSON());
       setSubscribed(true);
+    } catch (err) {
+      console.error('[usePushNotification] subscribe error:', err);
+      setError('Erro ao ativar notificações. Tente novamente.');
     } finally {
       setLoading(false);
     }
   }, [isSupported]);
 
   const unsubscribe = useCallback(async () => {
+    setError(null);
+
     if (!isSupported) return;
     setLoading(true);
     try {
@@ -68,10 +94,13 @@ export function usePushNotification() {
         await sub.unsubscribe();
       }
       setSubscribed(false);
+    } catch (err) {
+      console.error('[usePushNotification] unsubscribe error:', err);
+      setError('Erro ao desativar notificações. Tente novamente.');
     } finally {
       setLoading(false);
     }
   }, [isSupported]);
 
-  return { permission, subscribed, loading, isSupported, subscribe, unsubscribe };
+  return { permission, subscribed, loading, error, isSupported, subscribe, unsubscribe };
 }

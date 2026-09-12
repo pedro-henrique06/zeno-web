@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -16,6 +17,7 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  Snackbar,
   Switch,
   Typography,
 } from '@mui/material';
@@ -42,7 +44,7 @@ export default function SettingsPage() {
   const { t } = useTranslation();
   const { mode, toggleTheme } = useThemeContext();
   const logoutMutation = useLogout();
-  const { subscribed, loading, isSupported, permission, subscribe, unsubscribe } = usePushNotification();
+  const { subscribed, loading, error: pushError, isSupported, permission, subscribe, unsubscribe } = usePushNotification();
   const { data: profile } = useProfile();
 
   const today = dayjs();
@@ -50,6 +52,11 @@ export default function SettingsPage() {
   const createEntry = useCreateEntry();
 
   const [resetOpen, setResetOpen] = useState(false);
+  const [pushErrorMsg, setPushErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (pushError) setPushErrorMsg(pushError);
+  }, [pushError]);
 
   const todayBalance = balancesData?.days.find((d) => d.isToday)?.balance ?? 0;
   const currencySymbol = CURRENCY_SYMBOLS[profile?.currency ?? 'BRL'];
@@ -121,7 +128,7 @@ export default function SettingsPage() {
                 primary={t('settings.notifications')}
                 secondary={subscribed ? t('settings.notificationsOn') : t('settings.notificationsOff')}
               />
-              <Switch checked={subscribed} disabled={loading} />
+              <Switch checked={subscribed} disabled={loading} onClick={(e) => e.stopPropagation()} />
             </ListItemButton>
           )}
 
@@ -155,6 +162,17 @@ export default function SettingsPage() {
           </ListItemButton>
         </List>
       </Paper>
+
+      <Snackbar
+        open={!!pushErrorMsg}
+        autoHideDuration={5000}
+        onClose={() => setPushErrorMsg(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="error" variant="filled" onClose={() => setPushErrorMsg(null)} sx={{ width: '100%' }}>
+          {pushErrorMsg}
+        </Alert>
+      </Snackbar>
 
       <Dialog open={resetOpen} onClose={() => setResetOpen(false)}>
         <DialogTitle>{t('settings.resetBalanceTitle')}</DialogTitle>
