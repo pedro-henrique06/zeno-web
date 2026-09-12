@@ -17,16 +17,13 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Chip,
 } from '@mui/material';
-import { alpha, type Theme } from '@mui/material/styles';
+import { alpha, useTheme, type Theme } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 import InsightsIcon from '@mui/icons-material/Insights';
 import AppsIcon from '@mui/icons-material/Apps';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useTranslation } from 'react-i18next';
 import { useBalances } from '@/hooks/useBalances';
 import { useEntries } from '@/hooks/useEntries';
@@ -148,14 +145,14 @@ function StatsRow({
           key={s.label}
           sx={{
             flex: 1,
-            px: 1.25,
+            px: 1.5,
             py: 1.5,
-            borderRadius: 2.5,
-            bgcolor: '#1A2E50',
+            borderRadius: 3,
+            bgcolor: '#1B3152',
           }}
         >
           <Typography
-            sx={{ display: 'block', mb: 0.6, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.6px', color: 'rgba(255,255,255,0.5)' }}
+            sx={{ display: 'block', mb: 0.75, fontSize: '8.5px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.7px', color: 'rgba(255,255,255,0.45)' }}
           >
             {s.label}
           </Typography>
@@ -163,10 +160,10 @@ function StatsRow({
             sx={{
               fontFamily: '"Fraunces", serif',
               fontWeight: 700,
-              fontSize: '0.82rem',
+              fontSize: '0.9rem',
               color: s.color,
               fontVariantNumeric: 'tabular-nums',
-              lineHeight: 1.2,
+              lineHeight: 1,
             }}
           >
             {formatCurrency(s.value, currency, language)}
@@ -190,6 +187,7 @@ function BalanceHeader({
   language?: Language;
 }) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const todayDay = days.find((d) => d.isToday);
   const lastPastDay = [...days].reverse().find((d) => !d.isProjected);
@@ -201,51 +199,63 @@ function BalanceHeader({
   const intPart = parts[0] ?? formatted;
   const decPart = parts[1];
 
+  // Ghost color for positive balance — light blue-gray that matches the navy palette
+  const ghostColor = theme.palette.mode === 'dark'
+    ? 'rgba(255,255,255,0.18)'
+    : 'rgba(27,61,107,0.22)';
+  const balanceColor = isNegative ? '#D94F3D' : ghostColor;
+
   // Comparison vs previous month
   let pctChange: number | null = null;
   if (prevBalance !== null && prevBalance !== 0) {
     pctChange = ((currentBalance - prevBalance) / Math.abs(prevBalance)) * 100;
   }
+  const isUp = pctChange !== null && pctChange >= 0;
 
   return (
-    <Box sx={{ pb: 1.5 }}>
-      <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.8px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
+    <Box sx={{ pb: 1 }}>
+      <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.8px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.5 }}>
         {t('balances.currentBalance')}
       </Typography>
       <Typography
         sx={{
           fontFamily: '"Fraunces", serif',
-          fontSize: '2.6rem',
+          fontSize: '3.5rem',
           fontWeight: 700,
-          letterSpacing: '-2px',
+          letterSpacing: '-3px',
           lineHeight: 1,
-          color: isNegative ? '#D94F3D' : 'text.primary',
+          color: balanceColor,
           fontVariantNumeric: 'tabular-nums',
-          mb: 1,
+          mb: 0.75,
         }}
       >
         {isNegative ? '−' : ''}
         {intPart}
         {decPart && (
-          <span style={{ fontSize: '1.6rem', opacity: 0.4, letterSpacing: '-1px' }}>,{decPart}</span>
+          <span style={{ fontSize: '2rem', opacity: 0.45, letterSpacing: '-1.5px' }}>,{decPart}</span>
         )}
       </Typography>
 
       {pctChange !== null && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Chip
-            icon={pctChange >= 0 ? <TrendingUpIcon sx={{ fontSize: '14px !important' }} /> : <TrendingDownIcon sx={{ fontSize: '14px !important' }} />}
-            label={`${pctChange >= 0 ? '+' : ''}${pctChange.toFixed(0)}%`}
-            size="small"
+          <Box
             sx={{
-              bgcolor: pctChange >= 0 ? 'rgba(30,138,94,0.12)' : 'rgba(217,79,61,0.12)',
-              color: pctChange >= 0 ? '#1E8A5E' : '#D94F3D',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.4,
+              px: 1,
+              py: 0.4,
+              borderRadius: 999,
+              bgcolor: isUp ? 'rgba(30,138,94,0.12)' : 'rgba(217,79,61,0.12)',
+              color: isUp ? '#1E8A5E' : '#D94F3D',
               fontWeight: 700,
-              fontSize: '11px',
-              height: 22,
-              '& .MuiChip-icon': { color: 'inherit', ml: 0.5 },
+              fontSize: '12px',
+              lineHeight: 1,
             }}
-          />
+          >
+            <span style={{ fontSize: '13px' }}>{isUp ? '↑' : '↓'}</span>
+            {Math.abs(pctChange).toFixed(0)}%
+          </Box>
           <Typography sx={{ fontSize: '12px', color: 'text.disabled' }}>
             vs mês anterior
           </Typography>
