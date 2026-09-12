@@ -74,47 +74,35 @@ export default function MenuPage() {
 
   return (
     <Box>
-      {/* Dark navy profile card */}
-      <Paper
-        sx={{
-          p: 2.5,
-          borderRadius: 3,
-          mb: 1.5,
-          bgcolor: '#1B2D48',
-          boxShadow: 'none',
-          border: 'none',
-        }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar
-            sx={{
-              width: 54,
-              height: 54,
-              bgcolor: '#4A9FE0',
-              fontSize: 20,
-              fontFamily: '"Fraunces", serif',
-              fontWeight: 700,
-              letterSpacing: -0.5,
-              border: '2px solid rgba(255,255,255,0.15)',
-            }}
-          >
-            {initial}
-          </Avatar>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{
-              fontFamily: '"Fraunces", serif',
-              fontWeight: 600,
-              fontSize: '1.1rem',
-              color: '#FFFFFF',
-            }} noWrap>
-              {user?.name}
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.55)' }} noWrap>
-              {user?.email}
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
+      {/* Profile — avatar + ghost name (no card) */}
+      <Box sx={{ mb: 2 }}>
+        <Avatar
+          sx={{
+            width: 52,
+            height: 52,
+            bgcolor: '#4A9FE0',
+            fontSize: 18,
+            fontWeight: 700,
+            mb: 1,
+          }}
+        >
+          {initial}
+        </Avatar>
+        <Typography sx={{
+          fontFamily: '"Fraunces", serif',
+          fontWeight: 300,
+          fontStyle: 'italic',
+          fontSize: '1.2rem',
+          color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)',
+          lineHeight: 1.1,
+          mb: 0.25,
+        }} noWrap>
+          {user?.name}
+        </Typography>
+        <Typography sx={{ fontSize: '11px', color: 'text.secondary' }} noWrap>
+          {user?.email}
+        </Typography>
+      </Box>
 
       {/* Daily budget card — dark */}
       {profile?.dailyBudget != null && profile.dailyBudget > 0 && (

@@ -86,8 +86,8 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
     >
       <defs>
         <linearGradient id={gradPastId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4A9FE0" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="#4A9FE0" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#2DC579" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#2DC579" stopOpacity="0.02" />
         </linearGradient>
         <linearGradient id={gradFutureId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#5ECCC8" stopOpacity="0.18" />
@@ -115,12 +115,12 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
         <path d={areaPath(pastPts, zeroY)} fill={`url(#${gradPastId})`} />
       )}
 
-      {/* Past smooth line — blue */}
+      {/* Past smooth line — green */}
       {pastPts.length >= 2 && (
         <path
           d={smoothPath(pastPts)}
           fill="none"
-          stroke="#4A9FE0"
+          stroke="#2DC579"
           strokeWidth={2.5}
           strokeLinecap="round"
         />
@@ -150,7 +150,7 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
           y1={PY}
           x2={todayX.toFixed(2)}
           y2={H - PY}
-          stroke="rgba(74,159,224,0.4)"
+          stroke="rgba(45,197,121,0.4)"
           strokeWidth={1}
           strokeDasharray="3 3"
         />
@@ -162,7 +162,7 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
           x={(todayX + 4).toFixed(2)}
           y={(PY + 2).toFixed(2)}
           fontSize="9"
-          fill="rgba(74,159,224,0.8)"
+          fill="rgba(45,197,121,0.9)"
           fontFamily="DM Sans, sans-serif"
           fontWeight="700"
           letterSpacing=".06em"
@@ -174,8 +174,8 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
       {/* Today dot */}
       {todayX !== null && todayY !== null && (
         <>
-          <circle cx={todayX} cy={todayY} r={8} fill="rgba(74,159,224,0.18)" />
-          <circle cx={todayX} cy={todayY} r={4} fill="#4A9FE0" />
+          <circle cx={todayX} cy={todayY} r={8} fill="rgba(45,197,121,0.18)" />
+          <circle cx={todayX} cy={todayY} r={4} fill="#2DC579" />
         </>
       )}
     </svg>

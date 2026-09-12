@@ -48,12 +48,11 @@ function BigTile({
       <Typography
         sx={{
           fontFamily: '"Fraunces", serif',
-          fontSize: '1.6rem',
-          fontWeight: 300,
-          fontStyle: 'italic',
+          fontSize: '1.4rem',
+          fontWeight: 700,
           color,
           fontVariantNumeric: 'tabular-nums',
-          lineHeight: 1.1,
+          lineHeight: 1,
           letterSpacing: '-0.5px',
         }}
       >
@@ -217,13 +216,12 @@ export default function DashboardPage() {
         <Typography
           sx={{
             fontFamily: '"Fraunces", serif',
-            fontSize: '1.6rem',
+            fontSize: '2rem',
             fontWeight: 300,
             fontStyle: 'italic',
-            color: 'text.primary',
-            lineHeight: 1.2,
-            letterSpacing: '-0.5px',
-            opacity: 0.85,
+            color: (theme) => theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.15)',
+            lineHeight: 1,
+            letterSpacing: '-1px',
           }}
         >
           {t('dashboard.title')}
