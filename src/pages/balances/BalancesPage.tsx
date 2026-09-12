@@ -17,6 +17,7 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Chip,
 } from '@mui/material';
 import { alpha, type Theme } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -24,6 +25,8 @@ import CallReceivedIcon from '@mui/icons-material/CallReceived';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 import InsightsIcon from '@mui/icons-material/Insights';
 import AppsIcon from '@mui/icons-material/Apps';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useTranslation } from 'react-i18next';
 import { useBalances } from '@/hooks/useBalances';
 import { useEntries } from '@/hooks/useEntries';
@@ -117,7 +120,7 @@ function dayRowSx(day: BalanceDay) {
       : {};
 }
 
-/** Three summary chips shown above the day list */
+/** Three summary chips shown in dark navy style */
 function StatsRow({
   days,
   currency,
@@ -146,15 +149,13 @@ function StatsRow({
           sx={{
             flex: 1,
             px: 1.25,
-            py: 1.25,
+            py: 1.5,
             borderRadius: 2.5,
-            bgcolor: 'background.paper',
-            border: '1px solid',
-            borderColor: 'divider',
+            bgcolor: '#1A2E50',
           }}
         >
           <Typography
-            sx={{ display: 'block', mb: 0.6, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.6px', color: 'text.disabled' }}
+            sx={{ display: 'block', mb: 0.6, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.6px', color: 'rgba(255,255,255,0.5)' }}
           >
             {s.label}
           </Typography>
@@ -162,7 +163,7 @@ function StatsRow({
             sx={{
               fontFamily: '"Fraunces", serif',
               fontWeight: 700,
-              fontSize: '0.85rem',
+              fontSize: '0.82rem',
               color: s.color,
               fontVariantNumeric: 'tabular-nums',
               lineHeight: 1.2,
@@ -176,53 +177,80 @@ function StatsRow({
   );
 }
 
-/** Today's balance big display */
+/** Today's balance big display with optional comparison badge */
 function BalanceHeader({
   days,
+  prevBalance,
   currency,
   language,
 }: {
   days: BalanceDay[];
+  prevBalance: number | null;
   currency?: Currency;
   language?: Language;
 }) {
   const { t } = useTranslation();
 
-  // Find today's balance (last non-projected day, or first day)
   const todayDay = days.find((d) => d.isToday);
   const lastPastDay = [...days].reverse().find((d) => !d.isProjected);
   const currentBalance = (todayDay ?? lastPastDay ?? days[0])?.balance ?? 0;
 
-  const formatted = formatCurrency(Math.abs(currentBalance), currency, language);
   const isNegative = currentBalance < 0;
-
-  // Split integer and decimal parts for styling
+  const formatted = formatCurrency(Math.abs(currentBalance), currency, language);
   const parts = formatted.split(',');
   const intPart = parts[0] ?? formatted;
   const decPart = parts[1];
 
+  // Comparison vs previous month
+  let pctChange: number | null = null;
+  if (prevBalance !== null && prevBalance !== 0) {
+    pctChange = ((currentBalance - prevBalance) / Math.abs(prevBalance)) * 100;
+  }
+
   return (
-    <Box sx={{ pb: 1 }}>
+    <Box sx={{ pb: 1.5 }}>
       <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.8px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
         {t('balances.currentBalance')}
       </Typography>
       <Typography
         sx={{
           fontFamily: '"Fraunces", serif',
-          fontSize: '2.2rem',
+          fontSize: '2.6rem',
           fontWeight: 700,
-          letterSpacing: '-1.5px',
+          letterSpacing: '-2px',
           lineHeight: 1,
           color: isNegative ? '#D94F3D' : 'text.primary',
           fontVariantNumeric: 'tabular-nums',
+          mb: 1,
         }}
       >
         {isNegative ? '−' : ''}
         {intPart}
         {decPart && (
-          <span style={{ fontSize: '1.4rem', opacity: 0.55 }}>,{decPart}</span>
+          <span style={{ fontSize: '1.6rem', opacity: 0.4, letterSpacing: '-1px' }}>,{decPart}</span>
         )}
       </Typography>
+
+      {pctChange !== null && (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Chip
+            icon={pctChange >= 0 ? <TrendingUpIcon sx={{ fontSize: '14px !important' }} /> : <TrendingDownIcon sx={{ fontSize: '14px !important' }} />}
+            label={`${pctChange >= 0 ? '+' : ''}${pctChange.toFixed(0)}%`}
+            size="small"
+            sx={{
+              bgcolor: pctChange >= 0 ? 'rgba(30,138,94,0.12)' : 'rgba(217,79,61,0.12)',
+              color: pctChange >= 0 ? '#1E8A5E' : '#D94F3D',
+              fontWeight: 700,
+              fontSize: '11px',
+              height: 22,
+              '& .MuiChip-icon': { color: 'inherit', ml: 0.5 },
+            }}
+          />
+          <Typography sx={{ fontSize: '12px', color: 'text.disabled' }}>
+            vs mês anterior
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 }
@@ -233,11 +261,11 @@ function UpcomingDot({ kind }: { kind: EntryKind }) {
   return (
     <Box
       sx={{
-        width: 8,
-        height: 8,
+        width: 9,
+        height: 9,
         borderRadius: '50%',
         flexShrink: 0,
-        border: `2px solid ${color}`,
+        border: `2.5px solid ${color}`,
       }}
     />
   );
@@ -253,7 +281,6 @@ function UpcomingEntries({
   currency?: Currency;
   language?: Language;
 }) {
-  const { t } = useTranslation();
   const today = dayjs().startOf('day');
   const upcoming = entries
     .filter((e) => dayjs(e.date).startOf('day').isAfter(today))
@@ -263,46 +290,55 @@ function UpcomingEntries({
   if (upcoming.length === 0) return null;
 
   return (
-    <Paper sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: 'none', mb: 1.5, overflow: 'hidden' }}>
-      <Typography sx={{ px: 2, pt: 1.5, pb: 0.5, fontSize: '10px', fontWeight: 700, letterSpacing: '.7px', textTransform: 'uppercase', color: 'text.disabled' }}>
-        {t('balances.upcoming')}
+    <Box sx={{ mb: 2 }}>
+      <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.7px', textTransform: 'uppercase', color: 'text.disabled', mb: 1.25 }}>
+        Próximos lançamentos
       </Typography>
-      {upcoming.map((entry, i) => {
-        const credit = isCredit(entry.kind);
-        const diff = dayjs(entry.date).startOf('day').diff(today, 'day');
-        const dayLabel = dayjs(entry.date).format('DD MMM').toLowerCase();
-        return (
-          <Box
-            key={entry.id}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.25,
-              px: 2,
-              py: 1.25,
-              borderTop: i > 0 ? '1px solid' : 'none',
-              borderColor: 'divider',
-            }}
-          >
-            <UpcomingDot kind={entry.kind} />
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography sx={{ fontWeight: 500, fontSize: '0.84rem', color: 'text.primary' }} noWrap>
-                {entry.title}
-              </Typography>
-              <Typography sx={{ fontSize: '11px', color: 'text.disabled', mt: '1px' }}>
-                em {diff} dia{diff !== 1 ? 's' : ''} · {dayLabel}
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        {upcoming.map((entry, i) => {
+          const credit = isCredit(entry.kind);
+          const diff = dayjs(entry.date).startOf('day').diff(today, 'day');
+          const dayLabel = dayjs(entry.date).format('DD MMM').toLowerCase();
+          return (
+            <Box
+              key={entry.id}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                py: 1.25,
+                borderTop: i > 0 ? '1px solid' : 'none',
+                borderColor: 'divider',
+              }}
+            >
+              <UpcomingDot kind={entry.kind} />
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                  sx={{ fontWeight: 500, fontSize: '0.875rem', color: 'text.secondary' }}
+                  noWrap
+                >
+                  {entry.title}
+                </Typography>
+                <Typography sx={{ fontSize: '11px', color: 'text.disabled', mt: '1px' }}>
+                  em {diff} dia{diff !== 1 ? 's' : ''} · {dayLabel}
+                </Typography>
+              </Box>
+              <Typography
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  fontVariantNumeric: 'tabular-nums',
+                  flexShrink: 0,
+                  color: credit ? '#1E8A5E' : '#D94F3D',
+                }}
+              >
+                {credit ? '+' : '−'}{formatCurrency(entry.value, currency, language)}
               </Typography>
             </Box>
-            <Typography
-              sx={{ fontWeight: 700, fontSize: '0.84rem', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}
-              color={credit ? 'success.main' : 'error.main'}
-            >
-              {credit ? '+' : '−'}{formatCurrency(entry.value, currency, language)}
-            </Typography>
-          </Box>
-        );
-      })}
-    </Paper>
+          );
+        })}
+      </Box>
+    </Box>
   );
 }
 
@@ -324,6 +360,11 @@ export default function BalancesPage() {
 
   const { data, isLoading, isError } = useBalances(month, year);
   const { data: entriesData } = useEntries(month, year);
+
+  // Previous month for comparison badge
+  const prevMonth = month === 1 ? 12 : month - 1;
+  const prevYear = month === 1 ? year - 1 : year;
+  const { data: prevData } = useBalances(prevMonth, prevYear);
 
   useEffect(() => {
     if (hasScrolledToTodayRef.current) return;
@@ -375,6 +416,12 @@ export default function BalancesPage() {
   const days = data?.days ?? [];
   const entries = entriesData?.items ?? [];
 
+  // Previous month's last balance
+  const prevDays = prevData?.days ?? [];
+  const prevLastBalance = prevDays.length > 0
+    ? (prevDays[prevDays.length - 1]?.balance ?? null)
+    : null;
+
   const dayDateString = (day: BalanceDay) => dayjs(new Date(year, month - 1, day.day)).format('YYYY-MM-DD');
 
   const goToEntriesForDay = (day: BalanceDay) => {
@@ -401,26 +448,19 @@ export default function BalancesPage() {
 
       {/* Current balance header */}
       {days.length > 0 && (
-        <BalanceHeader days={days} currency={profile?.currency} language={profile?.language} />
+        <BalanceHeader
+          days={days}
+          prevBalance={prevLastBalance}
+          currency={profile?.currency}
+          language={profile?.language}
+        />
       )}
 
-      {/* Balance trend chart */}
+      {/* Balance trend chart — borderless */}
       {days.length > 1 && (
-        <Paper
-          sx={{
-            borderRadius: 3,
-            mb: 1.5,
-            overflow: 'hidden',
-            border: '1px solid',
-            borderColor: 'divider',
-            boxShadow: 'none',
-            px: 0.5,
-            pt: 0.5,
-            pb: 0,
-          }}
-        >
+        <Box sx={{ mx: -0.5, mb: 1.5 }}>
           <BalanceChart days={days} height={90} />
-        </Paper>
+        </Box>
       )}
 
       {/* Stats chips */}
@@ -433,6 +473,7 @@ export default function BalancesPage() {
         <UpcomingEntries entries={entries} currency={profile?.currency} language={profile?.language} />
       )}
 
+      {/* Day-by-day table */}
       <TableContainer
         component={Paper}
         sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}
