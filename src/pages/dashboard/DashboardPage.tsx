@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Box, Typography, Paper, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -170,7 +170,7 @@ function MonthlyBarChart({
         tickLabelStyle: { fontSize: 10, fill: axisColor, fontFamily: 'DM Sans, sans-serif' },
       }]}
       yAxis={[{ disableLine: true, disableTicks: true, tickLabelStyle: { fill: 'transparent' } }]}
-      slotProps={{ legend: { hidden: true } }}
+      slots={{ legend: () => null }}
       margin={{ top: 8, right: 4, bottom: 28, left: 4 }}
       borderRadius={4}
       sx={{
