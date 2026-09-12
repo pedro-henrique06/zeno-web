@@ -128,7 +128,7 @@ export default function SettingsPage() {
                 primary={t('settings.notifications')}
                 secondary={subscribed ? t('settings.notificationsOn') : t('settings.notificationsOff')}
               />
-              <Switch checked={subscribed} disabled={loading} onClick={(e) => e.stopPropagation()} />
+              <Switch checked={subscribed} disabled={loading} onChange={handleNotificationToggle} onClick={(e) => e.stopPropagation()} />
             </ListItemButton>
           )}
 
