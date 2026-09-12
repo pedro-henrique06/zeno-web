@@ -365,7 +365,7 @@ export default function BalancesPage() {
           <BalanceHeader days={days} currency={profile?.currency} language={profile?.language} />
           {days.length > 1 && (
             <Box sx={{ mb: 1.5 }}>
-              <BalanceChart days={days} height={80} />
+              <BalanceChart days={days} height={160} />
             </Box>
           )}
           <StatsRow days={days} currency={profile?.currency} language={profile?.language} />
