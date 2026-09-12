@@ -1,54 +1,61 @@
 import ReactApexChart from 'react-apexcharts';
 import { useTheme } from '@mui/material';
 import type { ApexOptions } from 'apexcharts';
-import type { BalanceDay } from '@/types';
 
-interface BalanceChartProps {
-  days: BalanceDay[];
-  height?: number;
+export interface ChartPoint {
+  x: number; // timestamp ms
+  y: number;
 }
 
-export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
+interface BalanceChartProps {
+  past: ChartPoint[];
+  future: ChartPoint[];
+  todayX?: number | null;
+  todayY?: number | null;
+  height?: number;
+  currency?: string;
+}
+
+function fmtY(val: number, currency?: string): string {
+  const abs = Math.abs(val);
+  const sign = val < 0 ? '-' : '';
+  const sym = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : 'R$';
+  if (abs >= 1_000_000) return `${sign}${sym}${(abs / 1_000_000).toFixed(1)}M`;
+  if (abs >= 1_000)     return `${sign}${sym}${(abs / 1_000).toFixed(abs >= 100_000 ? 0 : 1)}k`;
+  return `${sign}${sym}${abs.toFixed(0)}`;
+}
+
+export function BalanceChart({
+  past,
+  future,
+  todayX,
+  todayY,
+  height = 160,
+  currency,
+}: BalanceChartProps) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
-  if (days.length < 2) return null;
+  if (past.length < 2) return null;
 
-  /* ── split past / future ── */
-  const todayI = days.findIndex((d) => d.isToday);
-  const firstFutureI = days.findIndex((d) => d.isProjected);
-  const splitI =
-    todayI >= 0
-      ? todayI
-      : firstFutureI > 0
-        ? firstFutureI - 1
-        : days.length - 1;
+  const hasFuture = future.length > 1;
 
-  const hasFuture = splitI < days.length - 1;
-
-  const pastData  = days.slice(0, splitI + 1).map((d) => ({ x: d.day, y: d.balance }));
-  const futureData = hasFuture ? days.slice(splitI).map((d) => ({ x: d.day, y: d.balance })) : [];
-
-  const todayDay     = todayI >= 0 ? days[todayI].day     : null;
-  const todayBalance = todayI >= 0 ? days[todayI].balance : null;
-
-  /* ── series ── */
   const series = hasFuture
     ? [
-        { name: 'Realizado', data: pastData },
-        { name: 'Projetado', data: futureData },
+        { name: 'Realizado', data: past },
+        { name: 'Projetado', data: future },
       ]
-    : [{ name: 'Realizado', data: pastData }];
+    : [{ name: 'Realizado', data: past }];
 
-  /* ── options ── */
-  const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+  const labelColor = isDark ? 'rgba(255,255,255,0.38)' : 'rgba(0,0,0,0.38)';
+  const gridColor  = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
 
   const options: ApexOptions = {
     chart: {
       type: 'area',
       height,
-      toolbar: { show: false },
-      zoom: { enabled: false },
+      toolbar:    { show: false },
+      zoom:       { enabled: false },
       background: 'transparent',
       fontFamily: '"DM Sans", sans-serif',
       animations: { enabled: true, speed: 700, easing: 'easeout' },
@@ -66,36 +73,51 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
     },
     stroke: {
       curve: 'smooth',
-      width: hasFuture ? [2.5, 2] : [2.5],
-      dashArray: hasFuture ? [0, 6] : [0],
+      width:     hasFuture ? [2.5, 2] : [2.5],
+      dashArray: hasFuture ? [0, 6]   : [0],
     },
     xaxis: {
-      type: 'numeric',
-      labels:      { show: false },
-      axisBorder:  { show: false },
-      axisTicks:   { show: false },
-      tooltip:     { enabled: false },
+      type: 'datetime',
+      labels: {
+        show: true,
+        datetimeUTC: false,
+        format: 'MMM',
+        style: { colors: labelColor, fontSize: '9px', fontFamily: '"DM Sans", sans-serif' },
+      },
+      axisBorder: { show: false },
+      axisTicks:  { show: false },
+      tooltip:    { enabled: false },
     },
-    yaxis: { labels: { show: false } },
+    yaxis: {
+      labels: {
+        show: true,
+        formatter: (val: number) => fmtY(val, currency),
+        style: { colors: labelColor, fontSize: '9px', fontFamily: '"DM Sans", sans-serif' },
+        offsetX: -4,
+      },
+    },
     grid: {
       borderColor: gridColor,
-      padding: { left: 0, right: 0, top: -10, bottom: -8 },
+      padding: { left: 0, right: 6, top: -8, bottom: -4 },
     },
     dataLabels: { enabled: false },
     markers:    { size: 0 },
     legend:     { show: false },
     tooltip: {
       theme: isDark ? 'dark' : 'light',
-      x: { formatter: (v: number) => `Dia ${Math.round(v)}` },
+      x: { format: 'dd MMM' },
       y: {
         formatter: (v: number) =>
-          `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          v.toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: currency === 'USD' ? 'USD' : currency === 'EUR' ? 'EUR' : 'BRL',
+          }),
       },
     },
     annotations: {
-      xaxis: todayDay != null
+      xaxis: todayX != null
         ? [{
-            x: todayDay,
+            x: todayX,
             borderColor: 'rgba(45,197,121,0.4)',
             strokeDashArray: 4,
             label: {
@@ -112,10 +134,10 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
             },
           }]
         : [],
-      points: todayDay != null && todayBalance != null
+      points: todayX != null && todayY != null
         ? [{
-            x: todayDay,
-            y: todayBalance,
+            x: todayX,
+            y: todayY,
             marker: {
               size: 5,
               fillColor: '#2DC579',

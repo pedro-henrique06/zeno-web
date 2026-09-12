@@ -1,16 +1,16 @@
-import { useRef, useState, type TouchEvent } from 'react';
+import { useRef, useState, useMemo, type TouchEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useBalances } from '@/hooks/useBalances';
+import { useBalances, useBalancesHorizon } from '@/hooks/useBalances';
 import { useEntries } from '@/hooks/useEntries';
 import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import type { BalanceDay, Entry } from '@/types';
 import { isCredit } from '@/utils/entryKind';
-import { BalanceChart } from '@/components/BalanceChart';
+import { BalanceChart, type ChartPoint } from '@/components/BalanceChart';
 
 const SWIPE_THRESHOLD = 60;
 
@@ -311,6 +311,36 @@ export default function BalancesPage() {
   const { data: profile } = useProfile();
   const { data, isLoading, isError } = useBalances(month, year);
   const { data: entriesData } = useEntries(month, year);
+  const { data: horizonData } = useBalancesHorizon(year, true);
+
+  // Build full-year chart series from horizon data
+  const { chartPast, chartFuture, todayX, todayY } = useMemo(() => {
+    const past: ChartPoint[]   = [];
+    const future: ChartPoint[] = [];
+    let todayX: number | null  = null;
+    let todayY: number | null  = null;
+    let bridged                = false;
+
+    if (horizonData) {
+      horizonData.months.forEach((m) => {
+        m.days.forEach((d) => {
+          const ts = new Date(m.year, m.month - 1, d.day).getTime();
+          if (d.isToday) { todayX = ts; todayY = d.balance; }
+          if (!d.isProjected) {
+            past.push({ x: ts, y: d.balance });
+          } else {
+            if (!bridged && past.length > 0) {
+              future.push(past[past.length - 1]); // bridge
+              bridged = true;
+            }
+            future.push({ x: ts, y: d.balance });
+          }
+        });
+      });
+    }
+
+    return { chartPast: past, chartFuture: future, todayX, todayY };
+  }, [horizonData]);
 
   const shiftMonth = (delta: number) => {
     const next = new Date(year, month - 1 + delta, 1);
@@ -363,9 +393,16 @@ export default function BalancesPage() {
       {days.length > 0 && (
         <>
           <BalanceHeader days={days} currency={profile?.currency} language={profile?.language} />
-          {days.length > 1 && (
+          {chartPast.length > 1 && (
             <Box sx={{ mb: 1.5 }}>
-              <BalanceChart days={days} height={160} />
+              <BalanceChart
+                past={chartPast}
+                future={chartFuture}
+                todayX={todayX}
+                todayY={todayY}
+                height={180}
+                currency={profile?.currency}
+              />
             </Box>
           )}
           <StatsRow days={days} currency={profile?.currency} language={profile?.language} />
