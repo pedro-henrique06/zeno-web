@@ -105,7 +105,7 @@ export default function SettingsPage() {
           <ListItemButton onClick={toggleTheme} sx={{ mx: 1, borderRadius: 2 }}>
             <ListItemIcon>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
             <ListItemText primary={mode === 'dark' ? t('settings.lightMode') : t('settings.darkMode')} />
-            <Switch checked={mode === 'dark'} onChange={toggleTheme} />
+            <Switch checked={mode === 'dark'} onChange={toggleTheme} onClick={(e) => e.stopPropagation()} />
           </ListItemButton>
 
           {isSupported && permission !== 'denied' && (
