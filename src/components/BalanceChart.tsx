@@ -38,7 +38,6 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
   const PX = 6;
   const PY = 14;
 
-  // Position X by actual day number (day 1..maxDay)
   const maxDay = Math.max(...days.map((d) => d.day));
   const xOfDay = (day: number) =>
     PX + ((day - 1) / Math.max(maxDay - 1, 1)) * (W - PX * 2);
@@ -46,7 +45,6 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
   const vals = days.map((d) => d.balance);
   const rawMin = Math.min(...vals, 0);
   const rawMax = Math.max(...vals, 0);
-  // Add vertical padding so the line never touches the edge
   const vPad = Math.max((rawMax - rawMin) * 0.15, 200);
   const minV = rawMin - vPad;
   const maxV = rawMax + vPad;
@@ -55,12 +53,10 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
   const yOf = (v: number) => H - PY - ((v - minV) / range) * (H - PY * 2);
   const zeroY = yOf(0);
 
-  // Horizontal grid lines at 25%, 50%, 75% of drawing area
   const gridY1 = PY + (H - PY * 2) * 0.25;
   const gridY2 = PY + (H - PY * 2) * 0.50;
   const gridY3 = PY + (H - PY * 2) * 0.75;
 
-  // Split at today (inclusive) / first projected
   const todayI = days.findIndex((d) => d.isToday);
   const firstFutureI = days.findIndex((d) => d.isProjected);
   const splitI =
@@ -79,8 +75,8 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
   const todayX = todayI >= 0 ? xOfDay(days[todayI].day) : null;
   const todayY = todayI >= 0 ? yOf(days[todayI].balance) : null;
 
-  const gradPastId = 'zc-grad-past';
-  const gradFutureId = 'zc-grad-future';
+  const gradPastId = 'zc-grad-past-v2';
+  const gradFutureId = 'zc-grad-future-v2';
 
   return (
     <svg
@@ -90,19 +86,19 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
     >
       <defs>
         <linearGradient id={gradPastId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1E8A5E" stopOpacity="0.22" />
-          <stop offset="100%" stopColor="#1E8A5E" stopOpacity="0.02" />
+          <stop offset="0%" stopColor="#4A9FE0" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#4A9FE0" stopOpacity="0.02" />
         </linearGradient>
         <linearGradient id={gradFutureId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#0CB89E" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#0CB89E" stopOpacity="0.01" />
+          <stop offset="0%" stopColor="#5ECCC8" stopOpacity="0.18" />
+          <stop offset="100%" stopColor="#5ECCC8" stopOpacity="0.01" />
         </linearGradient>
       </defs>
 
       {/* Horizontal grid lines */}
-      <line x1={PX} y1={gridY1.toFixed(2)} x2={W - PX} y2={gridY1.toFixed(2)} stroke="#E8EBF0" strokeWidth={1} />
-      <line x1={PX} y1={gridY2.toFixed(2)} x2={W - PX} y2={gridY2.toFixed(2)} stroke="#E8EBF0" strokeWidth={1} />
-      <line x1={PX} y1={gridY3.toFixed(2)} x2={W - PX} y2={gridY3.toFixed(2)} stroke="#E8EBF0" strokeWidth={1} />
+      <line x1={PX} y1={gridY1.toFixed(2)} x2={W - PX} y2={gridY1.toFixed(2)} stroke="rgba(0,0,0,0.06)" strokeWidth={1} />
+      <line x1={PX} y1={gridY2.toFixed(2)} x2={W - PX} y2={gridY2.toFixed(2)} stroke="rgba(0,0,0,0.06)" strokeWidth={1} />
+      <line x1={PX} y1={gridY3.toFixed(2)} x2={W - PX} y2={gridY3.toFixed(2)} stroke="rgba(0,0,0,0.06)" strokeWidth={1} />
 
       {/* Zero baseline */}
       <line
@@ -110,24 +106,21 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
         y1={zeroY.toFixed(2)}
         x2={W - PX}
         y2={zeroY.toFixed(2)}
-        stroke="#E4E8EE"
+        stroke="rgba(0,0,0,0.1)"
         strokeWidth={1}
       />
 
       {/* Past gradient area */}
       {pastPts.length >= 2 && (
-        <path
-          d={areaPath(pastPts, zeroY)}
-          fill={`url(#${gradPastId})`}
-        />
+        <path d={areaPath(pastPts, zeroY)} fill={`url(#${gradPastId})`} />
       )}
 
-      {/* Past smooth line */}
+      {/* Past smooth line — blue */}
       {pastPts.length >= 2 && (
         <path
           d={smoothPath(pastPts)}
           fill="none"
-          stroke="#1E8A5E"
+          stroke="#4A9FE0"
           strokeWidth={2.5}
           strokeLinecap="round"
         />
@@ -135,32 +128,29 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
 
       {/* Future gradient area */}
       {futurePts.length >= 2 && (
-        <path
-          d={areaPath(futurePts, zeroY)}
-          fill={`url(#${gradFutureId})`}
-        />
+        <path d={areaPath(futurePts, zeroY)} fill={`url(#${gradFutureId})`} />
       )}
 
-      {/* Future dashed smooth line */}
+      {/* Future dashed smooth line — teal */}
       {futurePts.length >= 2 && (
         <path
           d={smoothPath(futurePts)}
           fill="none"
-          stroke="#0CB89E"
+          stroke="#5ECCC8"
           strokeWidth={2}
           strokeDasharray="6 4"
           strokeLinecap="round"
         />
       )}
 
-      {/* Today vertical marker — teal */}
+      {/* Today vertical marker */}
       {todayX !== null && (
         <line
           x1={todayX.toFixed(2)}
           y1={PY}
           x2={todayX.toFixed(2)}
           y2={H - PY}
-          stroke="rgba(12,184,158,.35)"
+          stroke="rgba(74,159,224,0.4)"
           strokeWidth={1}
           strokeDasharray="3 3"
         />
@@ -172,7 +162,7 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
           x={(todayX + 4).toFixed(2)}
           y={(PY + 2).toFixed(2)}
           fontSize="9"
-          fill="rgba(12,184,158,.75)"
+          fill="rgba(74,159,224,0.8)"
           fontFamily="DM Sans, sans-serif"
           fontWeight="700"
           letterSpacing=".06em"
@@ -181,11 +171,11 @@ export function BalanceChart({ days, height = 110 }: BalanceChartProps) {
         </text>
       )}
 
-      {/* Today dot — teal */}
+      {/* Today dot */}
       {todayX !== null && todayY !== null && (
         <>
-          <circle cx={todayX} cy={todayY} r={8} fill="rgba(12,184,158,.15)" />
-          <circle cx={todayX} cy={todayY} r={4} fill="#0CB89E" />
+          <circle cx={todayX} cy={todayY} r={8} fill="rgba(74,159,224,0.18)" />
+          <circle cx={todayX} cy={todayY} r={4} fill="#4A9FE0" />
         </>
       )}
     </svg>

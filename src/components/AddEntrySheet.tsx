@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Avatar, Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { Box, Drawer, List, ListItemButton, ListItemText, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EntryKind } from '@/types';
 import { EntryKindColors, EntryKindLetters, useEntryKindLabels } from '@/utils/entryKind';
@@ -33,38 +33,49 @@ export function AddEntrySheet({ open, onClose }: AddEntrySheetProps) {
         slotProps={{
           paper: {
             sx: {
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
               pb: 'env(safe-area-inset-bottom)',
+              bgcolor: 'background.paper',
             },
           },
         }}
       >
         <Box sx={{ display: 'flex', justifyContent: 'center', pt: 1.5 }}>
-          <Box sx={{ width: 40, height: 4, borderRadius: 2, bgcolor: 'divider' }} />
+          <Box sx={{ width: 36, height: 4, borderRadius: 2, bgcolor: 'divider' }} />
         </Box>
-        <Typography variant="subtitle1" sx={{ fontWeight: 700, px: 3, pt: 1.5, pb: 0.5 }}>
+        <Typography sx={{ fontWeight: 700, px: 3, pt: 2, pb: 0.5, fontSize: '1rem' }}>
           {t('addEntrySheet.title')}
         </Typography>
-        <List sx={{ pt: 1, pb: 2 }}>
+        <List sx={{ pt: 0.5, pb: 2 }}>
           {KINDS.map((kind) => (
             <ListItemButton
               key={kind}
-              sx={{ mx: 2, mb: 0.5, borderRadius: 2 }}
+              sx={{ mx: 2, mb: 0.5, borderRadius: 2.5, py: 1.25 }}
               onClick={() => {
                 setActiveKind(kind);
                 onClose();
               }}
             >
-              <ListItemIcon>
-                <Avatar sx={{ bgcolor: EntryKindColors[kind], width: 36, height: 36, fontSize: 14, fontWeight: 700 }}>
-                  {EntryKindLetters[kind]}
-                </Avatar>
-              </ListItemIcon>
+              {/* Flat colored circle letter */}
+              <Box
+                sx={{
+                  width: 40, height: 40, borderRadius: '50%',
+                  bgcolor: EntryKindColors[kind],
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '15px', fontWeight: 700, color: '#fff',
+                  mr: 2, flexShrink: 0,
+                }}
+              >
+                {EntryKindLetters[kind]}
+              </Box>
               <ListItemText
                 primary={kindLabels[kind]}
                 secondary={descriptions[kind]}
-                sx={{ ml: 1 }}
+                slotProps={{
+                  primary: { style: { fontWeight: 600 } },
+                  secondary: { style: { fontSize: '0.78rem' } },
+                }}
               />
             </ListItemButton>
           ))}

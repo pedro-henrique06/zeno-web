@@ -15,7 +15,7 @@ import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog'
 import { CostOfLivingHorizonDialog } from '@/components/CostOfLivingHorizonDialog';
 import { DailyAverageHorizonDialog } from '@/components/DailyAverageHorizonDialog';
 
-/** Large two-tone income / expense tile */
+/** Large colored income / expense tile */
 function BigTile({
   label,
   value,
@@ -35,22 +35,26 @@ function BigTile({
     <Box
       sx={{
         flex: 1,
-        p: 1.75,
+        p: 2,
         borderRadius: 3,
         bgcolor: bgColor,
+        border: '1px solid',
+        borderColor: 'divider',
       }}
     >
-      <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'text.disabled', display: 'block', mb: 0.75 }}>
+      <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color, display: 'block', mb: 0.75, opacity: 0.7 }}>
         {label}
       </Typography>
       <Typography
         sx={{
           fontFamily: '"Fraunces", serif',
-          fontSize: '1.55rem',
-          fontWeight: 700,
+          fontSize: '1.6rem',
+          fontWeight: 300,
+          fontStyle: 'italic',
           color,
           fontVariantNumeric: 'tabular-nums',
           lineHeight: 1.1,
+          letterSpacing: '-0.5px',
         }}
       >
         {formatCurrency(value, currency, language)}
@@ -93,7 +97,7 @@ function StatCard({
         sx={{
           fontFamily: '"Fraunces", serif',
           fontSize: '1.2rem',
-          fontWeight: 700,
+          fontWeight: 600,
           mb: 0.5,
           fontVariantNumeric: 'tabular-nums',
           lineHeight: 1.2,
@@ -130,19 +134,19 @@ function MovementBar({
   return (
     <Box sx={{ py: 1 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-        <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
+        <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', fontSize: '0.82rem' }}>
           {label}
         </Typography>
         <Typography
           variant="body2"
-          sx={{ fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}
+          sx={{ fontWeight: 700, color, fontVariantNumeric: 'tabular-nums', fontSize: '0.82rem' }}
         >
           {formatCurrency(total, currency, language)}
         </Typography>
       </Box>
       <Box
         sx={{
-          height: 6,
+          height: 5,
           borderRadius: 3,
           bgcolor: 'action.hover',
           overflow: 'hidden',
@@ -187,7 +191,7 @@ export default function DashboardPage() {
   if (isLoading || !data) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: '#4A9FE0' }} />
       </Box>
     );
   }
@@ -210,7 +214,18 @@ export default function DashboardPage() {
 
       {/* Page header */}
       <Box sx={{ mb: 2, mt: 0.5 }}>
-        <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.5rem', fontWeight: 600, color: 'text.primary', lineHeight: 1.2 }}>
+        <Typography
+          sx={{
+            fontFamily: '"Fraunces", serif',
+            fontSize: '1.6rem',
+            fontWeight: 300,
+            fontStyle: 'italic',
+            color: 'text.primary',
+            lineHeight: 1.2,
+            letterSpacing: '-0.5px',
+            opacity: 0.85,
+          }}
+        >
           {t('dashboard.title')}
         </Typography>
         <Typography sx={{ fontSize: '12px', color: 'text.disabled', mt: 0.25 }}>
@@ -223,26 +238,26 @@ export default function DashboardPage() {
         <BigTile
           label={t('dashboard.income')}
           value={movements.entrada}
-          color="#1E8A5E"
-          bgColor="#E8F5EE"
+          color="#2DC579"
+          bgColor="rgba(45,197,121,0.08)"
           currency={profile?.currency}
           language={profile?.language}
         />
         <BigTile
           label={t('dashboard.expenses')}
           value={movements.saida + movements.cartao}
-          color="#D94F3D"
-          bgColor="#FBEAE8"
+          color="#E86B52"
+          bgColor="rgba(232,107,82,0.08)"
           currency={profile?.currency}
           language={profile?.language}
         />
       </Box>
 
       {/* Stat cards */}
-      <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700, display: 'block', mb: 1 }}>
+      <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700, display: 'block', mb: 1, fontSize: '0.65rem', letterSpacing: '.08em' }}>
         {t('dashboard.monthlyCalculations')}
       </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, gap: 1.5, mb: 3 }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, gap: 1.25, mb: 2.5 }}>
         <StatCard
           label={t('dashboard.performance')}
           value={formatCurrency(performance, profile?.currency, profile?.language)}
@@ -273,13 +288,13 @@ export default function DashboardPage() {
         />
       </Box>
 
-      {/* Movement bars */}
+      {/* Movement bars — POR CATEGORIA */}
       <Paper sx={{ borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+          <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: 'text.disabled' }}>
             {t('dashboard.monthMovements')}
           </Typography>
-          <Button size="small" onClick={() => navigate(`/entries?month=${month}&year=${year}`)}>
+          <Button size="small" sx={{ color: '#4A9FE0', fontWeight: 600, fontSize: '0.78rem', p: '2px 8px' }} onClick={() => navigate(`/entries?month=${month}&year=${year}`)}>
             {t('dashboard.seeAll')}
           </Button>
         </Box>
@@ -292,11 +307,21 @@ export default function DashboardPage() {
       </Paper>
 
       {/* Saldo do mês */}
-      <Paper sx={{ borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider', boxShadow: 'none', mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Paper sx={{
+        borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider',
+        boxShadow: 'none', mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        bgcolor: performance >= 0 ? 'rgba(45,197,121,0.06)' : 'rgba(232,107,82,0.06)',
+      }}>
         <Typography sx={{ fontSize: '13px', color: 'text.secondary', fontWeight: 500 }}>
           {t('dashboard.monthBalance')}
         </Typography>
-        <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.35rem', fontWeight: 700, color: performance >= 0 ? '#1E8A5E' : '#D94F3D', fontVariantNumeric: 'tabular-nums' }}>
+        <Typography sx={{
+          fontFamily: '"Fraunces", serif',
+          fontSize: '1.35rem',
+          fontWeight: 600,
+          color: performance >= 0 ? '#2DC579' : '#E86B52',
+          fontVariantNumeric: 'tabular-nums',
+        }}>
           {performance >= 0 ? '+' : ''}{formatCurrency(performance, profile?.currency, profile?.language)}
         </Typography>
       </Paper>

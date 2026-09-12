@@ -17,6 +17,7 @@ import {
   TableHead,
   TableRow,
   Typography,
+  Avatar,
 } from '@mui/material';
 import { alpha, type Theme } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -38,10 +39,9 @@ import { EntryKindColors, EntryKindLetters, useEntryKindLabels, isCredit } from 
 import { getBalanceColor, getBalanceTone } from '@/utils/balanceColor';
 import { BalancesHorizonDialog } from '@/components/BalancesHorizonDialog';
 import { BalanceChart } from '@/components/BalanceChart';
-import { Avatar } from '@mui/material';
 
 const KINDS = [EntryKind.Diario, EntryKind.Entrada, EntryKind.Saida, EntryKind.Economia, EntryKind.Cartao];
-const ALL_COLOR = '#3B82F6';
+const ALL_COLOR = '#4A9FE0';
 const SWIPE_THRESHOLD = 60;
 type KindFilter = EntryKind | 'all';
 
@@ -82,11 +82,11 @@ function DayCell({ day }: { day: BalanceDay }) {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 24,
-        height: 24,
+        width: 26,
+        height: 26,
         borderRadius: '50%',
-        bgcolor: 'primary.main',
-        color: 'primary.contrastText',
+        bgcolor: '#4A9FE0',
+        color: '#fff',
         fontWeight: 700,
         fontSize: 13,
       }}
@@ -117,7 +117,6 @@ function dayRowSx(day: BalanceDay) {
       : {};
 }
 
-/** Three summary chips shown above the day list */
 function StatsRow({
   days,
   currency,
@@ -133,9 +132,9 @@ function StatsRow({
   const lastBalance = days.length ? days[days.length - 1].balance : 0;
 
   const stats = [
-    { label: t('balances.statsIncome'), value: totalEntradas, color: '#1E8A5E' },
-    { label: t('balances.statsExpenses'), value: totalSaidas, color: '#D94F3D' },
-    { label: t('balances.statsForecast'), value: lastBalance, color: lastBalance >= 0 ? '#0CB89E' : '#D94F3D' },
+    { label: t('balances.statsIncome'), value: totalEntradas, color: '#2DC579' },
+    { label: t('balances.statsExpenses'), value: totalSaidas, color: '#E86B52' },
+    { label: t('balances.statsForecast'), value: lastBalance, color: lastBalance >= 0 ? '#5ECCC8' : '#E86B52' },
   ];
 
   return (
@@ -146,15 +145,21 @@ function StatsRow({
           sx={{
             flex: 1,
             px: 1.25,
-            py: 1.25,
+            py: 1.5,
             borderRadius: 2.5,
-            bgcolor: 'background.paper',
-            border: '1px solid',
-            borderColor: 'divider',
+            bgcolor: '#1B2D48',
           }}
         >
           <Typography
-            sx={{ display: 'block', mb: 0.6, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.6px', color: 'text.disabled' }}
+            sx={{
+              display: 'block',
+              mb: 0.75,
+              fontSize: '9px',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '.7px',
+              color: 'rgba(255,255,255,0.5)',
+            }}
           >
             {s.label}
           </Typography>
@@ -176,7 +181,6 @@ function StatsRow({
   );
 }
 
-/** Today's balance big display */
 function BalanceHeader({
   days,
   currency,
@@ -188,7 +192,6 @@ function BalanceHeader({
 }) {
   const { t } = useTranslation();
 
-  // Find today's balance (last non-projected day, or first day)
   const todayDay = days.find((d) => d.isToday);
   const lastPastDay = [...days].reverse().find((d) => !d.isProjected);
   const currentBalance = (todayDay ?? lastPastDay ?? days[0])?.balance ?? 0;
@@ -196,45 +199,45 @@ function BalanceHeader({
   const formatted = formatCurrency(Math.abs(currentBalance), currency, language);
   const isNegative = currentBalance < 0;
 
-  // Split integer and decimal parts for styling
   const parts = formatted.split(',');
   const intPart = parts[0] ?? formatted;
   const decPart = parts[1];
 
   return (
-    <Box sx={{ pb: 1 }}>
+    <Box sx={{ pb: 1.5 }}>
       <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.8px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
         {t('balances.currentBalance')}
       </Typography>
       <Typography
         sx={{
           fontFamily: '"Fraunces", serif',
-          fontSize: '2.2rem',
-          fontWeight: 700,
-          letterSpacing: '-1.5px',
+          fontSize: '2.6rem',
+          fontWeight: 300,
+          fontStyle: 'italic',
+          letterSpacing: '-2px',
           lineHeight: 1,
-          color: isNegative ? '#D94F3D' : 'text.primary',
+          color: isNegative ? '#E86B52' : 'text.primary',
           fontVariantNumeric: 'tabular-nums',
+          opacity: 0.9,
         }}
       >
         {isNegative ? '−' : ''}
         {intPart}
         {decPart && (
-          <span style={{ fontSize: '1.4rem', opacity: 0.55 }}>,{decPart}</span>
+          <span style={{ fontSize: '1.5rem', opacity: 0.45 }}>,{decPart}</span>
         )}
       </Typography>
     </Box>
   );
 }
 
-/** Open-ring dot for upcoming entry */
 function UpcomingDot({ kind }: { kind: EntryKind }) {
   const color = EntryKindColors[kind];
   return (
     <Box
       sx={{
-        width: 8,
-        height: 8,
+        width: 9,
+        height: 9,
         borderRadius: '50%',
         flexShrink: 0,
         border: `2px solid ${color}`,
@@ -243,7 +246,6 @@ function UpcomingDot({ kind }: { kind: EntryKind }) {
   );
 }
 
-/** Próximos lançamentos — upcoming future entries */
 function UpcomingEntries({
   entries,
   currency,
@@ -359,7 +361,7 @@ export default function BalancesPage() {
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress />
+        <CircularProgress sx={{ color: '#4A9FE0' }} />
       </Box>
     );
   }
@@ -399,12 +401,10 @@ export default function BalancesPage() {
         />
       </StickyHeader>
 
-      {/* Current balance header */}
       {days.length > 0 && (
         <BalanceHeader days={days} currency={profile?.currency} language={profile?.language} />
       )}
 
-      {/* Balance trend chart */}
       {days.length > 1 && (
         <Paper
           sx={{
@@ -419,16 +419,14 @@ export default function BalancesPage() {
             pb: 0,
           }}
         >
-          <BalanceChart days={days} height={90} />
+          <BalanceChart days={days} height={100} />
         </Paper>
       )}
 
-      {/* Stats chips */}
       {days.length > 0 && (
         <StatsRow days={days} currency={profile?.currency} language={profile?.language} />
       )}
 
-      {/* Próximos lançamentos */}
       {entries.length > 0 && (
         <UpcomingEntries entries={entries} currency={profile?.currency} language={profile?.language} />
       )}
