@@ -62,10 +62,11 @@ export function EntryFormDialog({ open, onClose, entry, fixedKind, defaultDate }
     kind: entry?.kind ?? fixedKind ?? 0,
     description: entry?.description ?? '',
     tagId: entry?.tagId ?? '',
-    date: entry?.date ? dayjs(entry.date).format('YYYY-MM-DD') : defaultDate ?? dayjs().format('YYYY-MM-DD'),
+    // Use substring(0,10) to extract YYYY-MM-DD without UTC→local day shift
+    date: entry?.date ? entry.date.substring(0, 10) : defaultDate ?? dayjs().format('YYYY-MM-DD'),
     isRecurring: entry?.isRecurring ?? false,
     hasRecurrenceEndDate: !!entry?.recurrenceEndDate,
-    recurrenceEndDate: entry?.recurrenceEndDate ? dayjs(entry.recurrenceEndDate).format('YYYY-MM-DD') : '',
+    recurrenceEndDate: entry?.recurrenceEndDate ? entry.recurrenceEndDate.substring(0, 10) : '',
     houseId: entry?.houseId ?? '',
   });
   const [valueCents, setValueCents] = useState(Math.round((entry?.value ?? 0) * 100));

@@ -21,7 +21,16 @@ export function formatCurrency(value: number, currency: Currency = 'BRL', langua
 }
 
 export function formatDate(date: string | Date, language: Language = 'PtBR'): string {
-  const d = new Date(date);
+  let d: Date;
+  if (date instanceof Date) {
+    d = date;
+  } else {
+    // Extract YYYY-MM-DD and construct a local Date to avoid UTC→local day shift
+    // e.g. "2026-09-12T00:00:00Z" in UTC-3 would otherwise render as Sep 11
+    const s = date.substring(0, 10);
+    const parts = s.split('-').map(Number);
+    d = new Date(parts[0], parts[1] - 1, parts[2]);
+  }
   if (isNaN(d.getTime())) return '-';
   return new Intl.DateTimeFormat(LANGUAGE_LOCALES[language], {
     day: '2-digit',

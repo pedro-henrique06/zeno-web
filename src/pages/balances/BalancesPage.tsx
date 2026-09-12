@@ -93,7 +93,7 @@ function UpcomingEntries({ entries, currency, language }: { entries: Entry[]; cu
       {upcoming.map((entry, i) => {
         const credit = isCredit(entry.kind);
         const color = credit ? '#2DC579' : '#E86B52';
-        const diff = dayjs(entry.date).startOf('day').diff(today, 'day');
+        const diff = dayjs(entry.date.substring(0, 10)).diff(today.startOf('day'), 'day');
         return (
           <Box key={entry.id} sx={{
             display: 'flex', alignItems: 'flex-start', gap: 1,
@@ -105,7 +105,7 @@ function UpcomingEntries({ entries, currency, language }: { entries: Entry[]; cu
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'text.secondary' }} noWrap>{entry.title}</Typography>
               <Typography sx={{ fontSize: '10px', color: 'text.secondary', opacity: 0.6 }}>
-                em {diff} dia{diff !== 1 ? 's' : ''} · {dayjs(entry.date).format('DD MMM').toLowerCase()}
+                em {diff} dia{diff !== 1 ? 's' : ''} · {dayjs(entry.date.substring(0, 10)).format('DD MMM').toLowerCase()}
               </Typography>
             </Box>
             <Typography sx={{ fontSize: '12px', fontWeight: 700, fontVariantNumeric: 'tabular-nums', color, flexShrink: 0 }}>
