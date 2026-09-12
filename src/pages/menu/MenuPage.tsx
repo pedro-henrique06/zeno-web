@@ -74,81 +74,89 @@ export default function MenuPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
-        {t('menu.title')}
-      </Typography>
-
-      {/* Profile card */}
+      {/* Dark navy profile card */}
       <Paper
         sx={{
-          p: 2,
+          p: 2.5,
           borderRadius: 3,
           mb: 1.5,
-          border: '1px solid',
-          borderColor: 'divider',
+          bgcolor: '#1B2D48',
           boxShadow: 'none',
+          border: 'none',
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar
             sx={{
-              width: 52,
-              height: 52,
-              bgcolor: '#1B3D6B',
+              width: 54,
+              height: 54,
+              bgcolor: '#4A9FE0',
               fontSize: 20,
               fontFamily: '"Fraunces", serif',
               fontWeight: 700,
               letterSpacing: -0.5,
+              border: '2px solid rgba(255,255,255,0.15)',
             }}
           >
             {initial}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ fontFamily: '"Fraunces", serif', fontWeight: 600, fontSize: '1.1rem' }} noWrap>
+            <Typography sx={{
+              fontFamily: '"Fraunces", serif',
+              fontWeight: 600,
+              fontSize: '1.1rem',
+              color: '#FFFFFF',
+            }} noWrap>
               {user?.name}
             </Typography>
-            <Typography variant="body2" color="text.secondary" noWrap>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.55)' }} noWrap>
               {user?.email}
             </Typography>
           </Box>
         </Box>
       </Paper>
 
-      {/* Daily budget card */}
+      {/* Daily budget card — dark */}
       {profile?.dailyBudget != null && profile.dailyBudget > 0 && (
         <Paper
           sx={{
             p: 2,
             borderRadius: 3,
             mb: 1.5,
-            border: '1px solid',
-            borderColor: 'divider',
+            bgcolor: '#1B2D48',
             boxShadow: 'none',
+            border: 'none',
             cursor: 'pointer',
           }}
           onClick={() => navigate('/menu/previsao-diario')}
         >
-          <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
+          <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', mb: 0.75 }}>
             {t('menu.dailyBudget')}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', mb: 1 }}>
-            <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.3rem', fontWeight: 700, color: 'text.primary', fontVariantNumeric: 'tabular-nums' }}>
+            <Typography sx={{
+              fontFamily: '"Fraunces", serif',
+              fontSize: '1.3rem',
+              fontWeight: 600,
+              color: '#FFFFFF',
+              fontVariantNumeric: 'tabular-nums',
+            }}>
               {formatCurrency(profile.dailyBudget, profile.currency, profile.language)}
-              <span style={{ fontSize: '0.85rem', opacity: 0.5, marginLeft: 2 }}>/dia</span>
+              <span style={{ fontSize: '0.85rem', opacity: 0.45, marginLeft: 2 }}>/dia</span>
             </Typography>
             {summary && (
-              <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#1E8A5E' }}>
+              <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#2DC579' }}>
                 {Math.round((summary.movements.diario / Math.max(profile.dailyBudget, 1)) * 100)}% usado hoje
               </Typography>
             )}
           </Box>
-          <Box sx={{ height: 6, borderRadius: 3, bgcolor: 'action.hover', overflow: 'hidden' }}>
+          <Box sx={{ height: 5, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.12)', overflow: 'hidden' }}>
             {summary && (
               <Box
                 sx={{
                   height: '100%',
                   width: `${Math.min(Math.round((summary.movements.diario / Math.max(profile.dailyBudget, 1)) * 100), 100)}%`,
-                  background: 'linear-gradient(90deg, #1E8A5E, #3DBF8A)',
+                  background: 'linear-gradient(90deg, #2DC579, #5ECCC8)',
                   borderRadius: 3,
                   transition: 'width 0.4s ease',
                 }}
@@ -162,7 +170,7 @@ export default function MenuPage() {
       <Paper
         sx={{
           borderRadius: 3,
-          mb: 2,
+          mb: 1.5,
           border: '1px solid',
           borderColor: 'divider',
           boxShadow: 'none',
@@ -176,7 +184,13 @@ export default function MenuPage() {
                 onClick={() => navigate(item.path)}
               >
                 <ListItemIcon sx={{ minWidth: 44 }}>
-                  <Box sx={{ width: 32, height: 32, borderRadius: '9px', bgcolor: '#F5F6F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#1B3D6B' }}>
+                  <Box sx={{
+                    width: 34, height: 34,
+                    borderRadius: '10px',
+                    bgcolor: '#1B2D48',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: '#4A9FE0',
+                  }}>
                     {item.icon}
                   </Box>
                 </ListItemIcon>
@@ -198,7 +212,7 @@ export default function MenuPage() {
       <Paper
         sx={{
           borderRadius: 3,
-          mb: 2,
+          mb: 1.5,
           border: '1px solid',
           borderColor: 'divider',
           boxShadow: 'none',
@@ -209,7 +223,13 @@ export default function MenuPage() {
             <Box key={item.label}>
               <ListItemButton sx={{ mx: 1, borderRadius: 2, py: 1.25 }}>
                 <ListItemIcon sx={{ minWidth: 44 }}>
-                  <Box sx={{ width: 32, height: 32, borderRadius: '9px', bgcolor: '#F5F6F9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7A8699' }}>
+                  <Box sx={{
+                    width: 34, height: 34,
+                    borderRadius: '10px',
+                    bgcolor: 'action.hover',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    color: 'text.secondary',
+                  }}>
                     {item.icon}
                   </Box>
                 </ListItemIcon>
@@ -240,13 +260,13 @@ export default function MenuPage() {
         <List sx={{ py: 1 }} disablePadding>
           <ListItemButton sx={{ mx: 1, borderRadius: 2, py: 1.25 }} onClick={handleLogout}>
             <ListItemIcon sx={{ minWidth: 44 }}>
-              <Box sx={{ width: 32, height: 32, borderRadius: '9px', bgcolor: '#FBEAE8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D94F3D' }}>
+              <Box sx={{ width: 34, height: 34, borderRadius: '10px', bgcolor: 'rgba(232,107,82,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E86B52' }}>
                 <LogoutIcon sx={{ fontSize: 18 }} />
               </Box>
             </ListItemIcon>
             <ListItemText
               primary={t('menu.logout')}
-              slotProps={{ primary: { style: { fontWeight: 500, color: '#D94F3D' } } }}
+              slotProps={{ primary: { style: { fontWeight: 500, color: '#E86B52' } } }}
             />
           </ListItemButton>
           <Divider sx={{ mx: 2, borderColor: 'divider' }} />
@@ -255,13 +275,13 @@ export default function MenuPage() {
             onClick={() => setResetOpen(true)}
           >
             <ListItemIcon sx={{ minWidth: 44 }}>
-              <Box sx={{ width: 32, height: 32, borderRadius: '9px', bgcolor: '#FBEAE8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D94F3D' }}>
+              <Box sx={{ width: 34, height: 34, borderRadius: '10px', bgcolor: 'rgba(232,107,82,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E86B52' }}>
                 <DeleteSweepIcon sx={{ fontSize: 18 }} />
               </Box>
             </ListItemIcon>
             <ListItemText
               primary={t('menu.resetAccount')}
-              slotProps={{ primary: { style: { fontWeight: 500, color: '#D94F3D' } } }}
+              slotProps={{ primary: { style: { fontWeight: 500, color: '#E86B52' } } }}
             />
           </ListItemButton>
         </List>

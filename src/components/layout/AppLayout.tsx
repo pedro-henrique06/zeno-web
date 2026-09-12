@@ -38,7 +38,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         sx={{
           p: 2,
           pt: 'calc(16px + env(safe-area-inset-top, 0px))',
-          pb: 'calc(72px + env(safe-area-inset-bottom, 0px))',
+          pb: 'calc(80px + env(safe-area-inset-bottom, 0px))',
         }}
       >
         {children}
@@ -55,8 +55,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           borderTop: '1px solid',
           borderColor: 'divider',
           pb: 'env(safe-area-inset-bottom)',
-          backdropFilter: 'blur(12px)',
-          bgcolor: 'rgba(248,249,251,0.94)',
+          backdropFilter: 'blur(16px)',
+          bgcolor: theme.palette.mode === 'dark'
+            ? 'rgba(26,36,56,0.97)'
+            : 'rgba(255,255,255,0.97)',
         }}
       >
         <BottomNavigation
@@ -70,7 +72,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             }
           }}
           sx={{
-            height: 64,
+            height: 68,
             bgcolor: 'transparent',
           }}
         >
@@ -82,18 +84,23 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 icon={
                   <Box
                     sx={{
-                      width: 44,
-                      height: 44,
-                      borderRadius: 2.5,
-                      bgcolor: '#1B3D6B',
+                      width: 52,
+                      height: 52,
+                      borderRadius: '50%',
+                      bgcolor: '#4A9FE0',
                       color: '#FFFFFF',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      boxShadow: '0 4px 14px rgba(27,61,107,0.35)',
+                      boxShadow: '0 4px 20px rgba(74,159,224,0.5)',
+                      transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                      '&:active': {
+                        transform: 'scale(0.93)',
+                        boxShadow: '0 2px 10px rgba(74,159,224,0.4)',
+                      },
                     }}
                   >
-                    {item.icon}
+                    <AddIcon sx={{ fontSize: 28 }} />
                   </Box>
                 }
                 sx={{ minWidth: 'auto' }}
@@ -105,8 +112,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 value={item.path}
                 icon={item.icon}
                 sx={{
-                  '&.Mui-selected': { color: '#1B3D6B' },
+                  '&.Mui-selected': { color: '#4A9FE0' },
                   color: 'text.secondary',
+                  '& .MuiBottomNavigationAction-label': {
+                    fontSize: '0.68rem',
+                    fontWeight: 500,
+                  },
+                  '& .MuiBottomNavigationAction-label.Mui-selected': {
+                    fontSize: '0.68rem',
+                    fontWeight: 600,
+                  },
                 }}
               />
             ),

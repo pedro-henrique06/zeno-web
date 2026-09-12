@@ -9,62 +9,103 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
+// Design tokens
+const C = {
+  // Backgrounds
+  bgPage: '#F2F2F7',
+  bgPaper: '#FFFFFF',
+  bgDark: '#1B2D48',      // dark navy card
+  bgDarkSurface: '#243B58',
+
+  // Brand
+  blue: '#4A9FE0',         // CTA / active
+  teal: '#5ECCC8',         // projected / future
+  green: '#2DC579',        // income / positive
+  salmon: '#E86B52',       // expenses / negative
+  orange: '#F0A030',
+  purple: '#8B5CF6',
+
+  // Text on light bg
+  textPrimary: '#1C1C1E',
+  textSecondary: '#8E8E93',
+  textDisabled: '#AEAEB2',
+
+  // Text on dark bg
+  darkTextPrimary: '#FFFFFF',
+  darkTextSecondary: 'rgba(255,255,255,0.65)',
+
+  // Dividers
+  dividerLight: '#E5E5EA',
+} as const;
+
 function getTheme(mode: 'light' | 'dark'): Theme {
   const isDark = mode === 'dark';
+
   return createTheme({
     palette: {
       mode,
       primary: {
-        main: isDark ? '#2F80ED' : '#1976d2',
-        light: isDark ? '#4F9EFF' : '#42a5f5',
-        dark: isDark ? '#1B6DD1' : '#1565c0',
+        main: C.blue,
+        light: '#6EB7EA',
+        dark: '#2D85CC',
+        contrastText: '#FFFFFF',
       },
       secondary: {
-        main: isDark ? '#9c27b0' : '#9c27b0',
-        light: isDark ? '#ba68c8' : '#ba68c8',
-        dark: isDark ? '#7b1fa2' : '#7b1fa2',
+        main: C.teal,
+        light: '#80DEDA',
+        dark: '#3EB5B1',
+        contrastText: '#FFFFFF',
       },
       success: {
-        main: isDark ? '#22C55E' : '#16A34A',
-        light: isDark ? '#4ADE80' : '#22C55E',
-        dark: isDark ? '#16A34A' : '#16A34A',
+        main: C.green,
+        light: '#5DD99A',
+        dark: '#1EA85F',
+        contrastText: '#FFFFFF',
       },
       error: {
-        main: isDark ? '#EF4444' : '#DC2626',
-        light: isDark ? '#F87171' : '#EF4444',
-        dark: isDark ? '#DC2626' : '#DC2626',
+        main: C.salmon,
+        light: '#EF907B',
+        dark: '#CB4D35',
+        contrastText: '#FFFFFF',
       },
       warning: {
-        main: isDark ? '#F59E0B' : '#D97706',
-        light: isDark ? '#FBBF24' : '#F59E0B',
-        dark: isDark ? '#D97706' : '#D97706',
+        main: C.orange,
+        light: '#F5BC5C',
+        dark: '#CC841A',
+        contrastText: '#FFFFFF',
       },
       ...(isDark
         ? {
             background: {
-              default: '#0B0F14',
-              paper: '#151B23',
+              default: '#0F1623',
+              paper: '#1A2438',
             },
             text: {
-              primary: '#F9FAFB',
-              secondary: '#9CA3AF',
+              primary: '#F0F4F8',
+              secondary: '#9DAFC5',
             },
-            divider: '#2A3441',
+            divider: '#2A3C54',
           }
         : {
             background: {
-              default: '#F5F5F5',
-              paper: '#FFFFFF',
+              default: C.bgPage,
+              paper: C.bgPaper,
             },
             text: {
-              primary: '#111827',
-              secondary: '#6B7280',
+              primary: C.textPrimary,
+              secondary: C.textSecondary,
             },
-            divider: '#E5E7EB',
+            divider: C.dividerLight,
           }),
     },
     typography: {
-      fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+      fontFamily: '"DM Sans", "Roboto", "Helvetica", "Arial", sans-serif',
+      h1: { fontWeight: 700 },
+      h2: { fontWeight: 700 },
+      h3: { fontWeight: 700 },
+      h4: { fontWeight: 700 },
+      h5: { fontWeight: 600 },
+      h6: { fontWeight: 600 },
     },
     shape: {
       borderRadius: 12,
@@ -83,16 +124,25 @@ function getTheme(mode: 'light' | 'dark'): Theme {
       MuiCard: {
         styleOverrides: {
           root: {
-            boxShadow: isDark ? '0 4px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.08)',
+            boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.4)' : '0 1px 4px rgba(28,28,30,0.06)',
             borderRadius: 16,
-            padding: '20px 24px',
+            border: isDark ? '1px solid rgba(255,255,255,0.06)' : `1px solid ${C.dividerLight}`,
           },
         },
       },
       MuiCardContent: {
         styleOverrides: {
           root: {
-            padding: '20px 24px',
+            padding: '16px 20px',
+            '&:last-child': { paddingBottom: '16px' },
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: 'none',
+            boxShadow: isDark ? '0 2px 8px rgba(0,0,0,0.3)' : '0 1px 4px rgba(28,28,30,0.06)',
           },
         },
       },
@@ -110,12 +160,16 @@ function getTheme(mode: 'light' | 'dark'): Theme {
           root: {
             height: '48px',
           },
+          multiline: {
+            height: 'auto',
+          },
         },
       },
       MuiTableCell: {
         styleOverrides: {
           root: {
-            padding: '16px',
+            padding: '12px 16px',
+            borderColor: isDark ? '#2A3C54' : C.dividerLight,
           },
         },
       },
@@ -124,7 +178,17 @@ function getTheme(mode: 'light' | 'dark'): Theme {
           root: {
             '& .MuiTableCell-root': {
               fontWeight: 600,
-              color: isDark ? '#9CA3AF' : '#6B7280',
+              color: isDark ? '#9DAFC5' : C.textSecondary,
+              backgroundColor: isDark ? '#1A2438' : C.bgPage,
+            },
+          },
+        },
+      },
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            '&:hover': {
+              backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.025)',
             },
           },
         },
@@ -133,14 +197,15 @@ function getTheme(mode: 'light' | 'dark'): Theme {
         styleOverrides: {
           root: {
             borderRadius: 8,
+            fontWeight: 500,
           },
         },
       },
       MuiDialog: {
         styleOverrides: {
           paper: {
-            borderRadius: 16,
-            padding: '8px',
+            borderRadius: 20,
+            backgroundImage: 'none',
           },
         },
       },
@@ -148,6 +213,8 @@ function getTheme(mode: 'light' | 'dark'): Theme {
         styleOverrides: {
           root: {
             padding: '24px 24px 16px',
+            fontSize: '1.25rem',
+            fontWeight: 600,
           },
         },
       },
@@ -171,6 +238,7 @@ function getTheme(mode: 'light' | 'dark'): Theme {
             textTransform: 'none',
             fontWeight: 500,
             minHeight: '48px',
+            fontSize: '0.95rem',
           },
         },
       },
@@ -179,6 +247,7 @@ function getTheme(mode: 'light' | 'dark'): Theme {
           indicator: {
             height: 3,
             borderRadius: 3,
+            backgroundColor: C.blue,
           },
         },
       },
@@ -212,10 +281,42 @@ function getTheme(mode: 'light' | 'dark'): Theme {
           },
         },
       },
-      MuiPaper: {
+      MuiAlert: {
         styleOverrides: {
           root: {
-            backgroundImage: 'none',
+            borderRadius: 12,
+          },
+        },
+      },
+      MuiLinearProgress: {
+        styleOverrides: {
+          root: {
+            borderRadius: 4,
+            height: 8,
+          },
+        },
+      },
+      MuiDivider: {
+        styleOverrides: {
+          root: {
+            borderColor: isDark ? '#2A3C54' : C.dividerLight,
+          },
+        },
+      },
+      MuiBottomNavigation: {
+        styleOverrides: {
+          root: {
+            backgroundColor: isDark ? 'rgba(26,36,56,0.97)' : 'rgba(255,255,255,0.97)',
+          },
+        },
+      },
+      MuiBottomNavigationAction: {
+        styleOverrides: {
+          root: {
+            '&.Mui-selected': {
+              color: C.blue,
+            },
+            color: isDark ? '#9DAFC5' : C.textSecondary,
           },
         },
       },
@@ -226,7 +327,7 @@ function getTheme(mode: 'light' | 'dark'): Theme {
 export function ThemeContextProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('theme-mode');
-    return saved === 'dark' ? 'dark' : 'dark';
+    return saved === 'dark' ? 'dark' : 'light';
   });
 
   const toggleTheme = useCallback(() => {
