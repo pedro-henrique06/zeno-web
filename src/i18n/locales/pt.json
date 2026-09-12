@@ -133,7 +133,9 @@
     "monthBalance": "Saldo do mês",
     "savedHint": "do total de entradas",
     "costOfLivingHint": "gastos para viver",
-    "dailyAverageHint": "média por dia"
+    "dailyAverageHint": "média por dia",
+    "lastSixMonths": "Últimos 6 meses",
+    "byCategory": "Por categoria"
   },
   "entries": {
     "title": "Lançamentos",
