@@ -26,7 +26,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import RepeatIcon from '@mui/icons-material/Repeat';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import GroupIcon from '@mui/icons-material/Group';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
@@ -38,7 +37,52 @@ import { useEntryKindLabels } from '@/utils/entryKind';
 import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
 import type { House } from '@/types';
 
-function HouseDetailDialog({ house, open, onClose }: { house: House; open: boolean; onClose: () => void }) {
+const AVATAR_COLORS = ['#E08B42', '#1E8A5E', '#7C5CBF', '#0CB89E', '#D94F3D', '#3B82F6'];
+
+function MemberAvatars({ members, size = 32 }: { members: { userId: string; name: string }[]; size?: number }) {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      {members.slice(0, 5).map((m, idx) => (
+        <Box
+          key={m.userId}
+          sx={{
+            width: size,
+            height: size,
+            borderRadius: '50%',
+            bgcolor: AVATAR_COLORS[idx % AVATAR_COLORS.length],
+            border: '2px solid #1B3D6B',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: size * 0.38,
+            fontWeight: 700,
+            color: 'white',
+            ml: idx === 0 ? 0 : `-${size * 0.28}px`,
+            zIndex: members.length - idx,
+            position: 'relative',
+            flexShrink: 0,
+          }}
+        >
+          {m.name.charAt(0).toUpperCase()}
+        </Box>
+      ))}
+    </Box>
+  );
+}
+
+function HouseDetailDialog({
+  house,
+  open,
+  onClose,
+  onEdit,
+  onDelete,
+}: {
+  house: House;
+  open: boolean;
+  onClose: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   const { t } = useTranslation();
   const kindLabels = useEntryKindLabels();
   const { data: profile } = useProfile();
@@ -81,7 +125,24 @@ function HouseDetailDialog({ house, open, onClose }: { house: House; open: boole
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <HomeWorkIcon fontSize="small" />
-        {house.name}
+        <Box sx={{ flex: 1 }}>{house.name}</Box>
+        {isOwner && (
+          <Box sx={{ display: 'flex', gap: 0.25 }}>
+            <IconButton
+              size="small"
+              onClick={() => { handleClose(); onEdit(); }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <IconButton
+              size="small"
+              color="error"
+              onClick={() => { handleClose(); onDelete(); }}
+            >
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        )}
       </DialogTitle>
 
       <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2, borderBottom: 1, borderColor: 'divider' }}>
@@ -257,16 +318,14 @@ export default function HousesPage() {
     setFormOpen(true);
   };
 
-  const openEdit = (e: React.MouseEvent, house: House) => {
-    e.stopPropagation();
+  const openEdit = (house: House) => {
     setEditingHouse(house);
     setName(house.name);
     setDescription(house.description ?? '');
     setFormOpen(true);
   };
 
-  const handleDelete = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
+  const handleDelete = (id: string) => {
     deleteMutation.mutate(id);
   };
 
@@ -323,71 +382,121 @@ export default function HousesPage() {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
           {(houses ?? []).map((house) => {
             const members = house.members ?? [];
-            const AVATAR_COLORS = ['#1B3D6B', '#1E8A5E', '#E08B42', '#7C5CBF', '#0CB89E', '#D94F3D'];
+            const totalPeople = members.length + 1; // +1 for owner
             return (
               <Paper
                 key={house.id}
-                sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: 'none', overflow: 'hidden', cursor: 'pointer' }}
                 onClick={() => setDetailHouse(house)}
+                sx={{
+                  borderRadius: 3,
+                  bgcolor: '#1B3D6B',
+                  boxShadow: '0 4px 16px rgba(27,61,107,0.18)',
+                  border: 'none',
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  transition: 'transform 0.15s, box-shadow 0.15s',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(27,61,107,0.28)',
+                  },
+                }}
               >
-                {/* Card top */}
-                <Box sx={{ px: 2, pt: 2, pb: 1.5 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                    <Typography sx={{ fontWeight: 600, fontSize: '1rem', color: 'text.primary', mb: 0.75 }}>
-                      {house.name}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 0.25 }}>
-                      <IconButton size="small" onClick={(e) => openEdit(e, house)}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                      <IconButton size="small" onClick={(e) => handleDelete(e, house.id)}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                  {/* Overlapping avatars */}
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    {members.slice(0, 4).map((m, idx) => (
+                {/* Card body */}
+                <Box sx={{ px: 2.5, pt: 2.25, pb: 2 }}>
+                  {/* Name row */}
+                  <Typography
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: '1.05rem',
+                      color: 'white',
+                      mb: 1.5,
+                      letterSpacing: '-0.01em',
+                    }}
+                  >
+                    {house.name}
+                  </Typography>
+
+                  {/* Avatars + member count */}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                    {members.length > 0 ? (
+                      <MemberAvatars members={members} size={30} />
+                    ) : (
                       <Box
-                        key={m.userId}
                         sx={{
-                          width: 28, height: 28, borderRadius: '50%',
-                          bgcolor: AVATAR_COLORS[idx % AVATAR_COLORS.length],
-                          border: '2px solid white',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: '11px', fontWeight: 700, color: 'white',
-                          ml: idx === 0 ? 0 : -0.75,
-                          zIndex: members.length - idx,
+                          width: 30,
+                          height: 30,
+                          borderRadius: '50%',
+                          bgcolor: 'rgba(255,255,255,0.15)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
-                        {m.name.charAt(0).toUpperCase()}
-                      </Box>
-                    ))}
-                    {members.length === 0 && (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <GroupIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
-                        <Typography variant="caption" color="text.disabled">{t('houses.noMembers')}</Typography>
+                        <GroupIcon sx={{ fontSize: 16, color: 'rgba(255,255,255,0.6)' }} />
                       </Box>
                     )}
-                    {members.length > 0 && (
-                      <Typography sx={{ ml: 1, fontSize: '11px', color: 'text.disabled' }}>
-                        {members.length} {members.length === 1 ? 'membro' : 'membros'}
-                      </Typography>
-                    )}
+                    <Typography
+                      sx={{
+                        fontSize: '12px',
+                        color: 'rgba(255,255,255,0.6)',
+                        fontWeight: 500,
+                        ml: members.length > 0 ? 0.5 : 0,
+                      }}
+                    >
+                      {totalPeople === 1
+                        ? t('houses.noMembers')
+                        : `${totalPeople} ${t('houses.members').toLowerCase()}`}
+                    </Typography>
                   </Box>
+
                   {house.description && (
-                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.75 }}>
+                    <Typography
+                      sx={{
+                        fontSize: '12px',
+                        color: 'rgba(255,255,255,0.45)',
+                        mt: 1,
+                        lineHeight: 1.4,
+                      }}
+                    >
                       {house.description}
                     </Typography>
                   )}
                 </Box>
-                {/* Card bottom */}
-                <Box sx={{ px: 2, py: 1.25, bgcolor: 'action.hover', borderTop: '1px solid', borderColor: 'divider', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                  <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
+
+                {/* Card footer */}
+                <Box
+                  sx={{
+                    px: 2.5,
+                    py: 1.25,
+                    bgcolor: 'rgba(0,0,0,0.18)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>
+                    {t('houses.entriesTab')}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box
+                      component="span"
+                      sx={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: '50%',
+                        bgcolor: '#0CB89E',
+                        display: 'inline-block',
+                      }}
+                    />
+                    <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', fontWeight: 600 }}>
+                      {t('houses.noEntries')}
+                    </Typography>
+                  </Box>
                 </Box>
               </Paper>
             );
           })}
+
           {/* "+ Nova casa" dashed button */}
           <Box
             onClick={openCreate}
@@ -476,6 +585,8 @@ export default function HousesPage() {
           house={detailHouse}
           open={!!detailHouse}
           onClose={() => setDetailHouse(null)}
+          onEdit={() => openEdit(detailHouse)}
+          onDelete={() => handleDelete(detailHouse.id)}
         />
       )}
     </Box>
