@@ -12,6 +12,7 @@ export function useEntries(month: number, year: number, page = 1, pageSize = 50)
 function invalidateAll(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: ['entries'] });
   queryClient.invalidateQueries({ queryKey: ['balances'] });
+  queryClient.invalidateQueries({ queryKey: ['balances-horizon'] });
   queryClient.invalidateQueries({ queryKey: ['summary'] });
 }
 
