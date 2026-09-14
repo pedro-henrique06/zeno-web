@@ -360,8 +360,10 @@ export default function GoalsPage() {
             placeholder="1.000.000"
             fullWidth
             size="small"
-            InputProps={{
-              startAdornment: <InputAdornment position="start">{symbol}</InputAdornment>,
+            slotProps={{
+              input: {
+                startAdornment: <InputAdornment position="start">{symbol}</InputAdornment>,
+              },
             }}
           />
           <TextField
@@ -371,8 +373,10 @@ export default function GoalsPage() {
             placeholder="500"
             fullWidth
             size="small"
-            InputProps={{
-              startAdornment: <InputAdornment position="start">{symbol}</InputAdornment>,
+            slotProps={{
+              input: {
+                startAdornment: <InputAdornment position="start">{symbol}</InputAdornment>,
+              },
             }}
           />
         </Box>
