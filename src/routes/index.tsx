@@ -11,6 +11,7 @@ import EditProfilePage from '@/pages/menu/EditProfilePage';
 import DailyBudgetPage from '@/pages/menu/DailyBudgetPage';
 import SettingsPage from '@/pages/menu/SettingsPage';
 import HousesPage from '@/pages/menu/HousesPage';
+import GoalsPage from '@/pages/goals/GoalsPage';
 import { useAuth } from '@/contexts/AuthContext';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -75,6 +76,7 @@ export default function AppRoutes() {
           <Route path="menu/previsao-diario" element={<DailyBudgetPage />} />
           <Route path="menu/casas" element={<HousesPage />} />
           <Route path="menu/configuracoes" element={<SettingsPage />} />
+          <Route path="menu/metas" element={<GoalsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
