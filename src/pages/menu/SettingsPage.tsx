@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import dayjs from 'dayjs';
 import {
   Alert,
@@ -26,6 +26,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useNavigate } from 'react-router-dom';
@@ -38,6 +39,50 @@ import { useCreateEntry } from '@/hooks/useEntries';
 import { useProfile } from '@/hooks/useUser';
 import { EntryKind } from '@/types';
 import { CURRENCY_SYMBOLS } from '@/utils/currency';
+import { alpha } from '@mui/material/styles';
+import { brand } from '@/theme/tokens';
+
+const ROW_SX = { mx: 1, borderRadius: 2, py: 1.25 } as const;
+
+function SectionLabel({ children }: { children: ReactNode }) {
+  return (
+    <Typography
+      sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: 'text.secondary', mt: 2.5, mb: 0.75, pl: 0.5 }}
+    >
+      {children}
+    </Typography>
+  );
+}
+
+function SectionCard({ children }: { children: ReactNode }) {
+  return (
+    <Paper sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: 'none', py: 0.5 }}>
+      <List disablePadding>{children}</List>
+    </Paper>
+  );
+}
+
+function IconBadge({ children, danger }: { children: ReactNode; danger?: boolean }) {
+  return (
+    <ListItemIcon sx={{ minWidth: 46 }}>
+      <Box
+        sx={{
+          width: 34,
+          height: 34,
+          borderRadius: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: danger ? alpha(brand.expense, 0.12) : brand.navy,
+          color: danger ? brand.expense : brand.blue,
+          '& svg': { fontSize: 18 },
+        }}
+      >
+        {children}
+      </Box>
+    </ListItemIcon>
+  );
+}
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -107,61 +152,53 @@ export default function SettingsPage() {
         </Typography>
       </Box>
 
-      <Paper sx={{ borderRadius: 3 }}>
-        <List sx={{ py: 1 }}>
-          <ListItemButton onClick={toggleTheme} sx={{ mx: 1, borderRadius: 2 }}>
-            <ListItemIcon>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</ListItemIcon>
-            <ListItemText primary={mode === 'dark' ? t('settings.lightMode') : t('settings.darkMode')} />
-            <Switch checked={mode === 'dark'} onChange={toggleTheme} onClick={(e) => e.stopPropagation()} />
-          </ListItemButton>
+      <SectionLabel>{t('settings.sectionAppearance')}</SectionLabel>
+      <SectionCard>
+        <ListItemButton onClick={toggleTheme} sx={ROW_SX}>
+          <IconBadge>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</IconBadge>
+          <ListItemText primary={mode === 'dark' ? t('settings.lightMode') : t('settings.darkMode')} slotProps={{ primary: { style: { fontWeight: 500 } } }} />
+          <Switch checked={mode === 'dark'} onChange={toggleTheme} onClick={(e) => e.stopPropagation()} />
+        </ListItemButton>
+      </SectionCard>
 
-          {isSupported && permission !== 'denied' && (
-            <ListItemButton
-              onClick={handleNotificationToggle}
-              disabled={loading}
-              sx={{ mx: 1, borderRadius: 2 }}
-            >
-              <ListItemIcon>
-                {subscribed ? <NotificationsIcon /> : <NotificationsOffIcon />}
-              </ListItemIcon>
+      {isSupported && permission !== 'denied' && (
+        <>
+          <SectionLabel>{t('settings.sectionNotifications')}</SectionLabel>
+          <SectionCard>
+            <ListItemButton onClick={handleNotificationToggle} disabled={loading} sx={ROW_SX}>
+              <IconBadge>{subscribed ? <NotificationsIcon /> : <NotificationsOffIcon />}</IconBadge>
               <ListItemText
                 primary={t('settings.notifications')}
                 secondary={subscribed ? t('settings.notificationsOn') : t('settings.notificationsOff')}
+                slotProps={{ primary: { style: { fontWeight: 500 } } }}
               />
               <Switch checked={subscribed} disabled={loading} onChange={handleNotificationToggle} onClick={(e) => e.stopPropagation()} />
             </ListItemButton>
-          )}
+          </SectionCard>
+        </>
+      )}
 
-          <Divider sx={{ my: 1 }} />
-
-          <ListItemButton
-            onClick={() => setResetOpen(true)}
-            disabled={balancesLoading}
-            sx={{ mx: 1, borderRadius: 2 }}
-          >
-            <ListItemIcon>
-              {balancesLoading ? <CircularProgress size={20} /> : <AccountBalanceWalletIcon />}
-            </ListItemIcon>
-            <ListItemText
-              primary={t('settings.resetBalance')}
-              secondary={
-                balancesLoading
-                  ? t('settings.resetBalanceLoading')
-                  : t('settings.resetBalanceCurrent', { balance: formatBalance(todayBalance) })
-              }
-            />
-          </ListItemButton>
-
-          <Divider sx={{ my: 1 }} />
-
-          <ListItemButton onClick={() => logoutMutation.mutate()} sx={{ mx: 1, borderRadius: 2, color: 'error.main' }}>
-            <ListItemIcon sx={{ color: 'error.main' }}>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary={t('settings.logout')} />
-          </ListItemButton>
-        </List>
-      </Paper>
+      <SectionLabel>{t('settings.sectionAccount')}</SectionLabel>
+      <SectionCard>
+        <ListItemButton onClick={() => setResetOpen(true)} disabled={balancesLoading} sx={ROW_SX}>
+          <IconBadge>{balancesLoading ? <CircularProgress size={18} color="inherit" /> : <AccountBalanceWalletIcon />}</IconBadge>
+          <ListItemText
+            primary={t('settings.resetBalance')}
+            secondary={
+              balancesLoading
+                ? t('settings.resetBalanceLoading')
+                : t('settings.resetBalanceCurrent', { balance: formatBalance(todayBalance) })
+            }
+            slotProps={{ primary: { style: { fontWeight: 500 } } }}
+          />
+          <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
+        </ListItemButton>
+        <Divider sx={{ mx: 2 }} />
+        <ListItemButton onClick={() => logoutMutation.mutate()} sx={ROW_SX}>
+          <IconBadge danger><LogoutIcon /></IconBadge>
+          <ListItemText primary={t('settings.logout')} slotProps={{ primary: { style: { fontWeight: 500, color: brand.expense } } }} />
+        </ListItemButton>
+      </SectionCard>
 
       <Snackbar
         open={!!pushErrorMsg}

@@ -96,7 +96,10 @@
     "resetBalanceAlreadyZero": "Your balance is already $0.00. No adjustment needed.",
     "resetBalanceConfirmBtn": "Reset now",
     "balanceResetEntryTitle": "Balance adjustment",
-    "balanceResetEntryDesc": "Automatic entry to zero out the balance"
+    "balanceResetEntryDesc": "Automatic entry to zero out the balance",
+    "sectionAppearance": "Appearance",
+    "sectionNotifications": "Notifications",
+    "sectionAccount": "Account"
   },
   "editProfile": {
     "title": "Edit profile",
