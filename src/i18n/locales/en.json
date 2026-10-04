@@ -361,6 +361,17 @@
     "limitsTitle": "What is and isn't captured",
     "limits": "Wallet payments (tap to pay and online Apple Pay purchases) are captured as a Daily expense for today. Pix, bank slips, cash withdrawals and physical-card purchases don't go through Wallet and stay manual. If Shortcuts repeats the same alert within 2 minutes, Zeno ignores the repeat.",
     "error": "Could not complete. Try again.",
-    "close": "Close"
+    "close": "Close",
+    "fieldBodyCard": "Body field (text, optional)",
+    "fieldBodyCategory": "Body field (text, optional)",
+    "step3Extra": "Optional: add two more Text fields. For card, pick Shortcut Input and the card property (something like Card or Pass). For category, pick the Category property. Skip any that isn't in the list. They go into the description and help choose the tag.",
+    "rulesTitle": "Category rules",
+    "rulesIntro": "Zeno picks the spending tag on its own: first by the rules below (the text appears in the merchant name or category) and then by a tag with the same name as the Apple Pay category. With no match, the entry stays untagged.",
+    "rulesNoTags": "Create tags first (Tags menu) so you can link rules to them.",
+    "ruleMatch": "If the text contains",
+    "ruleMatchPlaceholder": "ifood, pharmacy, uber...",
+    "ruleTag": "Use the tag",
+    "ruleAdd": "Add rule",
+    "ruleDelete": "Delete rule"
   }
 }
