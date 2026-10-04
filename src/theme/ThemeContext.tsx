@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { createTheme, type Theme } from '@mui/material/styles';
-import { brand } from './tokens';
+import { brand, surfaces } from './tokens';
 
 interface ThemeContextType {
   mode: 'light' | 'dark';
@@ -12,9 +12,6 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 
 // Design tokens
 const C = {
-  // Backgrounds
-  bgPage: '#F2F2F7',
-  bgPaper: '#FFFFFF',
   bgDark: brand.navy,     // dark navy card
   bgDarkSurface: brand.navySurface,
 
@@ -26,21 +23,11 @@ const C = {
   orange: brand.warning,
   purple: brand.purple,
 
-  // Text on light bg
-  textPrimary: '#1C1C1E',
-  textSecondary: '#8E8E93',
-  textDisabled: '#AEAEB2',
-
-  // Text on dark bg
-  darkTextPrimary: '#FFFFFF',
-  darkTextSecondary: 'rgba(255,255,255,0.65)',
-
-  // Dividers
-  dividerLight: '#E5E5EA',
 } as const;
 
 function getTheme(mode: 'light' | 'dark'): Theme {
   const isDark = mode === 'dark';
+  const n = surfaces[mode];
 
   return createTheme({
     palette: {
@@ -75,29 +62,9 @@ function getTheme(mode: 'light' | 'dark'): Theme {
         dark: brand.warningDark,
         contrastText: '#FFFFFF',
       },
-      ...(isDark
-        ? {
-            background: {
-              default: '#0F1623',
-              paper: '#1A2438',
-            },
-            text: {
-              primary: '#F0F4F8',
-              secondary: '#9DAFC5',
-            },
-            divider: '#2A3C54',
-          }
-        : {
-            background: {
-              default: C.bgPage,
-              paper: C.bgPaper,
-            },
-            text: {
-              primary: C.textPrimary,
-              secondary: C.textSecondary,
-            },
-            divider: C.dividerLight,
-          }),
+      background: { default: n.page, paper: n.paper },
+      text: { primary: n.textPrimary, secondary: n.textSecondary, disabled: n.textDisabled },
+      divider: n.divider,
     },
     typography: {
       fontFamily: '"DM Sans", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -127,7 +94,7 @@ function getTheme(mode: 'light' | 'dark'): Theme {
           root: {
             boxShadow: isDark ? '0 4px 16px rgba(0,0,0,0.4)' : '0 1px 4px rgba(28,28,30,0.06)',
             borderRadius: 16,
-            border: isDark ? '1px solid rgba(255,255,255,0.06)' : `1px solid ${C.dividerLight}`,
+            border: `1px solid ${n.divider}`,
           },
         },
       },
@@ -170,7 +137,7 @@ function getTheme(mode: 'light' | 'dark'): Theme {
         styleOverrides: {
           root: {
             padding: '12px 16px',
-            borderColor: isDark ? '#2A3C54' : C.dividerLight,
+            borderColor: n.divider,
           },
         },
       },
@@ -179,8 +146,8 @@ function getTheme(mode: 'light' | 'dark'): Theme {
           root: {
             '& .MuiTableCell-root': {
               fontWeight: 600,
-              color: isDark ? '#9DAFC5' : C.textSecondary,
-              backgroundColor: isDark ? '#1A2438' : C.bgPage,
+              color: n.textSecondary,
+              backgroundColor: n.page,
             },
           },
         },
@@ -189,7 +156,7 @@ function getTheme(mode: 'light' | 'dark'): Theme {
         styleOverrides: {
           root: {
             '&:hover': {
-              backgroundColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.025)',
+              backgroundColor: n.hover,
             },
           },
         },
@@ -300,14 +267,14 @@ function getTheme(mode: 'light' | 'dark'): Theme {
       MuiDivider: {
         styleOverrides: {
           root: {
-            borderColor: isDark ? '#2A3C54' : C.dividerLight,
+            borderColor: n.divider,
           },
         },
       },
       MuiBottomNavigation: {
         styleOverrides: {
           root: {
-            backgroundColor: isDark ? 'rgba(26,36,56,0.97)' : 'rgba(255,255,255,0.97)',
+            backgroundColor: n.nav,
           },
         },
       },
@@ -317,7 +284,7 @@ function getTheme(mode: 'light' | 'dark'): Theme {
             '&.Mui-selected': {
               color: C.blue,
             },
-            color: isDark ? '#9DAFC5' : C.textSecondary,
+            color: n.textSecondary,
           },
         },
       },
@@ -328,7 +295,8 @@ function getTheme(mode: 'light' | 'dark'): Theme {
 export function ThemeContextProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('theme-mode');
-    return saved === 'dark' ? 'dark' : 'light';
+    if (saved === 'dark' || saved === 'light') return saved;
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
 
   const toggleTheme = useCallback(() => {
@@ -341,6 +309,9 @@ export function ThemeContextProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.style.colorScheme = mode;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', surfaces[mode].page);
   }, [mode]);
 
   const theme = useMemo(() => getTheme(mode), [mode]);

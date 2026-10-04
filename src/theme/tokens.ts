@@ -38,3 +38,29 @@ export const brand = {
 } as const;
 
 export type BrandColor = keyof typeof brand;
+
+/** Neutral surfaces and text per color mode. Dark is layered: page < paper < raised. */
+export const surfaces = {
+  light: {
+    page: '#F2F2F7',
+    paper: '#FFFFFF',
+    raised: '#FFFFFF',
+    divider: '#E5E5EA',
+    textPrimary: '#1C1C1E',
+    textSecondary: '#6E6E73',
+    textDisabled: '#AEAEB2',
+    hover: 'rgba(0,0,0,0.025)',
+    nav: 'rgba(255,255,255,0.97)',
+  },
+  dark: {
+    page: '#0B111B',
+    paper: '#141D2D',
+    raised: '#1B2638',
+    divider: '#243248',
+    textPrimary: '#EAF0F7',
+    textSecondary: '#93A4BA',
+    textDisabled: '#5E6E84',
+    hover: 'rgba(255,255,255,0.04)',
+    nav: 'rgba(20,29,45,0.97)',
+  },
+} as const;
