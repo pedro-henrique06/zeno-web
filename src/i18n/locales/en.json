@@ -34,7 +34,8 @@
       "googleButton": "Sign in with Google",
       "noAccount": "Don't have an account?",
       "createAccount": "Create account",
-      "genericError": "Could not sign in. Check your details."
+      "genericError": "Could not sign in. Check your details.",
+      "welcome": "Welcome back."
     },
     "register": {
       "tagline": "Create your account",
@@ -56,7 +57,8 @@
       "haveAccount": "Already have an account?",
       "login": "Sign in",
       "passwordMismatch": "Passwords do not match",
-      "genericError": "Could not create account."
+      "genericError": "Could not create account.",
+      "welcome": "Let's get started."
     }
   },
   "menu": {

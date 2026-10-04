@@ -34,7 +34,8 @@
       "googleButton": "Entrar com Google",
       "noAccount": "Não tem uma conta?",
       "createAccount": "Criar conta",
-      "genericError": "Não foi possível entrar. Verifique seus dados."
+      "genericError": "Não foi possível entrar. Verifique seus dados.",
+      "welcome": "Bem-vindo de volta."
     },
     "register": {
       "tagline": "Crie sua conta",
@@ -56,7 +57,8 @@
       "haveAccount": "Já tem uma conta?",
       "login": "Entrar",
       "passwordMismatch": "As senhas não conferem",
-      "genericError": "Não foi possível criar a conta."
+      "genericError": "Não foi possível criar a conta.",
+      "welcome": "Vamos começar."
     }
   },
   "menu": {
