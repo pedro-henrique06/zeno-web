@@ -14,57 +14,88 @@ import { EconomizedHorizonDialog } from '@/components/EconomizedHorizonDialog';
 import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog';
 import { CostOfLivingHorizonDialog } from '@/components/CostOfLivingHorizonDialog';
 import { DailyAverageHorizonDialog } from '@/components/DailyAverageHorizonDialog';
-import { alpha } from '@mui/material/styles';
 import { brand } from '@/theme/tokens';
 
-/** Large colored income / expense tile */
-function BigTile({
+/** The one hero card: month balance with income / expense underneath */
+function HeroCard({
   label,
-  value,
-  color,
-  bgColor,
+  hint,
+  balance,
+  income,
+  expenses,
+  incomeLabel,
+  expensesLabel,
   currency,
   language,
+  onClick,
 }: {
   label: string;
-  value: number;
-  color: string;
-  bgColor: string;
+  hint: string;
+  balance: number;
+  income: number;
+  expenses: number;
+  incomeLabel: string;
+  expensesLabel: string;
   currency?: Currency;
   language?: Language;
+  onClick: () => void;
 }) {
+  const positive = balance >= 0;
   return (
-    <Box
+    <Paper
+      onClick={onClick}
       sx={{
-        flex: 1,
-        p: 2,
-        borderRadius: 3,
-        bgcolor: bgColor,
-        border: '1px solid',
-        borderColor: 'divider',
+        p: 2.5,
+        mb: 2,
+        borderRadius: 4,
+        bgcolor: brand.navy,
+        boxShadow: 'none',
+        border: 'none',
+        cursor: 'pointer',
       }}
     >
-      <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color, display: 'block', mb: 0.75, opacity: 0.7 }}>
+      <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)', mb: 0.5 }}>
         {label}
       </Typography>
       <Typography
         sx={{
           fontFamily: '"Fraunces", serif',
-          fontSize: '1.4rem',
-          fontWeight: 700,
-          color,
-          fontVariantNumeric: 'tabular-nums',
-          lineHeight: 1,
+          fontSize: '2.25rem',
+          fontWeight: 600,
+          lineHeight: 1.1,
           letterSpacing: '-0.5px',
+          color: '#FFFFFF',
+          fontVariantNumeric: 'tabular-nums',
         }}
       >
-        {formatCurrency(value, currency, language)}
+        {positive ? '+' : ''}{formatCurrency(balance, currency, language)}
       </Typography>
-    </Box>
+      <Typography sx={{ fontSize: '12px', fontWeight: 600, color: positive ? brand.income : brand.expense, mt: 0.5 }}>
+        {hint}
+      </Typography>
+      <Box sx={{ display: 'flex', gap: 2, mt: 2, pt: 2, borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+        {[
+          { l: incomeLabel, v: income, c: brand.income },
+          { l: expensesLabel, v: expenses, c: brand.expense },
+        ].map(({ l, v, c }) => (
+          <Box key={l} sx={{ flex: 1, minWidth: 0 }}>
+            <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)' }}>
+              {l}
+            </Typography>
+            <Typography
+              sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.2rem', fontWeight: 600, color: c, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}
+            >
+              {formatCurrency(v, currency, language)}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </Paper>
   );
 }
 
-function StatCard({
+/** A tappable row of the monthly calculations list (no box of its own) */
+function StatRow({
   label,
   value,
   subLabel,
@@ -75,41 +106,34 @@ function StatCard({
   value: string;
   subLabel: string;
   subColor: 'success.main' | 'error.main' | 'text.secondary';
-  onClick?: () => void;
+  onClick: () => void;
 }) {
   return (
-    <Paper
-      sx={{
-        p: 2,
-        borderRadius: 3,
-        cursor: onClick ? 'pointer' : 'default',
-        border: '1px solid',
-        borderColor: 'divider',
-        boxShadow: 'none',
-        transition: 'background-color 0.15s',
-        '&:hover': onClick ? { bgcolor: 'action.hover' } : {},
-      }}
+    <Box
       onClick={onClick}
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: 2,
+        px: 2,
+        py: 1.5,
+        cursor: 'pointer',
+        transition: 'background-color 0.15s',
+        '&:hover': { bgcolor: 'action.hover' },
+        '& + &': { borderTop: '1px solid', borderColor: 'divider' },
+      }}
     >
-      <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
-        {label}
-      </Typography>
+      <Box sx={{ minWidth: 0 }}>
+        <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{label}</Typography>
+        <Typography sx={{ fontSize: '12px', color: subColor, fontWeight: 500 }}>{subLabel}</Typography>
+      </Box>
       <Typography
-        sx={{
-          fontFamily: '"Fraunces", serif',
-          fontSize: '1.2rem',
-          fontWeight: 600,
-          mb: 0.5,
-          fontVariantNumeric: 'tabular-nums',
-          lineHeight: 1.2,
-        }}
+        sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.15rem', fontWeight: 600, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}
       >
         {value}
       </Typography>
-      <Typography sx={{ fontSize: '12px', color: subColor, fontWeight: 600 }}>
-        {subLabel}
-      </Typography>
-    </Paper>
+    </Box>
   );
 }
 
@@ -233,60 +257,47 @@ export default function DashboardPage() {
         </Typography>
       </Box>
 
-      {/* Big income / expense tiles */}
-      <Box sx={{ display: 'flex', gap: 1.5, mb: 2 }}>
-        <BigTile
-          label={t('dashboard.income')}
-          value={movements.entrada}
-          color={brand.income}
-          bgColor={alpha(brand.income, 0.08)}
-          currency={profile?.currency}
-          language={profile?.language}
-        />
-        <BigTile
-          label={t('dashboard.expenses')}
-          value={movements.saida + movements.cartao}
-          color={brand.expense}
-          bgColor={alpha(brand.expense, 0.08)}
-          currency={profile?.currency}
-          language={profile?.language}
-        />
-      </Box>
+      {/* Hero: month balance + income / expenses */}
+      <HeroCard
+        label={t('dashboard.monthBalance')}
+        hint={performance >= 0 ? t('dashboard.moneyLeftOver') : t('dashboard.moneyShort')}
+        balance={performance}
+        income={movements.entrada}
+        expenses={movements.saida + movements.cartao}
+        incomeLabel={t('dashboard.income')}
+        expensesLabel={t('dashboard.expenses')}
+        currency={profile?.currency}
+        language={profile?.language}
+        onClick={() => setPerformanceOpen(true)}
+      />
 
-      {/* Stat cards */}
-      <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700, display: 'block', mb: 1, fontSize: '0.65rem', letterSpacing: '.08em' }}>
+      {/* Monthly calculations: one list, no per-item boxes */}
+      <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700, display: 'block', mb: 1, fontSize: '11px', letterSpacing: '.08em' }}>
         {t('dashboard.monthlyCalculations')}
       </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', sm: 'repeat(4, 1fr)' }, gap: 1.25, mb: 2.5 }}>
-        <StatCard
-          label={t('dashboard.performance')}
-          value={formatCurrency(performance, profile?.currency, profile?.language)}
-          subLabel={performance >= 0 ? t('dashboard.moneyLeftOver') : t('dashboard.moneyShort')}
-          subColor={performance >= 0 ? 'success.main' : 'error.main'}
-          onClick={() => setPerformanceOpen(true)}
-        />
-        <StatCard
+      <Paper sx={{ borderRadius: 3, mb: 2.5, border: '1px solid', borderColor: 'divider', boxShadow: 'none', overflow: 'hidden' }}>
+        <StatRow
           label={t('dashboard.saved')}
           value={`${economizedPercent.toFixed(1)}%`}
           subLabel={economizedPercent > 0 ? t('dashboard.savedHint') : t('dashboard.nothingSaved')}
           subColor={economizedPercent > 0 ? 'success.main' : 'text.secondary'}
           onClick={() => setEconomizedOpen(true)}
         />
-        <StatCard
+        <StatRow
           label={t('dashboard.costOfLiving')}
           value={formatCurrency(costOfLiving, profile?.currency, profile?.language)}
           subLabel={t('dashboard.costOfLivingHint')}
           subColor="text.secondary"
           onClick={() => setCostOfLivingOpen(true)}
         />
-        <StatCard
+        <StatRow
           label={t('dashboard.dailyAverage')}
           value={formatCurrency(dailyAverageReal, profile?.currency, profile?.language)}
           subLabel={t('dashboard.dailyAverageHint')}
           subColor="text.secondary"
           onClick={() => setDailyAverageOpen(true)}
         />
-      </Box>
+      </Paper>
 
       {/* Movement bars — POR CATEGORIA */}
       <Paper sx={{ borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
@@ -304,26 +315,6 @@ export default function DashboardPage() {
         <MovementBar kind={EntryKind.Diario} label={t('dashboard.daily')} total={movements.diario} max={totalMovement} currency={profile?.currency} language={profile?.language} />
         <MovementBar kind={EntryKind.Economia} label={t('dashboard.savings')} total={movements.economia} max={totalMovement} currency={profile?.currency} language={profile?.language} />
         <MovementBar kind={EntryKind.Cartao} label={t('dashboard.cardSpending')} total={movements.cartao} max={totalMovement} currency={profile?.currency} language={profile?.language} />
-      </Paper>
-
-      {/* Saldo do mês */}
-      <Paper sx={{
-        borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider',
-        boxShadow: 'none', mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        bgcolor: performance >= 0 ? alpha(brand.income, 0.06) : alpha(brand.expense, 0.06),
-      }}>
-        <Typography sx={{ fontSize: '13px', color: 'text.secondary', fontWeight: 500 }}>
-          {t('dashboard.monthBalance')}
-        </Typography>
-        <Typography sx={{
-          fontFamily: '"Fraunces", serif',
-          fontSize: '1.35rem',
-          fontWeight: 600,
-          color: performance >= 0 ? brand.income : brand.expense,
-          fontVariantNumeric: 'tabular-nums',
-        }}>
-          {performance >= 0 ? '+' : ''}{formatCurrency(performance, profile?.currency, profile?.language)}
-        </Typography>
       </Paper>
 
       <EconomizedHorizonDialog
