@@ -125,7 +125,7 @@ function EntryCard({
           </Typography>
           {tagName && (
             <>
-              <Typography variant="caption" color="text.disabled">
+              <Typography variant="caption" color="text.secondary">
                 ·
               </Typography>
               <Typography variant="caption" color="text.secondary">

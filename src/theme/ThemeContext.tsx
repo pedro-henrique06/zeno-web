@@ -79,6 +79,16 @@ function getTheme(mode: 'light' | 'dark'): Theme {
       borderRadius: 12,
     },
     components: {
+      MuiButtonBase: {
+        styleOverrides: {
+          root: {
+            '&.Mui-focusVisible': {
+              outline: `2px solid ${brand.blue}`,
+              outlineOffset: 2,
+            },
+          },
+        },
+      },
       MuiButton: {
         styleOverrides: {
           root: {
@@ -126,10 +136,7 @@ function getTheme(mode: 'light' | 'dark'): Theme {
       MuiInputBase: {
         styleOverrides: {
           root: {
-            height: '48px',
-          },
-          multiline: {
-            height: 'auto',
+            minHeight: '48px',
           },
         },
       },
@@ -223,6 +230,10 @@ function getTheme(mode: 'light' | 'dark'): Theme {
         styleOverrides: {
           root: {
             borderRadius: 10,
+          },
+          sizeSmall: {
+            minWidth: 36,
+            minHeight: 36,
           },
         },
       },

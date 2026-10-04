@@ -15,6 +15,7 @@ import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog'
 import { CostOfLivingHorizonDialog } from '@/components/CostOfLivingHorizonDialog';
 import { DailyAverageHorizonDialog } from '@/components/DailyAverageHorizonDialog';
 import { brand } from '@/theme/tokens';
+import { clickableProps } from '@/utils/a11y';
 
 /** The one hero card: month balance with income / expense underneath */
 function HeroCard({
@@ -43,7 +44,7 @@ function HeroCard({
   const positive = balance >= 0;
   return (
     <Paper
-      onClick={onClick}
+      {...clickableProps(onClick)}
       sx={{
         p: 2.5,
         mb: 2,
@@ -110,7 +111,7 @@ function StatRow({
 }) {
   return (
     <Box
-      onClick={onClick}
+      {...clickableProps(onClick)}
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -252,7 +253,7 @@ export default function DashboardPage() {
         >
           {t('dashboard.title')}
         </Typography>
-        <Typography sx={{ fontSize: '12px', color: 'text.disabled', mt: 0.25 }}>
+        <Typography sx={{ fontSize: '12px', color: 'text.secondary', mt: 0.25 }}>
           {t('dashboard.subtitle', { month: new Date(year, month - 1).toLocaleString('default', { month: 'long' }) })}
         </Typography>
       </Box>
@@ -302,7 +303,7 @@ export default function DashboardPage() {
       {/* Movement bars — POR CATEGORIA */}
       <Paper sx={{ borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-          <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: 'text.disabled' }}>
+          <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: 'text.secondary' }}>
             {t('dashboard.monthMovements')}
           </Typography>
           <Button size="small" sx={{ color: brand.blue, fontWeight: 600, fontSize: '0.78rem', p: '2px 8px' }} onClick={() => navigate(`/entries?month=${month}&year=${year}`)}>
