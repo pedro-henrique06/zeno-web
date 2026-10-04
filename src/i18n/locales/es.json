@@ -348,7 +348,7 @@
     "regenerate": "Generar nueva clave",
     "revoke": "Revocar",
     "step2Title": "2. Crea la automatización",
-    "step2": "En la app Atajos: pestaña Automatización, toca +, elige Transacción. Selecciona las tarjetas, elige Ejecutar inmediatamente y toca Siguiente. Añade la acción Obtener contenido de URL.",
+    "step2": "En la app Atajos: pestaña Automatización, toca +. En la búsqueda de activadores (chip Automatización), elige Wallet (en iOS antiguos se llama Transacción). Selecciona las tarjetas y elige Ejecutar inmediatamente. Añade la acción Obtener contenido de URL.",
     "step3Title": "3. Completa la acción",
     "step3": "Toca Mostrar más y completa. Método: POST. Cuerpo de la solicitud: JSON.",
     "fieldUrl": "URL",

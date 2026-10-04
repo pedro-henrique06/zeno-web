@@ -348,7 +348,7 @@
     "regenerate": "Gerar nova chave",
     "revoke": "Revogar",
     "step2Title": "2. Crie a automação",
-    "step2": "No app Atalhos: aba Automação, toque em +, escolha Transação. Marque os cartões, escolha Executar imediatamente e toque em Seguinte. Adicione a ação Obter conteúdo da URL.",
+    "step2": "No app Atalhos: aba Automação, toque em +. Na busca de gatilhos (chip Automação), escolha Carteira (em iOS mais antigos chama-se Transação). Marque os cartões e escolha Executar imediatamente. Adicione a ação Obter conteúdo da URL.",
     "step3Title": "3. Preencha a ação",
     "step3": "Toque em Mostrar mais e preencha. Método: POST. Corpo da solicitação: JSON.",
     "fieldUrl": "URL",

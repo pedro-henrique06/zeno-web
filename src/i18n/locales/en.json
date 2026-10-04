@@ -348,7 +348,7 @@
     "regenerate": "Generate new key",
     "revoke": "Revoke",
     "step2Title": "2. Create the automation",
-    "step2": "In the Shortcuts app: Automation tab, tap +, choose Transaction. Select your cards, choose Run Immediately and tap Next. Add the action Get Contents of URL.",
+    "step2": "In the Shortcuts app: Automation tab, tap +. In the trigger search (Automation chip), choose Wallet (called Transaction on older iOS). Select your cards and choose Run Immediately. Add the action Get Contents of URL.",
     "step3Title": "3. Fill in the action",
     "step3": "Tap Show More and fill in. Method: POST. Request Body: JSON.",
     "fieldUrl": "URL",
