@@ -79,12 +79,9 @@ function EntryCard({
         gap: 1.5,
         px: 2,
         py: 1.5,
-        borderRadius: 3,
-        bgcolor: 'background.paper',
-        border: '1px solid',
-        borderColor: 'divider',
         cursor: 'pointer',
         '&:hover': { bgcolor: 'action.hover' },
+        '& + &': { borderTop: '1px solid', borderColor: 'divider' },
         opacity: isFuture ? 0.72 : 1,
       }}
     >
@@ -93,7 +90,7 @@ function EntryCard({
         sx={{
           width: 36,
           height: 36,
-          borderRadius: 2,
+          borderRadius: '50%',
           bgcolor: isFuture ? 'transparent' : `${EntryKindColors[entry.kind]}18`,
           border: isFuture ? `1.5px solid ${EntryKindColors[entry.kind]}` : 'none',
           display: 'flex',
@@ -299,14 +296,32 @@ export default function EntriesPage() {
             <Stack spacing={2.5}>
               {groupEntriesByDate(entries).map((group) => (
                 <Box key={group.key} ref={group.key === focusDate ? focusRowRef : undefined}>
-                  <Typography
-                    variant="overline"
-                    color="text.secondary"
-                    sx={{ fontWeight: 700, letterSpacing: 0.5, pl: 0.5 }}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', px: 0.5 }}>
+                    <Typography
+                      variant="overline"
+                      color="text.secondary"
+                      sx={{ fontWeight: 700, letterSpacing: 0.5 }}
+                    >
+                      {group.label}
+                    </Typography>
+                    <Typography
+                      sx={{ fontSize: '0.8rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}
+                      color={group.total >= 0 ? 'success.main' : 'error.main'}
+                    >
+                      {group.total >= 0 ? '+' : '-'}
+                      {formatCurrency(Math.abs(group.total), profile?.currency, profile?.language)}
+                    </Typography>
+                  </Box>
+                  <Paper
+                    sx={{
+                      mt: 0.75,
+                      borderRadius: 3,
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      boxShadow: 'none',
+                      overflow: 'hidden',
+                    }}
                   >
-                    {group.label}
-                  </Typography>
-                  <Stack spacing={1} sx={{ mt: 0.75 }}>
                     {group.entries.map((entry) => (
                       <EntryCard
                         key={entry.id}
@@ -318,7 +333,7 @@ export default function EntriesPage() {
                         language={profile?.language}
                       />
                     ))}
-                  </Stack>
+                  </Paper>
                 </Box>
               ))}
             </Stack>

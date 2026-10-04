@@ -1,9 +1,12 @@
 import type { Entry } from '@/types';
+import { isCredit } from '@/utils/entryKind';
 
 export interface EntryDateGroup {
   key: string;
   label: string;
   entries: Entry[];
+  /** Net of the day: credits minus debits. */
+  total: number;
 }
 
 function dateKey(d: Date): string {
@@ -37,6 +40,7 @@ export function groupEntriesByDate(entries: Entry[]): EntryDateGroup[] {
         const d = parts.length === 3 ? new Date(parts[0], parts[1] - 1, parts[2]) : new Date(key);
         label = isNaN(d.getTime()) ? key : formatter.format(d);
       }
-      return { key, label, entries: groupEntries };
+      const total = groupEntries.reduce((sum, e) => sum + (isCredit(e.kind) ? e.value : -e.value), 0);
+      return { key, label, entries: groupEntries, total };
     });
 }

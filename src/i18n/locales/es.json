@@ -96,7 +96,10 @@
     "resetBalanceAlreadyZero": "Su saldo ya está en $0,00. No se necesita ningún ajuste.",
     "resetBalanceConfirmBtn": "Resetear ahora",
     "balanceResetEntryTitle": "Ajuste de saldo",
-    "balanceResetEntryDesc": "Movimiento automático para llevar el saldo a cero"
+    "balanceResetEntryDesc": "Movimiento automático para llevar el saldo a cero",
+    "sectionAppearance": "Apariencia",
+    "sectionNotifications": "Notificaciones",
+    "sectionAccount": "Cuenta"
   },
   "editProfile": {
     "title": "Editar perfil",
