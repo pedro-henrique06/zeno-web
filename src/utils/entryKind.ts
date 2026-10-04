@@ -3,10 +3,10 @@ import { EntryKind } from '@/types';
 import { brand } from '@/theme/tokens';
 
 export const EntryKindColors: Record<EntryKind, string> = {
-  [EntryKind.Entrada]: '#22C55E',
-  [EntryKind.Saida]: '#F97316',
-  [EntryKind.Diario]: '#EC4899',
-  [EntryKind.Economia]: '#14B8A6',
+  [EntryKind.Entrada]: brand.income,
+  [EntryKind.Saida]: brand.expense,
+  [EntryKind.Diario]: brand.warning,
+  [EntryKind.Economia]: brand.teal,
   [EntryKind.Cartao]: brand.purple,
 };
 

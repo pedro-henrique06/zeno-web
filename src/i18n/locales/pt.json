@@ -162,7 +162,10 @@
     "statsExpenses": "Saídas",
     "statsForecast": "Saldo previsto",
     "currentBalance": "Saldo atual",
-    "upcoming": "Próximos lançamentos"
+    "upcoming": "Próximos lançamentos",
+    "chartPast": "Realizado",
+    "chartFuture": "Projetado",
+    "chartToday": "HOJE"
   },
   "categories": {
     "searchPlaceholder": "Buscar tags",

@@ -162,7 +162,10 @@
     "upcoming": "Upcoming entries",
     "statsIncome": "Income",
     "statsExpenses": "Expenses",
-    "statsForecast": "Projected balance"
+    "statsForecast": "Projected balance",
+    "chartPast": "Actual",
+    "chartFuture": "Projected",
+    "chartToday": "TODAY"
   },
   "categories": {
     "searchPlaceholder": "Search tags",
