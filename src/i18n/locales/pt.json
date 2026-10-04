@@ -348,7 +348,7 @@
     "regenerate": "Gerar nova chave",
     "revoke": "Revogar",
     "step2Title": "2. Crie a automação",
-    "step2": "No app Atalhos: aba Automação, toque em +, escolha Transação. Marque os cartões, escolha Executar imediatamente e toque em Seguinte. Adicione a ação Obter conteúdo da URL.",
+    "step2": "No app Atalhos: aba Automação, toque em +. Na busca de gatilhos (chip Automação), escolha Carteira (em iOS mais antigos chama-se Transação). Marque os cartões e escolha Executar imediatamente. Adicione a ação Obter conteúdo da URL.",
     "step3Title": "3. Preencha a ação",
     "step3": "Toque em Mostrar mais e preencha. Método: POST. Corpo da solicitação: JSON.",
     "fieldUrl": "URL",
@@ -361,6 +361,17 @@
     "limitsTitle": "O que entra e o que não entra",
     "limits": "Entram os pagamentos feitos pela Carteira (aproximação e compras online com Apple Pay), sempre como gasto Diário do dia. Pix, boleto, saque e compras com o cartão físico não passam pela Carteira e continuam manuais. Se o Atalhos repetir o mesmo aviso em até 2 minutos, o Zeno ignora a repetição.",
     "error": "Não foi possível concluir. Tente novamente.",
-    "close": "Fechar"
+    "close": "Fechar",
+    "fieldBodyCard": "Campo do corpo (texto, opcional)",
+    "fieldBodyCategory": "Campo do corpo (texto, opcional)",
+    "step3Extra": "Opcional: adicione mais dois campos de Texto. No campo card, escolha Entrada do Atalho e a propriedade do cartão (algo como Cartão ou Passe). No campo category, escolha a propriedade Categoria. Se alguma não existir na lista, pule. Eles vão para a descrição e ajudam a escolher a tag.",
+    "rulesTitle": "Regras de categoria",
+    "rulesIntro": "O Zeno escolhe a tag do gasto sozinho: primeiro pelas regras abaixo (o texto aparece no nome do estabelecimento ou na categoria) e depois por uma tag com o mesmo nome da categoria do Apple Pay. Sem correspondência, o gasto fica sem tag.",
+    "rulesNoTags": "Crie tags primeiro (menu Tags) para poder ligar regras a elas.",
+    "ruleMatch": "Se o texto contiver",
+    "ruleMatchPlaceholder": "ifood, farmácia, uber...",
+    "ruleTag": "Usar a tag",
+    "ruleAdd": "Adicionar regra",
+    "ruleDelete": "Apagar regra"
   }
 }

@@ -348,7 +348,7 @@
     "regenerate": "Generar nueva clave",
     "revoke": "Revocar",
     "step2Title": "2. Crea la automatización",
-    "step2": "En la app Atajos: pestaña Automatización, toca +, elige Transacción. Selecciona las tarjetas, elige Ejecutar inmediatamente y toca Siguiente. Añade la acción Obtener contenido de URL.",
+    "step2": "En la app Atajos: pestaña Automatización, toca +. En la búsqueda de activadores (chip Automatización), elige Wallet (en iOS antiguos se llama Transacción). Selecciona las tarjetas y elige Ejecutar inmediatamente. Añade la acción Obtener contenido de URL.",
     "step3Title": "3. Completa la acción",
     "step3": "Toca Mostrar más y completa. Método: POST. Cuerpo de la solicitud: JSON.",
     "fieldUrl": "URL",
@@ -361,6 +361,17 @@
     "limitsTitle": "Qué entra y qué no",
     "limits": "Entran los pagos hechos con Wallet (por aproximación y compras en línea con Apple Pay) como gasto Diario de hoy. Pix, boletos, retiros y compras con tarjeta física no pasan por Wallet y siguen siendo manuales. Si Atajos repite el mismo aviso en menos de 2 minutos, Zeno ignora la repetición.",
     "error": "No se pudo completar. Inténtalo de nuevo.",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "fieldBodyCard": "Campo del cuerpo (texto, opcional)",
+    "fieldBodyCategory": "Campo del cuerpo (texto, opcional)",
+    "step3Extra": "Opcional: añade dos campos de Texto más. En card, elige Entrada del atajo y la propiedad de la tarjeta (algo como Tarjeta o Pase). En category, elige la propiedad Categoría. Si alguna no está en la lista, sáltala. Van a la descripción y ayudan a elegir la etiqueta.",
+    "rulesTitle": "Reglas de categoría",
+    "rulesIntro": "Zeno elige la etiqueta del gasto solo: primero por las reglas de abajo (el texto aparece en el nombre del comercio o en la categoría) y luego por una etiqueta con el mismo nombre que la categoría de Apple Pay. Sin coincidencia, el gasto queda sin etiqueta.",
+    "rulesNoTags": "Crea etiquetas primero (menú Etiquetas) para poder vincular reglas.",
+    "ruleMatch": "Si el texto contiene",
+    "ruleMatchPlaceholder": "ifood, farmacia, uber...",
+    "ruleTag": "Usar la etiqueta",
+    "ruleAdd": "Añadir regla",
+    "ruleDelete": "Borrar regla"
   }
 }

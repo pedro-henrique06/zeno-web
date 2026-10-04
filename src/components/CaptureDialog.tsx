@@ -4,6 +4,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 import { useTranslation } from 'react-i18next';
 import { useCaptureKeyStatus, useCreateCaptureKey, useRevokeCaptureKey } from '@/hooks/useCaptureKey';
+import { CaptureRulesSection } from '@/components/CaptureRulesSection';
 
 function apiBaseUrl(): string {
   const base = (import.meta.env.VITE_API_URL as string | undefined) || '/api';
@@ -132,8 +133,13 @@ export function CaptureDialog({ open, onClose }: { open: boolean; onClose: () =>
             <CopyField label={t('capture.fieldHeaderValue')} value={key} />
             <CopyField label={t('capture.fieldBodyTitle')} value="title" />
             <CopyField label={t('capture.fieldBodyAmount')} value="amount" />
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 1 }}>
               {t('capture.step3Vars')}
+            </Typography>
+            <CopyField label={t('capture.fieldBodyCard')} value="card" />
+            <CopyField label={t('capture.fieldBodyCategory')} value="category" />
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              {t('capture.step3Extra')}
             </Typography>
 
             <Alert severity="info" sx={{ mt: 2 }}>
@@ -141,6 +147,8 @@ export function CaptureDialog({ open, onClose }: { open: boolean; onClose: () =>
             </Alert>
           </>
         )}
+
+        <CaptureRulesSection enabled={open} />
 
         <StepTitle>{t('capture.limitsTitle')}</StepTitle>
         <Typography variant="body2" color="text.secondary">
