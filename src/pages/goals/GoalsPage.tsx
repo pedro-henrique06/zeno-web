@@ -105,6 +105,9 @@ function ScenarioBars({ basePmt, target, rate, currency, locale }: ScenarioBarsP
         return (
           <Box
             key={i}
+            role="img"
+            aria-label={`${fmtCurrency(pmt)}: ${formatMonths(months)}`}
+            title={`${fmtCurrency(pmt)}: ${formatMonths(months)}`}
             sx={{
               display: 'grid',
               gridTemplateColumns: '64px 1fr 56px',

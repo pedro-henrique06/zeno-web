@@ -162,7 +162,10 @@
     "upcoming": "Próximos movimientos",
     "statsIncome": "Ingresos",
     "statsExpenses": "Gastos",
-    "statsForecast": "Saldo previsto"
+    "statsForecast": "Saldo previsto",
+    "chartPast": "Realizado",
+    "chartFuture": "Proyectado",
+    "chartToday": "HOY"
   },
   "categories": {
     "searchPlaceholder": "Buscar etiquetas",

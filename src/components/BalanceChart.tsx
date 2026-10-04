@@ -1,8 +1,12 @@
 import ReactApexChart from 'react-apexcharts';
 import { useTheme } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { useProfile } from '@/hooks/useUser';
+import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
 import type { ApexOptions } from 'apexcharts';
 import { alpha } from '@mui/material/styles';
 import { brand } from '@/theme/tokens';
+import type { Currency } from '@/types';
 
 export interface ChartPoint {
   x: number; // timestamp ms
@@ -15,13 +19,13 @@ interface BalanceChartProps {
   todayX?: number | null;
   todayY?: number | null;
   height?: number;
-  currency?: string;
+  currency?: Currency;
 }
 
-function fmtY(val: number, currency?: string): string {
+function fmtY(val: number, currency: Currency = 'BRL'): string {
   const abs = Math.abs(val);
   const sign = val < 0 ? '-' : '';
-  const sym = currency === 'USD' ? '$' : currency === 'EUR' ? '€' : 'R$';
+  const sym = CURRENCY_SYMBOLS[currency];
   if (abs >= 1_000_000) return `${sign}${sym}${(abs / 1_000_000).toFixed(1)}M`;
   if (abs >= 1_000)     return `${sign}${sym}${(abs / 1_000).toFixed(abs >= 100_000 ? 0 : 1)}k`;
   return `${sign}${sym}${abs.toFixed(0)}`;
@@ -37,6 +41,9 @@ export function BalanceChart({
 }: BalanceChartProps) {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const { t } = useTranslation();
+  const { data: profile } = useProfile();
+  const locale = LANGUAGE_LOCALES[profile?.language ?? 'PtBR'];
 
   if (past.length < 2) return null;
 
@@ -44,12 +51,12 @@ export function BalanceChart({
 
   const series = hasFuture
     ? [
-        { name: 'Realizado', data: past },
-        { name: 'Projetado', data: future },
+        { name: t('balances.chartPast'), data: past },
+        { name: t('balances.chartFuture'), data: future },
       ]
-    : [{ name: 'Realizado', data: past }];
+    : [{ name: t('balances.chartPast'), data: past }];
 
-  const labelColor = isDark ? 'rgba(255,255,255,0.38)' : 'rgba(0,0,0,0.38)';
+  const labelColor = theme.palette.text.secondary;
   const gridColor  = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
 
   const options: ApexOptions = {
@@ -103,17 +110,25 @@ export function BalanceChart({
       padding: { left: 0, right: 6, top: -8, bottom: -4 },
     },
     dataLabels: { enabled: false },
-    markers:    { size: 0 },
-    legend:     { show: false },
+    markers:    { size: 0, hover: { size: 5 } },
+    legend: {
+      show: hasFuture,
+      position: 'top',
+      horizontalAlign: 'right',
+      fontSize: '12px',
+      fontFamily: '"DM Sans", sans-serif',
+      labels: { colors: labelColor },
+      markers: { size: 5, offsetX: -2 },
+      itemMargin: { horizontal: 8 },
+    },
     tooltip: {
       theme: isDark ? 'dark' : 'light',
+      shared: true,
+      intersect: false,
       x: { format: 'dd MMM' },
       y: {
         formatter: (v: number) =>
-          v.toLocaleString('pt-BR', {
-            style: 'currency',
-            currency: currency === 'USD' ? 'USD' : currency === 'EUR' ? 'EUR' : 'BRL',
-          }),
+          v.toLocaleString(locale, { style: 'currency', currency: currency ?? 'BRL' }),
       },
     },
     annotations: {
@@ -123,7 +138,7 @@ export function BalanceChart({
             borderColor: alpha(brand.income, 0.4),
             strokeDashArray: 4,
             label: {
-              text: 'HOJE',
+              text: t('balances.chartToday'),
               position: 'top',
               borderColor: 'transparent',
               style: {
