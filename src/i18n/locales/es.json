@@ -402,6 +402,9 @@
     "goalMonthly": "Aporte de este mes (20%): {{amount}}",
     "goalError": "No se pudo guardar. Inténtalo de nuevo.",
     "personalGoal": "Tu meta personal (adicional, solo tú la ves)",
-    "privacy": "Solo se muestran los totales de la casa: nadie ve los ingresos, el saldo ni los movimientos de los demás. Los importes se suman sin conversión de moneda."
+    "privacy": "Solo se muestran los totales de la casa: nadie ve los ingresos, el saldo ni los movimientos de los demás. Los importes se suman sin conversión de moneda.",
+    "fixedNone": "Ningún gasto fijo vinculado a la casa. Asocia movimientos recurrentes de gasto a esta casa.",
+    "fixedLeft": "Gastos fijos de la casa: {{fixed}} · sobran {{amount}} del 50%",
+    "fixedOver": "Gastos fijos de la casa: {{fixed}} · exceden {{amount}} del 50%"
   }
 }

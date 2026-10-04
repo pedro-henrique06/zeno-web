@@ -97,6 +97,9 @@ export function HouseBudgetTab({ house }: { house: House }) {
 
   const goal = budget.goal;
   const noIncome = budget.totalIncome <= 0;
+  const over = budget.needsRemaining < 0;
+  // Share of the needs bar already taken by the house's fixed expenses (capped at the full bar).
+  const fixedShare = budget.needs > 0 ? Math.min((budget.fixedExpenses / budget.needs) * 100, 100) : budget.fixedExpenses > 0 ? 100 : 0;
 
   return (
     <Box sx={{ px: 3, pt: 1 }}>
@@ -147,8 +150,32 @@ export function HouseBudgetTab({ house }: { house: House }) {
                 </Typography>
               </Box>
               <Box sx={{ height: 6, borderRadius: 3, bgcolor: 'action.hover', mt: 0.5, overflow: 'hidden' }}>
-                <Box sx={{ height: '100%', width: `${share}%`, borderRadius: 3, bgcolor: color }} />
+                <Box sx={{ position: 'relative', height: '100%', width: `${share}%`, borderRadius: 3, bgcolor: color }}>
+                  {key === 'needs' && fixedShare > 0 && (
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: `${fixedShare}%`,
+                        borderRadius: 3,
+                        bgcolor: over ? brand.expense : brand.navy,
+                      }}
+                    />
+                  )}
+                </Box>
               </Box>
+              {key === 'needs' && (
+                <Typography
+                  variant="caption"
+                  sx={{ display: 'block', mt: 0.5, color: over ? 'error.main' : 'text.secondary', fontVariantNumeric: 'tabular-nums' }}
+                >
+                  {budget.fixedExpenses <= 0
+                    ? t('houseBudget.fixedNone')
+                    : over
+                      ? t('houseBudget.fixedOver', { fixed: money(budget.fixedExpenses), amount: money(-budget.needsRemaining) })
+                      : t('houseBudget.fixedLeft', { fixed: money(budget.fixedExpenses), amount: money(budget.needsRemaining) })}
+                </Typography>
+              )}
             </Box>
           );
         })}

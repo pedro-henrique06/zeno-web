@@ -402,6 +402,9 @@
     "goalMonthly": "Aporte deste mês (20%): {{amount}}",
     "goalError": "Não foi possível salvar. Tente novamente.",
     "personalGoal": "Sua meta pessoal (adicional, só você vê)",
-    "privacy": "Só os totais da casa aparecem aqui: ninguém vê a renda, o saldo ou os lançamentos dos outros moradores. Os valores são somados sem conversão de moeda."
+    "privacy": "Só os totais da casa aparecem aqui: ninguém vê a renda, o saldo ou os lançamentos dos outros moradores. Os valores são somados sem conversão de moeda.",
+    "fixedNone": "Nenhum gasto fixo ligado à casa. Marque lançamentos recorrentes de saída com esta casa.",
+    "fixedLeft": "Gastos fixos da casa: {{fixed}} · sobram {{amount}} dos 50%",
+    "fixedOver": "Gastos fixos da casa: {{fixed}} · passam {{amount}} dos 50%"
   }
 }

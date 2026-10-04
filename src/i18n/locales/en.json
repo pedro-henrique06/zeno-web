@@ -402,6 +402,9 @@
     "goalMonthly": "This month's contribution (20%): {{amount}}",
     "goalError": "Could not save. Try again.",
     "personalGoal": "Your personal goal (extra, only you see it)",
-    "privacy": "Only house totals are shown: nobody sees other residents' income, balance or entries. Amounts are added without currency conversion."
+    "privacy": "Only house totals are shown: nobody sees other residents' income, balance or entries. Amounts are added without currency conversion.",
+    "fixedNone": "No fixed expenses linked to the house. Tag recurring expense entries with this house.",
+    "fixedLeft": "House fixed expenses: {{fixed}} · {{amount}} left of the 50%",
+    "fixedOver": "House fixed expenses: {{fixed}} · {{amount}} over the 50%"
   }
 }

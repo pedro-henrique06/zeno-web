@@ -98,9 +98,9 @@ function HouseDetailDialog({ house, open, onClose }: { house: House; open: boole
         scrollButtons={false}
         sx={{ px: 2, borderBottom: 1, borderColor: 'divider' }}
       >
-        <Tab label={t('houses.budgetTab')} />
-        <Tab label={t('houses.entriesTab')} />
-        <Tab label={t('houses.membersTab')} icon={<GroupIcon fontSize="small" />} iconPosition="end" />
+        <Tab label={t('houses.budgetTab')} sx={{ minWidth: 0, px: 1.5 }} />
+        <Tab label={t('houses.entriesTab')} sx={{ minWidth: 0, px: 1.5 }} />
+        <Tab label={t('houses.membersTab')} sx={{ minWidth: 0, px: 1.5 }} />
       </Tabs>
 
       <DialogContent sx={{ px: 0, minHeight: 200 }}>

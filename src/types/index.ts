@@ -333,6 +333,10 @@ export interface HouseBudget {
   isOwner: boolean;
   totalIncome: number;
   needs: number;
+  /** Recurring expenses linked to the house, for the month. */
+  fixedExpenses: number;
+  /** needs - fixedExpenses; negative when the fixed expenses exceed the 50% slice. */
+  needsRemaining: number;
   wants: number;
   savings: number;
   freePerPerson: number;
