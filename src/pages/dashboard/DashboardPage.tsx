@@ -44,7 +44,7 @@ function BigTile({
         borderColor: 'divider',
       }}
     >
-      <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color, display: 'block', mb: 0.75, opacity: 0.7 }}>
+      <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color, display: 'block', mb: 0.75, opacity: 0.7 }}>
         {label}
       </Typography>
       <Typography
@@ -91,7 +91,7 @@ function StatCard({
       }}
       onClick={onClick}
     >
-      <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
+      <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'text.disabled', mb: 0.75 }}>
         {label}
       </Typography>
       <Typography
@@ -106,7 +106,7 @@ function StatCard({
       >
         {value}
       </Typography>
-      <Typography sx={{ fontSize: '11px', color: subColor, fontWeight: 600 }}>
+      <Typography sx={{ fontSize: '12px', color: subColor, fontWeight: 600 }}>
         {subLabel}
       </Typography>
     </Paper>
@@ -291,7 +291,7 @@ export default function DashboardPage() {
       {/* Movement bars — POR CATEGORIA */}
       <Paper sx={{ borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
-          <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: 'text.disabled' }}>
+          <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: 'text.disabled' }}>
             {t('dashboard.monthMovements')}
           </Typography>
           <Button size="small" sx={{ color: brand.blue, fontWeight: 600, fontSize: '0.78rem', p: '2px 8px' }} onClick={() => navigate(`/entries?month=${month}&year=${year}`)}>

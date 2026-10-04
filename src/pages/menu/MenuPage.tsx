@@ -103,7 +103,7 @@ export default function MenuPage() {
         }} noWrap>
           {user?.name}
         </Typography>
-        <Typography sx={{ fontSize: '11px', color: 'text.secondary' }} noWrap>
+        <Typography sx={{ fontSize: '12px', color: 'text.secondary' }} noWrap>
           {user?.email}
         </Typography>
       </Box>
@@ -122,7 +122,7 @@ export default function MenuPage() {
           }}
           onClick={() => navigate('/menu/previsao-diario')}
         >
-          <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', mb: 0.75 }}>
+          <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', mb: 0.75 }}>
             {t('menu.dailyBudget')}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', mb: 1 }}>

@@ -28,7 +28,7 @@ function BalanceHeader({ days, currency, language }: { days: BalanceDay[]; curre
 
   return (
     <Box sx={{ mb: 1 }}>
-      <Typography sx={{ fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', textTransform: 'uppercase', color: 'text.secondary', mb: 0.5 }}>
+      <Typography sx={{ fontSize: '11px', fontWeight: 800, letterSpacing: '1.2px', textTransform: 'uppercase', color: 'text.secondary', mb: 0.5 }}>
         {t('balances.currentBalance')}
       </Typography>
       <Typography sx={{
@@ -89,7 +89,7 @@ function UpcomingEntries({ entries, currency, language }: { entries: Entry[]; cu
 
   return (
     <Box sx={{ mb: 1.5 }}>
-      <Typography sx={{ fontSize: '9px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', color: 'text.primary', mb: 1 }}>
+      <Typography sx={{ fontSize: '11px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', color: 'text.primary', mb: 1 }}>
         {t('balances.upcoming')}
       </Typography>
       {upcoming.map((entry, i) => {
@@ -106,7 +106,7 @@ function UpcomingEntries({ entries, currency, language }: { entries: Entry[]; cu
             <Box sx={{ width: 10, height: 10, borderRadius: '50%', flexShrink: 0, border: `2px solid ${color}`, mt: '3px' }} />
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <Typography sx={{ fontSize: '12px', fontWeight: 600, color: 'text.secondary' }} noWrap>{entry.title}</Typography>
-              <Typography sx={{ fontSize: '10px', color: 'text.secondary', opacity: 0.6 }}>
+              <Typography sx={{ fontSize: '11px', color: 'text.secondary', opacity: 0.6 }}>
                 em {diff} dia{diff !== 1 ? 's' : ''} · {dayjs(entry.date.substring(0, 10)).format('DD MMM').toLowerCase()}
               </Typography>
             </Box>
@@ -176,7 +176,7 @@ function CalendarView({ days, month, year, onDayPress }: {
                 '&:hover': { bgcolor: isToday ? brand.blue : 'action.hover' },
               }}
             >
-              <Typography sx={{ fontSize: '10px', fontWeight: isToday ? 700 : 500, color: isToday ? '#fff' : isFuture ? brand.teal : 'text.primary' }}>
+              <Typography sx={{ fontSize: '11px', fontWeight: isToday ? 700 : 500, color: isToday ? '#fff' : isFuture ? brand.teal : 'text.primary' }}>
                 {day}
               </Typography>
               {info && (info.hasIncome || info.hasExpense) && (
@@ -194,7 +194,7 @@ function CalendarView({ days, month, year, onDayPress }: {
         {[{ color: brand.income, label: 'Receita' }, { color: brand.expense, label: 'Despesa' }, { color: brand.teal, label: 'Futuro' }].map(({ color, label }) => (
           <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: color }} />
-            <Typography sx={{ fontSize: '9px', color: 'text.secondary' }}>{label}</Typography>
+            <Typography sx={{ fontSize: '11px', color: 'text.secondary' }}>{label}</Typography>
           </Box>
         ))}
       </Box>
@@ -245,25 +245,25 @@ function ListaView({ days, entries, currency, language, onDayPress }: {
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
               {dayEntries.slice(0, 2).map((e) => (
-                <Typography key={e.id} sx={{ fontSize: '11px', color: 'text.secondary' }} noWrap>{e.title}</Typography>
+                <Typography key={e.id} sx={{ fontSize: '12px', color: 'text.secondary' }} noWrap>{e.title}</Typography>
               ))}
               {dayEntries.length > 2 && (
-                <Typography sx={{ fontSize: '10px', color: 'text.disabled' }}>+{dayEntries.length - 2} mais</Typography>
+                <Typography sx={{ fontSize: '11px', color: 'text.disabled' }}>+{dayEntries.length - 2} mais</Typography>
               )}
             </Box>
             <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
               {d.entrada > 0 && (
-                <Typography sx={{ fontSize: '11px', fontWeight: 700, color: brand.income, fontVariantNumeric: 'tabular-nums' }}>
+                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: brand.income, fontVariantNumeric: 'tabular-nums' }}>
                   +{formatCurrency(d.entrada, currency, language)}
                 </Typography>
               )}
               {totalExpense > 0 && (
-                <Typography sx={{ fontSize: '11px', fontWeight: 700, color: brand.expense, fontVariantNumeric: 'tabular-nums' }}>
+                <Typography sx={{ fontSize: '12px', fontWeight: 700, color: brand.expense, fontVariantNumeric: 'tabular-nums' }}>
                   −{formatCurrency(totalExpense, currency, language)}
                 </Typography>
               )}
             </Box>
-            <Typography sx={{ fontWeight: 700, fontSize: '11px', fontVariantNumeric: 'tabular-nums', color: d.balance >= 0 ? brand.income : brand.expense, minWidth: 56, textAlign: 'right' }}>
+            <Typography sx={{ fontWeight: 700, fontSize: '12px', fontVariantNumeric: 'tabular-nums', color: d.balance >= 0 ? brand.income : brand.expense, minWidth: 56, textAlign: 'right' }}>
               {formatCurrency(d.balance, currency, language)}
             </Typography>
           </Box>
