@@ -10,7 +10,6 @@ import {
   IconButton,
   TextField,
   InputAdornment,
-  CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -25,6 +24,8 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import { useTags, useCreateTag, useUpdateTag, useDeleteTag } from '@/hooks/useTags';
 import { StickyHeader } from '@/components/layout/StickyHeader';
 import type { Tag } from '@/types';
+import { EmptyState } from '@/components/EmptyState';
+import { ListSkeleton } from '@/components/Skeletons';
 
 export default function CategoriesPage() {
   const { t } = useTranslation();
@@ -65,8 +66,8 @@ export default function CategoriesPage() {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress />
+      <Box sx={{ mt: 2 }}>
+        <ListSkeleton />
       </Box>
     );
   }
@@ -128,11 +129,13 @@ export default function CategoriesPage() {
           </List>
         </Paper>
       ) : (
-        <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
-          <LocalOfferIcon sx={{ fontSize: 64, mb: 2, opacity: 0.4 }} />
-          <Typography variant="h6">{t('categories.emptyTitle')}</Typography>
-          <Typography variant="body2">{t('categories.emptySubtitle')}</Typography>
-        </Box>
+        <EmptyState
+          icon={<LocalOfferIcon />}
+          title={t('categories.emptyTitle')}
+          subtitle={t('categories.emptySubtitle')}
+          actionLabel={t('categories.newTitle')}
+          onAction={openCreate}
+        />
       )}
       </Box>
 
