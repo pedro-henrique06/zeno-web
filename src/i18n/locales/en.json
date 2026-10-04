@@ -335,5 +335,32 @@
     "secret": "Treat the script like a password: anyone with the key can see the summary. If it leaks, tap Revoke.",
     "error": "Could not complete. Try again.",
     "close": "Close"
+  },
+  "capture": {
+    "item": "Log spending automatically",
+    "itemHint": "Apple Pay adds the expense for you",
+    "title": "Automatic spending (Apple Pay)",
+    "intro": "Every time you pay with a Wallet card (Apple Pay), the iPhone Shortcuts app can tell Zeno, which creates the Daily expense right away.",
+    "step1Title": "1. Generate the capture key",
+    "step1": "It is personal, can only create entries (it cannot read or delete anything) and can be revoked here.",
+    "step1Existing": "You already have an active key. For safety it is not shown again; generate a new one to see the fields (the previous one stops working).",
+    "generate": "Generate key",
+    "regenerate": "Generate new key",
+    "revoke": "Revoke",
+    "step2Title": "2. Create the automation",
+    "step2": "In the Shortcuts app: Automation tab, tap +, choose Transaction. Select your cards, choose Run Immediately and tap Next. Add the action Get Contents of URL.",
+    "step3Title": "3. Fill in the action",
+    "step3": "Tap Show More and fill in. Method: POST. Request Body: JSON.",
+    "fieldUrl": "URL",
+    "fieldHeaderName": "Header: name",
+    "fieldHeaderValue": "Header: value",
+    "fieldBodyTitle": "Body field (text)",
+    "fieldBodyAmount": "Body field (text)",
+    "step3Vars": "In the title field, tap the value and pick the Merchant variable (Shortcut Input). In the amount field, pick the Amount variable. Names may vary slightly by iOS version.",
+    "secret": "Treat the key like a password: anyone with it can create entries in your account. If it leaks, tap Revoke.",
+    "limitsTitle": "What is and isn't captured",
+    "limits": "Wallet payments (tap to pay and online Apple Pay purchases) are captured as a Daily expense for today. Pix, bank slips, cash withdrawals and physical-card purchases don't go through Wallet and stay manual. If Shortcuts repeats the same alert within 2 minutes, Zeno ignores the repeat.",
+    "error": "Could not complete. Try again.",
+    "close": "Close"
   }
 }

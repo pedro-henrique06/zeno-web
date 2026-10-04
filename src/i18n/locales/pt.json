@@ -335,5 +335,32 @@
     "secret": "Guarde o script como senha: quem tiver a chave consegue ver o resumo. Se vazar, toque em Revogar.",
     "error": "Não foi possível concluir. Tente novamente.",
     "close": "Fechar"
+  },
+  "capture": {
+    "item": "Registrar gastos automaticamente",
+    "itemHint": "Apple Pay lança o gasto sozinho",
+    "title": "Gastos automáticos (Apple Pay)",
+    "intro": "Toda vez que você pagar com um cartão da Carteira (Apple Pay), o app Atalhos do iPhone pode avisar o Zeno, que cria o gasto Diário na hora.",
+    "step1Title": "1. Gere a chave de captura",
+    "step1": "Ela é pessoal, só consegue criar lançamentos (não lê nem apaga nada) e pode ser revogada aqui.",
+    "step1Existing": "Você já tem uma chave ativa. Por segurança ela não é mostrada de novo; gere outra para ver os campos (a anterior para de funcionar).",
+    "generate": "Gerar chave",
+    "regenerate": "Gerar nova chave",
+    "revoke": "Revogar",
+    "step2Title": "2. Crie a automação",
+    "step2": "No app Atalhos: aba Automação, toque em +, escolha Transação. Marque os cartões, escolha Executar imediatamente e toque em Seguinte. Adicione a ação Obter conteúdo da URL.",
+    "step3Title": "3. Preencha a ação",
+    "step3": "Toque em Mostrar mais e preencha. Método: POST. Corpo da solicitação: JSON.",
+    "fieldUrl": "URL",
+    "fieldHeaderName": "Cabeçalho: nome",
+    "fieldHeaderValue": "Cabeçalho: valor",
+    "fieldBodyTitle": "Campo do corpo (texto)",
+    "fieldBodyAmount": "Campo do corpo (texto)",
+    "step3Vars": "No campo title, toque no valor e escolha a variável Comerciante (Entrada do Atalho). No campo amount, escolha a variável Valor. Os nomes podem variar um pouco conforme a versão do iOS.",
+    "secret": "Trate a chave como senha: quem a tiver consegue criar lançamentos na sua conta. Se vazar, toque em Revogar.",
+    "limitsTitle": "O que entra e o que não entra",
+    "limits": "Entram os pagamentos feitos pela Carteira (aproximação e compras online com Apple Pay), sempre como gasto Diário do dia. Pix, boleto, saque e compras com o cartão físico não passam pela Carteira e continuam manuais. Se o Atalhos repetir o mesmo aviso em até 2 minutos, o Zeno ignora a repetição.",
+    "error": "Não foi possível concluir. Tente novamente.",
+    "close": "Fechar"
   }
 }

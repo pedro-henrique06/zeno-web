@@ -335,5 +335,32 @@
     "secret": "Trata el script como una contraseña: quien tenga la clave puede ver el resumen. Si se filtra, toca Revocar.",
     "error": "No se pudo completar. Inténtalo de nuevo.",
     "close": "Cerrar"
+  },
+  "capture": {
+    "item": "Registrar gastos automáticamente",
+    "itemHint": "Apple Pay añade el gasto por ti",
+    "title": "Gastos automáticos (Apple Pay)",
+    "intro": "Cada vez que pagues con una tarjeta de Wallet (Apple Pay), la app Atajos del iPhone puede avisar a Zeno, que crea el gasto Diario al instante.",
+    "step1Title": "1. Genera la clave de captura",
+    "step1": "Es personal, solo puede crear movimientos (no lee ni borra nada) y puedes revocarla aquí.",
+    "step1Existing": "Ya tienes una clave activa. Por seguridad no se muestra otra vez; genera una nueva para ver los campos (la anterior deja de funcionar).",
+    "generate": "Generar clave",
+    "regenerate": "Generar nueva clave",
+    "revoke": "Revocar",
+    "step2Title": "2. Crea la automatización",
+    "step2": "En la app Atajos: pestaña Automatización, toca +, elige Transacción. Selecciona las tarjetas, elige Ejecutar inmediatamente y toca Siguiente. Añade la acción Obtener contenido de URL.",
+    "step3Title": "3. Completa la acción",
+    "step3": "Toca Mostrar más y completa. Método: POST. Cuerpo de la solicitud: JSON.",
+    "fieldUrl": "URL",
+    "fieldHeaderName": "Encabezado: nombre",
+    "fieldHeaderValue": "Encabezado: valor",
+    "fieldBodyTitle": "Campo del cuerpo (texto)",
+    "fieldBodyAmount": "Campo del cuerpo (texto)",
+    "step3Vars": "En el campo title, toca el valor y elige la variable Comercio (Entrada del atajo). En el campo amount, elige la variable Importe. Los nombres pueden variar según la versión de iOS.",
+    "secret": "Trata la clave como una contraseña: quien la tenga puede crear movimientos en tu cuenta. Si se filtra, toca Revocar.",
+    "limitsTitle": "Qué entra y qué no",
+    "limits": "Entran los pagos hechos con Wallet (por aproximación y compras en línea con Apple Pay) como gasto Diario de hoy. Pix, boletos, retiros y compras con tarjeta física no pasan por Wallet y siguen siendo manuales. Si Atajos repite el mismo aviso en menos de 2 minutos, Zeno ignora la repetición.",
+    "error": "No se pudo completar. Inténtalo de nuevo.",
+    "close": "Cerrar"
   }
 }
