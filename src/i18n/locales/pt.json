@@ -310,5 +310,30 @@
     "of": "{{saved}} de {{target}}",
     "remaining": "faltam {{time}}",
     "reached": "Meta alcançada"
+  },
+  "widget": {
+    "section": "Widget",
+    "item": "Widget do iPhone",
+    "itemHint": "Saldo, diário e meta na tela inicial",
+    "title": "Widget do iPhone",
+    "intro": "O iPhone só mostra widget de apps nativos, então usamos o app gratuito Scriptable. O widget mostra quanto ainda pode gastar hoje, o saldo do mês e o progresso da meta.",
+    "step1Title": "1. Instale o Scriptable",
+    "step1": "Baixe na App Store:",
+    "step2Title": "2. Gere sua chave",
+    "step2": "A chave é pessoal, só lê o resumo e pode ser revogada aqui a qualquer momento.",
+    "step2Existing": "Você já tem uma chave ativa. Por segurança ela não é mostrada de novo; gere outra para copiar o script (a anterior para de funcionar).",
+    "generate": "Gerar chave",
+    "regenerate": "Gerar nova chave",
+    "revoke": "Revogar",
+    "step3Title": "3. Copie o script",
+    "step3": "Ele já vem com a sua chave. Toque no botão para copiar.",
+    "scriptLabel": "Script do widget",
+    "copy": "Copiar script",
+    "copied": "Copiado",
+    "step4Title": "4. Adicione ao Scriptable e à tela inicial",
+    "step4": "No Scriptable toque em + e cole o script. Dê o nome Zeno. Depois, na tela inicial, segure em um espaço vazio, toque em + , escolha Scriptable, o tamanho do widget, toque no widget, e em Script escolha Zeno.",
+    "secret": "Guarde o script como senha: quem tiver a chave consegue ver o resumo. Se vazar, toque em Revogar.",
+    "error": "Não foi possível concluir. Tente novamente.",
+    "close": "Fechar"
   }
 }

@@ -310,5 +310,30 @@
     "of": "{{saved}} of {{target}}",
     "remaining": "{{time}} left",
     "reached": "Goal reached"
+  },
+  "widget": {
+    "section": "Widget",
+    "item": "iPhone widget",
+    "itemHint": "Balance, daily budget and goal on your home screen",
+    "title": "iPhone widget",
+    "intro": "iPhone only shows widgets from native apps, so we use the free Scriptable app. The widget shows what you can still spend today, the month balance and goal progress.",
+    "step1Title": "1. Install Scriptable",
+    "step1": "Get it on the App Store:",
+    "step2Title": "2. Generate your key",
+    "step2": "The key is personal, read-only and can be revoked here at any time.",
+    "step2Existing": "You already have an active key. For safety it is not shown again; generate a new one to copy the script (the previous one stops working).",
+    "generate": "Generate key",
+    "regenerate": "Generate new key",
+    "revoke": "Revoke",
+    "step3Title": "3. Copy the script",
+    "step3": "It already contains your key. Tap the button to copy it.",
+    "scriptLabel": "Widget script",
+    "copy": "Copy script",
+    "copied": "Copied",
+    "step4Title": "4. Add it to Scriptable and your home screen",
+    "step4": "In Scriptable tap + and paste the script. Name it Zeno. Then on the home screen long-press an empty spot, tap +, pick Scriptable and a widget size, tap the widget and choose Zeno under Script.",
+    "secret": "Treat the script like a password: anyone with the key can see the summary. If it leaks, tap Revoke.",
+    "error": "Could not complete. Try again.",
+    "close": "Close"
   }
 }
