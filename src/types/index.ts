@@ -288,3 +288,25 @@ export interface ApiResponse<T> {
   data: T;
   errors: string[];
 }
+
+export interface Goal {
+  id: string;
+  name: string;
+  targetAmount: number;
+  monthlyContribution: number;
+  initialAmount: number;
+  annualRatePercent: number;
+  startDate: string;
+  /** Initial amount plus Economia entries since the goal start. */
+  savedAmount: number;
+  /** savedAmount / targetAmount in %, capped at 100. */
+  progressPercent: number;
+}
+
+export interface SaveGoalRequest {
+  name: string;
+  targetAmount: number;
+  monthlyContribution: number;
+  initialAmount: number;
+  annualRatePercent: number;
+}

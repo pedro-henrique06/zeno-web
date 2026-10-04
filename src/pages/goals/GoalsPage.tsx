@@ -1,60 +1,26 @@
 import { useState, useMemo } from 'react';
 import {
+  Alert,
   Box,
+  Button,
   IconButton,
   InputAdornment,
   Paper,
   Slider,
+  Snackbar,
   TextField,
   Typography,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useUser';
 import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
+import { formatMonths, futureValue, irRate, monthsToGoal } from '@/utils/goalMath';
+import { useGoal, useSaveGoal, useDeleteGoal } from '@/hooks/useGoal';
 import { alpha } from '@mui/material/styles';
 import { brand } from '@/theme/tokens';
-
-// ─── Math helpers ────────────────────────────────────────────────────────────
-
-function monthlyRate(annualPct: number): number {
-  return Math.pow(1 + annualPct / 100, 1 / 12) - 1;
-}
-
-/** Months needed to reach `fv` saving `pmt` per month at `annualPct` % a.a. */
-function monthsToGoal(fv: number, pmt: number, annualPct: number): number {
-  if (pmt <= 0 || fv <= 0) return Infinity;
-  const r = monthlyRate(annualPct);
-  if (r === 0) return fv / pmt;
-  // n = log(1 + FV*r/PMT) / log(1+r)
-  const ratio = 1 + (fv * r) / pmt;
-  if (ratio <= 0) return Infinity;
-  return Math.log(ratio) / Math.log(1 + r);
-}
-
-/** Future value of `pmt` per month for `n` months at `annualPct` % a.a. */
-function futureValue(pmt: number, n: number, annualPct: number): number {
-  const r = monthlyRate(annualPct);
-  if (r === 0) return pmt * n;
-  return pmt * ((Math.pow(1 + r, n) - 1) / r);
-}
-
-function irRate(months: number): number {
-  if (months <= 6) return 0.225;
-  if (months <= 12) return 0.2;
-  if (months <= 24) return 0.175;
-  return 0.15;
-}
-
-function formatMonths(n: number): string {
-  if (!isFinite(n)) return '—';
-  const y = Math.floor(n / 12);
-  const m = Math.round(n % 12);
-  if (y === 0) return `${m}m`;
-  if (m === 0) return `${y}a`;
-  return `${y}a ${m}m`;
-}
 
 // ─── Scenario bar chart ───────────────────────────────────────────────────────
 
@@ -69,20 +35,21 @@ function color(months: number): string {
 
 interface ScenarioBarsProps {
   basePmt: number;
+  initial: number;
   target: number;
   rate: number;
   currency: string;
   locale: string;
 }
 
-function ScenarioBars({ basePmt, target, rate, currency, locale }: ScenarioBarsProps) {
+function ScenarioBars({ basePmt, initial, target, rate, currency, locale }: ScenarioBarsProps) {
   const scenarios = useMemo(() => {
     return SCENARIO_MULTIPLIERS.map((m) => {
       const pmt = basePmt * m;
-      const months = monthsToGoal(target, pmt, rate);
+      const months = monthsToGoal(target, pmt, rate, initial);
       return { pmt, months };
     });
-  }, [basePmt, target, rate]);
+  }, [basePmt, initial, target, rate]);
 
   const maxMonths = scenarios
     .map((s) => s.months)
@@ -250,6 +217,7 @@ function StatTile({
 
 export default function GoalsPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data: profile } = useProfile();
   const currency = profile?.currency ?? 'BRL';
   const locale = LANGUAGE_LOCALES[profile?.language ?? 'PtBR'];
@@ -259,14 +227,33 @@ export default function GoalsPage() {
   const [targetRaw, setTargetRaw] = useState('1000000');
   const [pmtRaw, setPmtRaw] = useState('500');
   const [rate, setRate] = useState(14.55); // 103% CDI default
+  const [nameRaw, setNameRaw] = useState('');
+  const [initialRaw, setInitialRaw] = useState('0');
+  const [toast, setToast] = useState<{ message: string; severity: 'success' | 'error' } | null>(null);
+
+  const { data: goal } = useGoal();
+  const saveGoal = useSaveGoal();
+  const deleteGoal = useDeleteGoal();
+
+  // Fill the form once from the saved goal (setting state while rendering is the supported pattern here).
+  const [hydrated, setHydrated] = useState(false);
+  if (goal && !hydrated) {
+    setHydrated(true);
+    setNameRaw(goal.name);
+    setTargetRaw(String(Math.round(goal.targetAmount)));
+    setPmtRaw(String(Math.round(goal.monthlyContribution)));
+    setInitialRaw(String(Math.round(goal.initialAmount)));
+    setRate(goal.annualRatePercent);
+  }
 
   const target = parseFloat(targetRaw.replace(/\D/g, '')) || 0;
   const pmt = parseFloat(pmtRaw.replace(/\D/g, '')) || 0;
+  const initial = parseFloat(initialRaw.replace(/\D/g, '')) || 0;
 
   // Results
-  const months = useMemo(() => monthsToGoal(target, pmt, rate), [target, pmt, rate]);
-  const invested = pmt * months;
-  const fv = futureValue(pmt, months, rate);
+  const months = useMemo(() => monthsToGoal(target, pmt, rate, initial), [target, pmt, rate, initial]);
+  const invested = initial + pmt * months;
+  const fv = futureValue(pmt, months, rate, initial);
   const grossEarnings = fv - invested;
   const ir = isFinite(months) ? grossEarnings * irRate(months) : 0;
   const netEarnings = grossEarnings - ir;
@@ -294,6 +281,39 @@ export default function GoalsPage() {
   const displayTarget = target > 0
     ? new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(target)
     : '';
+
+  const displayInitial = initial > 0
+    ? new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(initial)
+    : '';
+
+  const canSave = target > 0 && pmt > 0 && nameRaw.trim().length > 0;
+
+  const handleSave = () => {
+    saveGoal.mutate(
+      {
+        name: nameRaw.trim(),
+        targetAmount: target,
+        monthlyContribution: pmt,
+        initialAmount: initial,
+        annualRatePercent: Math.round(rate * 100) / 100,
+      },
+      {
+        onSuccess: () => setToast({ message: t('goals.saved'), severity: 'success' }),
+        onError: () => setToast({ message: t('goals.saveError'), severity: 'error' }),
+      },
+    );
+  };
+
+  const handleRemove = () => {
+    deleteGoal.mutate(undefined, {
+      onSuccess: () => {
+        setNameRaw('');
+        setHydrated(false);
+        setToast({ message: t('goals.removed'), severity: 'success' });
+      },
+      onError: () => setToast({ message: t('goals.saveError'), severity: 'error' }),
+    });
+  };
 
   const displayPmt = pmt > 0
     ? new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(pmt)
@@ -384,8 +404,56 @@ export default function GoalsPage() {
               },
             }}
           />
+          <TextField
+            label={t('goals.initialLabel')}
+            value={displayInitial}
+            onChange={(e) => setInitialRaw(e.target.value.replace(/\D/g, ''))}
+            placeholder="0"
+            fullWidth
+            size="small"
+            slotProps={{
+              input: {
+                startAdornment: <InputAdornment position="start">{symbol}</InputAdornment>,
+              },
+            }}
+          />
+          <TextField
+            label={t('goals.nameLabel')}
+            value={nameRaw}
+            onChange={(e) => setNameRaw(e.target.value)}
+            placeholder={t('goals.namePlaceholder')}
+            fullWidth
+            size="small"
+            slotProps={{ htmlInput: { maxLength: 60 } }}
+          />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="contained"
+              fullWidth
+              disabled={!canSave || saveGoal.isPending}
+              onClick={handleSave}
+            >
+              {goal ? t('goals.update') : t('goals.save')}
+            </Button>
+            {goal && (
+              <Button color="error" disabled={deleteGoal.isPending} onClick={handleRemove}>
+                {t('goals.remove')}
+              </Button>
+            )}
+          </Box>
         </Box>
       </Paper>
+
+      <Snackbar
+        open={!!toast}
+        autoHideDuration={4000}
+        onClose={() => setToast(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity={toast?.severity ?? 'success'} variant="filled" onClose={() => setToast(null)} sx={{ width: '100%' }}>
+          {toast?.message}
+        </Alert>
+      </Snackbar>
 
       {/* Results */}
       {pmt > 0 && target > 0 && (
@@ -434,6 +502,7 @@ export default function GoalsPage() {
             </Typography>
             <ScenarioBars
               basePmt={pmt}
+              initial={initial}
               target={target}
               rate={rate}
               currency={currency}
