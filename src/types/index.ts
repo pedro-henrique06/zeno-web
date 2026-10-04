@@ -310,3 +310,40 @@ export interface SaveGoalRequest {
   initialAmount: number;
   annualRatePercent: number;
 }
+
+export interface HouseGoal {
+  name: string;
+  targetAmount: number;
+  startDate: string;
+  /** Sum of each month's 20% slice since the goal start. */
+  accumulatedAmount: number;
+  progressPercent: number;
+  /** The 20% slice of the requested month. */
+  monthlyContribution: number;
+  monthsRemaining: number | null;
+}
+
+/** 50/30/20 budget of a house. Totals only: never per-resident income or balances. */
+export interface HouseBudget {
+  houseId: string;
+  month: number;
+  year: number;
+  currency: Currency;
+  residentCount: number;
+  isOwner: boolean;
+  totalIncome: number;
+  needs: number;
+  /** Recurring expenses linked to the house, for the month. */
+  fixedExpenses: number;
+  /** needs - fixedExpenses; negative when the fixed expenses exceed the 50% slice. */
+  needsRemaining: number;
+  wants: number;
+  savings: number;
+  freePerPerson: number;
+  goal: HouseGoal | null;
+}
+
+export interface SaveHouseGoalRequest {
+  name: string;
+  targetAmount: number;
+}

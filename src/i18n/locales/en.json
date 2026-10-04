@@ -205,7 +205,8 @@
     "alreadyMember": "This user is already a member.",
     "inviteError": "Could not invite the member.",
     "activeGroup": "active group",
-    "activeGroups": "active groups"
+    "activeGroups": "active groups",
+    "budgetTab": "Budget"
   },
   "entryForm": {
     "editTitle": "Edit entry",
@@ -373,5 +374,37 @@
     "ruleTag": "Use the tag",
     "ruleAdd": "Add rule",
     "ruleDelete": "Delete rule"
+  },
+  "houseBudget": {
+    "loadError": "Could not load the house budget. Try again.",
+    "totalIncome": "Combined house income",
+    "residents_one": "{{count}} resident",
+    "residents_other": "{{count}} residents",
+    "noIncome": "No income logged by residents this month.",
+    "needs": "Needs",
+    "wants": "Wants (free balance)",
+    "savings": "Goal",
+    "freePerPerson": "Free per person",
+    "freeHint": "{{amount}} from the 30%, split equally among {{count}} residents.",
+    "goalTitle": "House goal",
+    "goalName": "Goal name",
+    "goalTarget": "Goal amount",
+    "goalSave": "Save goal",
+    "goalEdit": "Edit",
+    "goalRemove": "Remove",
+    "goalCreate": "Set house goal",
+    "goalEmptyOwner": "Set a goal: each month's 20% goes to it.",
+    "goalEmptyMember": "The house owner hasn't set a goal yet.",
+    "goalOf": "{{saved}} of {{target}}",
+    "goalRemaining": "{{time}} left",
+    "goalReached": "Goal reached",
+    "goalNoEstimate": "no estimate",
+    "goalMonthly": "This month's contribution (20%): {{amount}}",
+    "goalError": "Could not save. Try again.",
+    "personalGoal": "Your personal goal (extra, only you see it)",
+    "privacy": "Only house totals are shown: nobody sees other residents' income, balance or entries. Amounts are added without currency conversion.",
+    "fixedNone": "No fixed expenses linked to the house. Tag recurring expense entries with this house.",
+    "fixedLeft": "House fixed expenses: {{fixed}} · {{amount}} left of the 50%",
+    "fixedOver": "House fixed expenses: {{fixed}} · {{amount}} over the 50%"
   }
 }

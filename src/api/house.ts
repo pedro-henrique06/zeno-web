@@ -1,5 +1,13 @@
 import apiClient, { unwrap } from './client';
-import type { House, CreateHouseRequest, UpdateHouseRequest, Entry } from '@/types';
+import type {
+  House,
+  CreateHouseRequest,
+  UpdateHouseRequest,
+  Entry,
+  HouseBudget,
+  HouseGoal,
+  SaveHouseGoalRequest,
+} from '@/types';
 
 export async function getHouses(): Promise<House[]> {
   return unwrap(apiClient.get('/houses'));
@@ -27,4 +35,16 @@ export async function addHouseMember(houseId: string, email: string): Promise<vo
 
 export async function removeHouseMember(houseId: string, memberId: string): Promise<void> {
   await apiClient.delete(`/houses/${houseId}/members/${memberId}`);
+}
+
+export async function getHouseBudget(houseId: string, month: number, year: number): Promise<HouseBudget> {
+  return unwrap(apiClient.get(`/houses/${houseId}/budget`, { params: { month, year } }));
+}
+
+export async function saveHouseGoal(houseId: string, data: SaveHouseGoalRequest): Promise<HouseGoal | null> {
+  return unwrap(apiClient.put(`/houses/${houseId}/goal`, data));
+}
+
+export async function deleteHouseGoal(houseId: string): Promise<void> {
+  await apiClient.delete(`/houses/${houseId}/goal`);
 }
