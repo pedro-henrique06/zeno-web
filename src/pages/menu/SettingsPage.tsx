@@ -27,6 +27,8 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import WidgetsIcon from '@mui/icons-material/Widgets';
+import { WidgetDialog } from '@/components/WidgetDialog';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { useNavigate } from 'react-router-dom';
@@ -97,6 +99,7 @@ export default function SettingsPage() {
   const createEntry = useCreateEntry();
 
   const [resetOpen, setResetOpen] = useState(false);
+  const [widgetOpen, setWidgetOpen] = useState(false);
   const [pushErrorMsg, setPushErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -178,6 +181,19 @@ export default function SettingsPage() {
         </>
       )}
 
+      <SectionLabel>{t('widget.section')}</SectionLabel>
+      <SectionCard>
+        <ListItemButton onClick={() => setWidgetOpen(true)} sx={ROW_SX}>
+          <IconBadge><WidgetsIcon /></IconBadge>
+          <ListItemText
+            primary={t('widget.item')}
+            secondary={t('widget.itemHint')}
+            slotProps={{ primary: { style: { fontWeight: 500 } } }}
+          />
+          <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
+        </ListItemButton>
+      </SectionCard>
+
       <SectionLabel>{t('settings.sectionAccount')}</SectionLabel>
       <SectionCard>
         <ListItemButton onClick={() => setResetOpen(true)} disabled={balancesLoading} sx={ROW_SX}>
@@ -199,6 +215,8 @@ export default function SettingsPage() {
           <ListItemText primary={t('settings.logout')} slotProps={{ primary: { style: { fontWeight: 500, color: brand.expense } } }} />
         </ListItemButton>
       </SectionCard>
+
+      <WidgetDialog open={widgetOpen} onClose={() => setWidgetOpen(false)} />
 
       <Snackbar
         open={!!pushErrorMsg}
