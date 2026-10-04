@@ -248,7 +248,7 @@ function ListaView({ days, entries, currency, language, onDayPress }: {
                 <Typography key={e.id} sx={{ fontSize: '12px', color: 'text.secondary' }} noWrap>{e.title}</Typography>
               ))}
               {dayEntries.length > 2 && (
-                <Typography sx={{ fontSize: '11px', color: 'text.disabled' }}>+{dayEntries.length - 2} mais</Typography>
+                <Typography sx={{ fontSize: '11px', color: 'text.secondary' }}>+{dayEntries.length - 2} mais</Typography>
               )}
             </Box>
             <Box sx={{ textAlign: 'right', flexShrink: 0 }}>

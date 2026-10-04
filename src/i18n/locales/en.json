@@ -4,7 +4,10 @@
     "save": "Save",
     "cancel": "Cancel",
     "create": "Create",
-    "noTag": "No tag"
+    "noTag": "No tag",
+    "currentMonth": "Current month",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month"
   },
   "currency": {
     "BRL": "Brazilian Real (R$)",

@@ -36,6 +36,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useResetAccount } from '@/hooks/useAuth';
 import { alpha } from '@mui/material/styles';
 import { brand } from '@/theme/tokens';
+import { clickableProps } from '@/utils/a11y';
 
 const APP_VERSION = '1.0.0';
 
@@ -120,7 +121,7 @@ export default function MenuPage() {
             border: 'none',
             cursor: 'pointer',
           }}
-          onClick={() => navigate('/menu/previsao-diario')}
+          {...clickableProps(() => navigate('/menu/previsao-diario'))}
         >
           <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', mb: 0.75 }}>
             {t('menu.dailyBudget')}
@@ -279,7 +280,7 @@ export default function MenuPage() {
         </List>
       </Paper>
 
-      <Typography variant="caption" color="text.disabled" sx={{ pl: 0.5 }}>
+      <Typography variant="caption" color="text.secondary" sx={{ pl: 0.5 }}>
         {t('menu.version', { version: APP_VERSION })}
       </Typography>
 

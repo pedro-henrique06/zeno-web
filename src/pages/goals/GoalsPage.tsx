@@ -181,7 +181,7 @@ function ScenarioBars({ basePmt, target, rate, currency, locale }: ScenarioBarsP
         <Box />
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           {['0', '5a', '10a', '15a', '20a', '25a'].map((l) => (
-            <Typography key={l} sx={{ fontSize: '11px', color: 'text.disabled' }}>
+            <Typography key={l} sx={{ fontSize: '11px', color: 'text.secondary' }}>
               {l}
             </Typography>
           ))}
@@ -220,7 +220,7 @@ function StatTile({
           fontWeight: 700,
           letterSpacing: '0.6px',
           textTransform: 'uppercase',
-          color: 'text.disabled',
+          color: 'text.secondary',
           mb: 0.5,
         }}
       >
@@ -426,7 +426,7 @@ export default function GoalsPage() {
             <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', color: 'text.secondary', mb: 0.5 }}>
               Cenários de aporte
             </Typography>
-            <Typography sx={{ fontSize: '12px', color: 'text.disabled', mb: 1.5 }}>
+            <Typography sx={{ fontSize: '12px', color: 'text.secondary', mb: 1.5 }}>
               Quanto tempo leva para atingir {fmtCurrency(target)} variando o aporte
             </Typography>
             <ScenarioBars

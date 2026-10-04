@@ -39,6 +39,7 @@ import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
 import type { House } from '@/types';
 import { alpha } from '@mui/material/styles';
 import { brand } from '@/theme/tokens';
+import { clickableProps } from '@/utils/a11y';
 
 const AVATAR_COLORS = [brand.blue, brand.income, brand.warning, brand.purple, brand.teal, brand.expense];
 
@@ -319,7 +320,7 @@ export default function HousesPage() {
             {t('houses.title')}
           </Typography>
           {(houses ?? []).length > 0 && (
-            <Typography sx={{ fontSize: '12px', color: 'text.disabled', mt: 0.25 }}>
+            <Typography sx={{ fontSize: '12px', color: 'text.secondary', mt: 0.25 }}>
               {(houses ?? []).length} {(houses ?? []).length === 1 ? t('houses.activeGroup') : t('houses.activeGroups')}
             </Typography>
           )}
@@ -354,7 +355,7 @@ export default function HousesPage() {
                   bgcolor: brand.navy,
                   border: 'none',
                 }}
-                onClick={() => setDetailHouse(house)}
+                {...clickableProps(() => setDetailHouse(house))}
               >
                 {/* Card top */}
                 <Box sx={{ px: 2.5, pt: 2, pb: 2 }}>

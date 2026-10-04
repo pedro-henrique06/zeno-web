@@ -1,8 +1,10 @@
 import { Box, IconButton, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useProfile } from '@/hooks/useUser';
 import { LANGUAGE_LOCALES } from '@/utils/currency';
+import { clickableProps } from '@/utils/a11y';
 
 interface MonthSwitcherProps {
   month: number;
@@ -12,6 +14,7 @@ interface MonthSwitcherProps {
 }
 
 export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwitcherProps) {
+  const { t } = useTranslation();
   const { data: profile } = useProfile();
   const date = new Date(year, month - 1, 1);
   const label = new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], {
@@ -29,7 +32,8 @@ export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwit
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
       <Box
-        onClick={() => onChange(today.getMonth() + 1, today.getFullYear())}
+        {...clickableProps(() => onChange(today.getMonth() + 1, today.getFullYear()))}
+        aria-label={t('common.currentMonth')}
         sx={{
           width: 36,
           height: 36,
@@ -49,13 +53,13 @@ export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwit
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <IconButton size="small" onClick={() => shift(-1)}>
+        <IconButton size="small" aria-label={t('common.previousMonth')} onClick={() => shift(-1)}>
           <ChevronLeftIcon />
         </IconButton>
         <Typography sx={{ fontWeight: 700, minWidth: 90, textAlign: 'center', textTransform: 'capitalize' }}>
           {label}
         </Typography>
-        <IconButton size="small" onClick={() => shift(1)}>
+        <IconButton size="small" aria-label={t('common.nextMonth')} onClick={() => shift(1)}>
           <ChevronRightIcon />
         </IconButton>
       </Box>
