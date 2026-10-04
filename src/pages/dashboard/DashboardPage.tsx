@@ -15,6 +15,8 @@ import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog'
 import { CostOfLivingHorizonDialog } from '@/components/CostOfLivingHorizonDialog';
 import { DailyAverageHorizonDialog } from '@/components/DailyAverageHorizonDialog';
 import { brand } from '@/theme/tokens';
+import { useGoal } from '@/hooks/useGoal';
+import { formatMonths, monthsToGoal } from '@/utils/goalMath';
 import { clickableProps } from '@/utils/a11y';
 import { DashboardSkeleton } from '@/components/Skeletons';
 
@@ -136,6 +138,78 @@ function StatRow({
         {value}
       </Typography>
     </Box>
+  );
+}
+
+/** Savings goal progress; taps through to the simulator. Prompts to set one when missing. */
+function GoalCard({ currency, language }: { currency?: Currency; language?: Language }) {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { data: goal, isLoading } = useGoal();
+  if (isLoading) return null;
+
+  const open = () => navigate('/menu/metas');
+
+  if (!goal) {
+    return (
+      <Box
+        {...clickableProps(open)}
+        sx={{
+          mb: 2,
+          px: 2,
+          py: 1.5,
+          borderRadius: 3,
+          border: '1px dashed',
+          borderColor: 'divider',
+          cursor: 'pointer',
+          '&:hover': { bgcolor: 'action.hover' },
+        }}
+      >
+        <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{t('goals.cardCta')}</Typography>
+        <Typography sx={{ fontSize: '12px', color: 'text.secondary' }}>{t('goals.cardCtaHint')}</Typography>
+      </Box>
+    );
+  }
+
+  const reached = goal.savedAmount >= goal.targetAmount;
+  const months = monthsToGoal(goal.targetAmount, goal.monthlyContribution, goal.annualRatePercent, goal.savedAmount);
+
+  return (
+    <Paper
+      {...clickableProps(open)}
+      sx={{ mb: 2, p: 2, borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: 'none', cursor: 'pointer' }}
+    >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 1 }}>
+        <Typography sx={{ fontSize: '14px', fontWeight: 600, minWidth: 0 }} noWrap>{goal.name}</Typography>
+        <Typography
+          sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.15rem', fontWeight: 600, color: brand.income, fontVariantNumeric: 'tabular-nums' }}
+        >
+          {goal.progressPercent.toFixed(goal.progressPercent % 1 === 0 ? 0 : 1)}%
+        </Typography>
+      </Box>
+      <Box sx={{ height: 8, borderRadius: 4, bgcolor: 'action.hover', overflow: 'hidden', my: 1.25 }}>
+        <Box
+          sx={{
+            height: '100%',
+            width: `${goal.progressPercent}%`,
+            borderRadius: 4,
+            background: `linear-gradient(90deg, ${brand.income}, ${brand.teal})`,
+            transition: 'width 0.4s ease',
+          }}
+        />
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, fontSize: '12px', color: 'text.secondary' }}>
+        <Typography sx={{ fontSize: 'inherit', color: 'inherit', fontVariantNumeric: 'tabular-nums' }}>
+          {t('goals.of', {
+            saved: formatCurrency(goal.savedAmount, currency, language),
+            target: formatCurrency(goal.targetAmount, currency, language),
+          })}
+        </Typography>
+        <Typography sx={{ fontSize: 'inherit', color: 'inherit', whiteSpace: 'nowrap' }}>
+          {reached ? t('goals.reached') : t('goals.remaining', { time: formatMonths(months) })}
+        </Typography>
+      </Box>
+    </Paper>
   );
 }
 
@@ -272,6 +346,8 @@ export default function DashboardPage() {
         language={profile?.language}
         onClick={() => setPerformanceOpen(true)}
       />
+
+      <GoalCard currency={profile?.currency} language={profile?.language} />
 
       {/* Monthly calculations: one list, no per-item boxes */}
       <Typography variant="overline" color="text.secondary" sx={{ pl: 0.5, fontWeight: 700, display: 'block', mb: 1, fontSize: '11px', letterSpacing: '.08em' }}>

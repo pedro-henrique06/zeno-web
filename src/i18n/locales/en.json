@@ -293,5 +293,22 @@
     "tags": "Tags",
     "houses": "Homes",
     "menu": "Menu"
+  },
+  "goals": {
+    "title": "Goal",
+    "nameLabel": "Goal name",
+    "namePlaceholder": "Emergency fund",
+    "initialLabel": "Already saved",
+    "save": "Save as my goal",
+    "update": "Update my goal",
+    "remove": "Remove",
+    "saved": "Goal saved to your account.",
+    "removed": "Goal removed.",
+    "saveError": "Could not save. Try again.",
+    "cardCta": "Set a goal",
+    "cardCtaHint": "Simulate and track what's left",
+    "of": "{{saved}} of {{target}}",
+    "remaining": "{{time}} left",
+    "reached": "Goal reached"
   }
 }

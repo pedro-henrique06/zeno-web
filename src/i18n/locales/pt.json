@@ -293,5 +293,22 @@
     "tags": "Tags",
     "houses": "Casas",
     "menu": "Menu"
+  },
+  "goals": {
+    "title": "Meta",
+    "nameLabel": "Nome da meta",
+    "namePlaceholder": "Reserva de emergência",
+    "initialLabel": "Já guardado",
+    "save": "Salvar como minha meta",
+    "update": "Atualizar minha meta",
+    "remove": "Remover",
+    "saved": "Meta salva na sua conta.",
+    "removed": "Meta removida.",
+    "saveError": "Não foi possível salvar. Tente novamente.",
+    "cardCta": "Defina uma meta",
+    "cardCtaHint": "Simule e acompanhe quanto falta",
+    "of": "{{saved}} de {{target}}",
+    "remaining": "faltam {{time}}",
+    "reached": "Meta alcançada"
   }
 }

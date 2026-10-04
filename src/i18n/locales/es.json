@@ -293,5 +293,22 @@
     "tags": "Etiquetas",
     "houses": "Casas",
     "menu": "Menú"
+  },
+  "goals": {
+    "title": "Meta",
+    "nameLabel": "Nombre de la meta",
+    "namePlaceholder": "Fondo de emergencia",
+    "initialLabel": "Ya ahorrado",
+    "save": "Guardar como mi meta",
+    "update": "Actualizar mi meta",
+    "remove": "Quitar",
+    "saved": "Meta guardada en tu cuenta.",
+    "removed": "Meta eliminada.",
+    "saveError": "No se pudo guardar. Inténtalo de nuevo.",
+    "cardCta": "Define una meta",
+    "cardCtaHint": "Simula y sigue cuánto falta",
+    "of": "{{saved}} de {{target}}",
+    "remaining": "faltan {{time}}",
+    "reached": "Meta alcanzada"
   }
 }
