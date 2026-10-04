@@ -14,7 +14,6 @@ import {
   Chip,
   Box,
   Stack,
-  CircularProgress,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RepeatIcon from '@mui/icons-material/Repeat';
@@ -31,6 +30,9 @@ import { EntryFormDialog } from '@/components/EntryFormDialog';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { StickyHeader } from '@/components/layout/StickyHeader';
 import type { Currency, Language } from '@/types';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import { EmptyState } from '@/components/EmptyState';
+import { ListSkeleton } from '@/components/Skeletons';
 
 /** Colored dot: filled for past, open ring for future */
 function EntryDot({ kind, isFuture }: { kind: EntryKind; isFuture?: boolean }) {
@@ -214,8 +216,8 @@ export default function EntriesPage() {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress />
+      <Box sx={{ mt: 2 }}>
+        <ListSkeleton />
       </Box>
     );
   }
@@ -387,27 +389,13 @@ export default function EntriesPage() {
             </TableContainer>
           )
         ) : (
-          <Box
-            sx={{
-              textAlign: 'center',
-              py: 6,
-              px: 3,
-              bgcolor: 'background.paper',
-              borderRadius: 3,
-              border: '1px dashed',
-              borderColor: 'divider',
-            }}
-          >
-            <Typography variant="h6" sx={{ mb: 1 }}>
-              {t('entries.emptyTitle')}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              {t('entries.emptySubtitle')}
-            </Typography>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
-              {t('entries.new')}
-            </Button>
-          </Box>
+          <EmptyState
+            icon={<ReceiptLongIcon />}
+            title={t('entries.emptyTitle')}
+            subtitle={t('entries.emptySubtitle')}
+            actionLabel={t('entries.new')}
+            onAction={openCreate}
+          />
         )}
       </Box>
 

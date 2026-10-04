@@ -1,7 +1,7 @@
 import { useRef, useState, useMemo, type TouchEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useBalances, useBalancesHorizon } from '@/hooks/useBalances';
 import { useEntries } from '@/hooks/useEntries';
@@ -13,6 +13,7 @@ import { isCredit } from '@/utils/entryKind';
 import { BalanceChart, type ChartPoint } from '@/components/BalanceChart';
 import { alpha } from '@mui/material/styles';
 import { brand } from '@/theme/tokens';
+import { ListSkeleton } from '@/components/Skeletons';
 
 const SWIPE_THRESHOLD = 60;
 
@@ -369,8 +370,8 @@ export default function BalancesPage() {
   };
 
   if (isLoading) return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
-      <CircularProgress sx={{ color: brand.blue }} />
+    <Box sx={{ mt: 2 }}>
+      <ListSkeleton rows={7} />
     </Box>
   );
 

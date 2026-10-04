@@ -40,6 +40,7 @@ import type { House } from '@/types';
 import { alpha } from '@mui/material/styles';
 import { brand } from '@/theme/tokens';
 import { clickableProps } from '@/utils/a11y';
+import { EmptyState } from '@/components/EmptyState';
 
 const AVATAR_COLORS = [brand.blue, brand.income, brand.warning, brand.purple, brand.teal, brand.expense];
 
@@ -428,11 +429,13 @@ export default function HousesPage() {
           })}
         </Box>
       ) : (
-        <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
-          <HomeWorkIcon sx={{ fontSize: 56, mb: 1.5, opacity: 0.3 }} />
-          <Typography variant="h6" sx={{ mb: 0.5 }}>{t('houses.emptyTitle')}</Typography>
-          <Typography variant="body2">{t('houses.emptySubtitle')}</Typography>
-        </Box>
+        <EmptyState
+          icon={<HomeWorkIcon />}
+          title={t('houses.emptyTitle')}
+          subtitle={t('houses.emptySubtitle')}
+          actionLabel={t('houses.newTitle')}
+          onAction={openCreate}
+        />
       )}
 
       {/* Dialog: formulário de criação/edição */}

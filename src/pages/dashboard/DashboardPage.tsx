@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Typography, Paper, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSummary } from '@/hooks/useSummary';
@@ -16,6 +16,7 @@ import { CostOfLivingHorizonDialog } from '@/components/CostOfLivingHorizonDialo
 import { DailyAverageHorizonDialog } from '@/components/DailyAverageHorizonDialog';
 import { brand } from '@/theme/tokens';
 import { clickableProps } from '@/utils/a11y';
+import { DashboardSkeleton } from '@/components/Skeletons';
 
 /** The one hero card: month balance with income / expense underneath */
 function HeroCard({
@@ -216,8 +217,8 @@ export default function DashboardPage() {
 
   if (isLoading || !data) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress sx={{ color: brand.blue }} />
+      <Box sx={{ mt: 2 }}>
+        <DashboardSkeleton />
       </Box>
     );
   }
