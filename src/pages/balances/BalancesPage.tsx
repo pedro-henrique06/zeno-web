@@ -11,6 +11,8 @@ import { MonthSwitcher } from '@/components/MonthSwitcher';
 import type { BalanceDay, Entry } from '@/types';
 import { isCredit } from '@/utils/entryKind';
 import { BalanceChart, type ChartPoint } from '@/components/BalanceChart';
+import { alpha } from '@mui/material/styles';
+import { brand } from '@/theme/tokens';
 
 const SWIPE_THRESHOLD = 60;
 
@@ -34,7 +36,7 @@ function BalanceHeader({ days, currency, language }: { days: BalanceDay[]; curre
         fontSize: '2.4rem', fontWeight: 700,
         letterSpacing: '-2px', lineHeight: 1,
         color: (theme) => isNeg
-          ? 'rgba(232,107,82,0.35)'
+          ? alpha(brand.expense, 0.35)
           : theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.13)',
         fontVariantNumeric: 'tabular-nums',
       }}>
@@ -53,15 +55,15 @@ function StatsRow({ days, currency, language }: { days: BalanceDay[]; currency?:
   const forecast = days.length ? days[days.length - 1].balance : 0;
 
   const stats = [
-    { label: t('balances.statsIncome'), value: income, color: '#2DC579' },
-    { label: t('balances.statsExpenses'), value: expenses, color: '#E86B52' },
-    { label: t('balances.statsForecast'), value: forecast, color: forecast >= 0 ? '#5ECCC8' : '#E86B52' },
+    { label: t('balances.statsIncome'), value: income, color: brand.income },
+    { label: t('balances.statsExpenses'), value: expenses, color: brand.expense },
+    { label: t('balances.statsForecast'), value: forecast, color: forecast >= 0 ? brand.teal : brand.expense },
   ];
 
   return (
     <Box sx={{ display: 'flex', gap: 1, mb: 1.5 }}>
       {stats.map((s) => (
-        <Box key={s.label} sx={{ flex: 1, px: 1.25, py: 1.25, borderRadius: 2.5, bgcolor: '#1B2D48' }}>
+        <Box key={s.label} sx={{ flex: 1, px: 1.25, py: 1.25, borderRadius: 2.5, bgcolor: brand.navy }}>
           <Typography sx={{ display: 'block', mb: 0.5, fontSize: '7px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.8px', color: 'rgba(255,255,255,0.4)' }}>
             {s.label}
           </Typography>
@@ -92,7 +94,7 @@ function UpcomingEntries({ entries, currency, language }: { entries: Entry[]; cu
       </Typography>
       {upcoming.map((entry, i) => {
         const credit = isCredit(entry.kind);
-        const color = credit ? '#2DC579' : '#E86B52';
+        const color = credit ? brand.income : brand.expense;
         const diff = dayjs(entry.date.substring(0, 10)).diff(today.startOf('day'), 'day');
         return (
           <Box key={entry.id} sx={{
@@ -170,17 +172,17 @@ function CalendarView({ days, month, year, onDayPress }: {
                 display: 'flex', flexDirection: 'column',
                 alignItems: 'center', justifyContent: 'center',
                 borderRadius: '8px', cursor: 'pointer', position: 'relative',
-                bgcolor: isToday ? '#4A9FE0' : isFuture ? 'rgba(94,204,200,0.12)' : 'transparent',
-                '&:hover': { bgcolor: isToday ? '#4A9FE0' : 'action.hover' },
+                bgcolor: isToday ? brand.blue : isFuture ? alpha(brand.teal, 0.12) : 'transparent',
+                '&:hover': { bgcolor: isToday ? brand.blue : 'action.hover' },
               }}
             >
-              <Typography sx={{ fontSize: '10px', fontWeight: isToday ? 700 : 500, color: isToday ? '#fff' : isFuture ? '#5ECCC8' : 'text.primary' }}>
+              <Typography sx={{ fontSize: '10px', fontWeight: isToday ? 700 : 500, color: isToday ? '#fff' : isFuture ? brand.teal : 'text.primary' }}>
                 {day}
               </Typography>
               {info && (info.hasIncome || info.hasExpense) && (
                 <Box sx={{ display: 'flex', gap: '2px', position: 'absolute', bottom: '2px' }}>
-                  {info.hasIncome && <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: isFuture ? '#5ECCC8' : '#2DC579' }} />}
-                  {info.hasExpense && <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: isFuture ? '#5ECCC8' : '#E86B52' }} />}
+                  {info.hasIncome && <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: isFuture ? brand.teal : brand.income }} />}
+                  {info.hasExpense && <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: isFuture ? brand.teal : brand.expense }} />}
                 </Box>
               )}
             </Box>
@@ -189,7 +191,7 @@ function CalendarView({ days, month, year, onDayPress }: {
       </Box>
       {/* Legend */}
       <Box sx={{ display: 'flex', gap: 1.5, mt: 1.5, mb: 1 }}>
-        {[{ color: '#2DC579', label: 'Receita' }, { color: '#E86B52', label: 'Despesa' }, { color: '#5ECCC8', label: 'Futuro' }].map(({ color, label }) => (
+        {[{ color: brand.income, label: 'Receita' }, { color: brand.expense, label: 'Despesa' }, { color: brand.teal, label: 'Futuro' }].map(({ color, label }) => (
           <Box key={label} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: color }} />
             <Typography sx={{ fontSize: '9px', color: 'text.secondary' }}>{label}</Typography>
@@ -234,7 +236,7 @@ function ListaView({ days, entries, currency, language, onDayPress }: {
           }}>
             <Box sx={{
               width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-              bgcolor: isToday ? '#4A9FE0' : 'action.hover',
+              bgcolor: isToday ? brand.blue : 'action.hover',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: isToday ? '#fff' : 'text.primary',
               fontWeight: 700, fontSize: '12px',
@@ -251,17 +253,17 @@ function ListaView({ days, entries, currency, language, onDayPress }: {
             </Box>
             <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
               {d.entrada > 0 && (
-                <Typography sx={{ fontSize: '11px', fontWeight: 700, color: '#2DC579', fontVariantNumeric: 'tabular-nums' }}>
+                <Typography sx={{ fontSize: '11px', fontWeight: 700, color: brand.income, fontVariantNumeric: 'tabular-nums' }}>
                   +{formatCurrency(d.entrada, currency, language)}
                 </Typography>
               )}
               {totalExpense > 0 && (
-                <Typography sx={{ fontSize: '11px', fontWeight: 700, color: '#E86B52', fontVariantNumeric: 'tabular-nums' }}>
+                <Typography sx={{ fontSize: '11px', fontWeight: 700, color: brand.expense, fontVariantNumeric: 'tabular-nums' }}>
                   −{formatCurrency(totalExpense, currency, language)}
                 </Typography>
               )}
             </Box>
-            <Typography sx={{ fontWeight: 700, fontSize: '11px', fontVariantNumeric: 'tabular-nums', color: d.balance >= 0 ? '#2DC579' : '#E86B52', minWidth: 56, textAlign: 'right' }}>
+            <Typography sx={{ fontWeight: 700, fontSize: '11px', fontVariantNumeric: 'tabular-nums', color: d.balance >= 0 ? brand.income : brand.expense, minWidth: 56, textAlign: 'right' }}>
               {formatCurrency(d.balance, currency, language)}
             </Typography>
           </Box>
@@ -277,9 +279,9 @@ function SegmentControl({ value, onChange }: { value: 'lista' | 'calendario'; on
     { key: 'lista', label: 'Lista' },
     { key: 'calendario', label: 'Calendário' },
   ];
-  const activeColor = value === 'lista' ? '#4A9FE0' : '#5ECCC8';
+  const activeColor = value === 'lista' ? brand.blue : brand.teal;
   return (
-    <Box sx={{ bgcolor: '#1B2D48', borderRadius: '12px', display: 'flex', p: '3px', mb: 1.5 }}>
+    <Box sx={{ bgcolor: brand.navy, borderRadius: '12px', display: 'flex', p: '3px', mb: 1.5 }}>
       {opts.map((o) => (
         <Box key={o.key} onClick={() => onChange(o.key)} sx={{
           flex: 1, textAlign: 'center', py: 0.875,
@@ -368,7 +370,7 @@ export default function BalancesPage() {
 
   if (isLoading) return (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
-      <CircularProgress sx={{ color: '#4A9FE0' }} />
+      <CircularProgress sx={{ color: brand.blue }} />
     </Box>
   );
 

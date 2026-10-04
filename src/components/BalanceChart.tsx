@@ -1,6 +1,8 @@
 import ReactApexChart from 'react-apexcharts';
 import { useTheme } from '@mui/material';
 import type { ApexOptions } from 'apexcharts';
+import { alpha } from '@mui/material/styles';
+import { brand } from '@/theme/tokens';
 
 export interface ChartPoint {
   x: number; // timestamp ms
@@ -60,7 +62,7 @@ export function BalanceChart({
       fontFamily: '"DM Sans", sans-serif',
       animations: { enabled: true, speed: 700, easing: 'easeout' },
     },
-    colors: hasFuture ? ['#2DC579', '#5ECCC8'] : ['#2DC579'],
+    colors: hasFuture ? [brand.income, brand.teal] : [brand.income],
     fill: {
       type: 'gradient',
       gradient: {
@@ -118,14 +120,14 @@ export function BalanceChart({
       xaxis: todayX != null
         ? [{
             x: todayX,
-            borderColor: 'rgba(45,197,121,0.4)',
+            borderColor: alpha(brand.income, 0.4),
             strokeDashArray: 4,
             label: {
               text: 'HOJE',
               position: 'top',
               borderColor: 'transparent',
               style: {
-                color: 'rgba(45,197,121,0.9)',
+                color: alpha(brand.income, 0.9),
                 background: 'transparent',
                 fontSize: '9px',
                 fontWeight: '700',
@@ -140,8 +142,8 @@ export function BalanceChart({
             y: todayY,
             marker: {
               size: 5,
-              fillColor: '#2DC579',
-              strokeColor: 'rgba(45,197,121,0.25)',
+              fillColor: brand.income,
+              strokeColor: alpha(brand.income, 0.25),
               strokeWidth: 7,
             },
             label: { text: '' },

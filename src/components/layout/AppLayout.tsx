@@ -8,6 +8,8 @@ import AddIcon from '@mui/icons-material/Add';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AddEntrySheet } from '@/components/AddEntrySheet';
+import { alpha } from '@mui/material/styles';
+import { brand } from '@/theme/tokens';
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   const [addOpen, setAddOpen] = useState(false);
@@ -87,16 +89,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                       width: 52,
                       height: 52,
                       borderRadius: '50%',
-                      bgcolor: '#4A9FE0',
+                      bgcolor: brand.blue,
                       color: '#FFFFFF',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      boxShadow: '0 4px 20px rgba(74,159,224,0.5)',
+                      boxShadow: `0 4px 20px ${alpha(brand.blue, 0.5)}`,
                       transition: 'transform 0.15s ease, box-shadow 0.15s ease',
                       '&:active': {
                         transform: 'scale(0.93)',
-                        boxShadow: '0 2px 10px rgba(74,159,224,0.4)',
+                        boxShadow: `0 2px 10px ${alpha(brand.blue, 0.4)}`,
                       },
                     }}
                   >
@@ -112,7 +114,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 value={item.path}
                 icon={item.icon}
                 sx={{
-                  '&.Mui-selected': { color: '#4A9FE0' },
+                  '&.Mui-selected': { color: brand.blue },
                   color: 'text.secondary',
                   '& .MuiBottomNavigationAction-label': {
                     fontSize: '0.68rem',
