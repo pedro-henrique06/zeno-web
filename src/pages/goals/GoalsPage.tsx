@@ -13,6 +13,8 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '@/hooks/useUser';
 import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
+import { alpha } from '@mui/material/styles';
+import { brand } from '@/theme/tokens';
 
 // ─── Math helpers ────────────────────────────────────────────────────────────
 
@@ -60,9 +62,9 @@ const SCENARIO_MULTIPLIERS = [0.5, 0.75, 1, 1.5, 2, 3, 4];
 
 function color(months: number): string {
   const years = months / 12;
-  if (years > 15) return '#E86B52';
-  if (years > 7) return '#F5A623';
-  return '#2DC579';
+  if (years > 15) return brand.expense;
+  if (years > 7) return brand.warning;
+  return brand.income;
 }
 
 interface ScenarioBarsProps {
@@ -208,8 +210,8 @@ function StatTile({
         minWidth: 0,
         p: 1.5,
         borderRadius: 2,
-        bgcolor: highlight ? 'rgba(45,197,121,0.08)' : 'action.hover',
-        border: highlight ? '1px solid rgba(45,197,121,0.2)' : '1px solid transparent',
+        bgcolor: highlight ? alpha(brand.income, 0.08) : 'action.hover',
+        border: highlight ? `1px solid ${alpha(brand.income, 0.2)}` : '1px solid transparent',
       }}
     >
       <Typography
@@ -229,7 +231,7 @@ function StatTile({
           fontSize: '13px',
           fontWeight: 700,
           fontVariantNumeric: 'tabular-nums',
-          color: highlight ? '#2DC579' : 'text.primary',
+          color: highlight ? brand.income : 'text.primary',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -312,7 +314,7 @@ export default function GoalsPage() {
           p: 2,
           borderRadius: 3,
           mb: 2,
-          bgcolor: '#1B2D48',
+          bgcolor: brand.navy,
           boxShadow: 'none',
         }}
       >
@@ -325,7 +327,7 @@ export default function GoalsPage() {
               {rate.toFixed(2)}%
             </Typography>
           </Box>
-          <TrendingUpIcon sx={{ color: '#4A9FE0', opacity: 0.7, mt: 0.5 }} />
+          <TrendingUpIcon sx={{ color: brand.blue, opacity: 0.7, mt: 0.5 }} />
         </Box>
         <Slider
           value={rate}
@@ -334,7 +336,7 @@ export default function GoalsPage() {
           step={0.05}
           onChange={(_, v) => setRate(v as number)}
           sx={{
-            color: '#4A9FE0',
+            color: brand.blue,
             '& .MuiSlider-thumb': { width: 16, height: 16 },
             '& .MuiSlider-track': { height: 4 },
             '& .MuiSlider-rail': { height: 4, opacity: 0.3 },
@@ -395,7 +397,7 @@ export default function GoalsPage() {
               sx={{
                 p: 1.5,
                 borderRadius: 2,
-                bgcolor: '#1B2D48',
+                bgcolor: brand.navy,
                 mb: 1.5,
                 textAlign: 'center',
               }}

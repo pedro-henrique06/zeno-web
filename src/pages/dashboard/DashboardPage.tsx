@@ -14,6 +14,8 @@ import { EconomizedHorizonDialog } from '@/components/EconomizedHorizonDialog';
 import { PerformanceHorizonDialog } from '@/components/PerformanceHorizonDialog';
 import { CostOfLivingHorizonDialog } from '@/components/CostOfLivingHorizonDialog';
 import { DailyAverageHorizonDialog } from '@/components/DailyAverageHorizonDialog';
+import { alpha } from '@mui/material/styles';
+import { brand } from '@/theme/tokens';
 
 /** Large colored income / expense tile */
 function BigTile({
@@ -190,7 +192,7 @@ export default function DashboardPage() {
   if (isLoading || !data) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress sx={{ color: '#4A9FE0' }} />
+        <CircularProgress sx={{ color: brand.blue }} />
       </Box>
     );
   }
@@ -236,16 +238,16 @@ export default function DashboardPage() {
         <BigTile
           label={t('dashboard.income')}
           value={movements.entrada}
-          color="#2DC579"
-          bgColor="rgba(45,197,121,0.08)"
+          color={brand.income}
+          bgColor={alpha(brand.income, 0.08)}
           currency={profile?.currency}
           language={profile?.language}
         />
         <BigTile
           label={t('dashboard.expenses')}
           value={movements.saida + movements.cartao}
-          color="#E86B52"
-          bgColor="rgba(232,107,82,0.08)"
+          color={brand.expense}
+          bgColor={alpha(brand.expense, 0.08)}
           currency={profile?.currency}
           language={profile?.language}
         />
@@ -292,7 +294,7 @@ export default function DashboardPage() {
           <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: 'text.disabled' }}>
             {t('dashboard.monthMovements')}
           </Typography>
-          <Button size="small" sx={{ color: '#4A9FE0', fontWeight: 600, fontSize: '0.78rem', p: '2px 8px' }} onClick={() => navigate(`/entries?month=${month}&year=${year}`)}>
+          <Button size="small" sx={{ color: brand.blue, fontWeight: 600, fontSize: '0.78rem', p: '2px 8px' }} onClick={() => navigate(`/entries?month=${month}&year=${year}`)}>
             {t('dashboard.seeAll')}
           </Button>
         </Box>
@@ -308,7 +310,7 @@ export default function DashboardPage() {
       <Paper sx={{
         borderRadius: 3, p: 2, border: '1px solid', borderColor: 'divider',
         boxShadow: 'none', mt: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        bgcolor: performance >= 0 ? 'rgba(45,197,121,0.06)' : 'rgba(232,107,82,0.06)',
+        bgcolor: performance >= 0 ? alpha(brand.income, 0.06) : alpha(brand.expense, 0.06),
       }}>
         <Typography sx={{ fontSize: '13px', color: 'text.secondary', fontWeight: 500 }}>
           {t('dashboard.monthBalance')}
@@ -317,7 +319,7 @@ export default function DashboardPage() {
           fontFamily: '"Fraunces", serif',
           fontSize: '1.35rem',
           fontWeight: 600,
-          color: performance >= 0 ? '#2DC579' : '#E86B52',
+          color: performance >= 0 ? brand.income : brand.expense,
           fontVariantNumeric: 'tabular-nums',
         }}>
           {performance >= 0 ? '+' : ''}{formatCurrency(performance, profile?.currency, profile?.language)}

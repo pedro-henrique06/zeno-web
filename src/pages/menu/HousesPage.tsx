@@ -37,8 +37,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useEntryKindLabels } from '@/utils/entryKind';
 import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
 import type { House } from '@/types';
+import { alpha } from '@mui/material/styles';
+import { brand } from '@/theme/tokens';
 
-const AVATAR_COLORS = ['#4A9FE0', '#2DC579', '#F0A030', '#8B5CF6', '#5ECCC8', '#E86B52'];
+const AVATAR_COLORS = [brand.blue, brand.income, brand.warning, brand.purple, brand.teal, brand.expense];
 
 function HouseDetailDialog({ house, open, onClose }: { house: House; open: boolean; onClose: () => void }) {
   const { t } = useTranslation();
@@ -133,7 +135,7 @@ function HouseDetailDialog({ house, open, onClose }: { house: House; open: boole
             </Typography>
             <List disablePadding sx={{ mb: 2 }}>
               <ListItem disablePadding>
-                <Avatar sx={{ width: 32, height: 32, mr: 1.5, bgcolor: '#4A9FE0', fontSize: 14 }}>
+                <Avatar sx={{ width: 32, height: 32, mr: 1.5, bgcolor: brand.blue, fontSize: 14 }}>
                   {house.name.charAt(0).toUpperCase()}
                 </Avatar>
                 <ListItemText
@@ -284,7 +286,7 @@ export default function HousesPage() {
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress sx={{ color: '#4A9FE0' }} />
+        <CircularProgress sx={{ color: brand.blue }} />
       </Box>
     );
   }
@@ -325,12 +327,12 @@ export default function HousesPage() {
         <IconButton
           onClick={openCreate}
           sx={{
-            bgcolor: '#4A9FE0',
+            bgcolor: brand.blue,
             color: '#fff',
             width: 36,
             height: 36,
             borderRadius: '50%',
-            '&:hover': { bgcolor: '#2D85CC' },
+            '&:hover': { bgcolor: brand.blueDark },
           }}
         >
           <AddIcon fontSize="small" />
@@ -349,7 +351,7 @@ export default function HousesPage() {
                   boxShadow: 'none',
                   overflow: 'hidden',
                   cursor: 'pointer',
-                  bgcolor: '#1B2D48',
+                  bgcolor: brand.navy,
                   border: 'none',
                 }}
                 onClick={() => setDetailHouse(house)}
@@ -364,7 +366,7 @@ export default function HousesPage() {
                       <IconButton size="small" onClick={(e) => openEdit(e, house)} sx={{ color: 'rgba(255,255,255,0.55)', '&:hover': { color: '#fff', bgcolor: 'rgba(255,255,255,0.1)' } }}>
                         <EditIcon fontSize="small" />
                       </IconButton>
-                      <IconButton size="small" onClick={(e) => handleDelete(e, house.id)} sx={{ color: 'rgba(255,255,255,0.55)', '&:hover': { color: '#E86B52', bgcolor: 'rgba(232,107,82,0.15)' } }}>
+                      <IconButton size="small" onClick={(e) => handleDelete(e, house.id)} sx={{ color: 'rgba(255,255,255,0.55)', '&:hover': { color: brand.expense, bgcolor: alpha(brand.expense, 0.15) } }}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Box>
@@ -460,7 +462,7 @@ export default function HousesPage() {
             variant="contained"
             onClick={handleSave}
             disabled={!name.trim() || createMutation.isPending || updateMutation.isPending}
-            sx={{ bgcolor: '#4A9FE0', '&:hover': { bgcolor: '#2D85CC' } }}
+            sx={{ bgcolor: brand.blue, '&:hover': { bgcolor: brand.blueDark } }}
           >
             {t('common.save')}
           </Button>

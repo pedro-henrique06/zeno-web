@@ -1,12 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { EntryKind } from '@/types';
+import { brand } from '@/theme/tokens';
 
 export const EntryKindColors: Record<EntryKind, string> = {
   [EntryKind.Entrada]: '#22C55E',
   [EntryKind.Saida]: '#F97316',
   [EntryKind.Diario]: '#EC4899',
   [EntryKind.Economia]: '#14B8A6',
-  [EntryKind.Cartao]: '#8B5CF6',
+  [EntryKind.Cartao]: brand.purple,
 };
 
 export const EntryKindLetters: Record<EntryKind, string> = {

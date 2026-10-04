@@ -34,6 +34,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { useResetAccount } from '@/hooks/useAuth';
+import { alpha } from '@mui/material/styles';
+import { brand } from '@/theme/tokens';
 
 const APP_VERSION = '1.0.0';
 
@@ -82,7 +84,7 @@ export default function MenuPage() {
           sx={{
             width: 52,
             height: 52,
-            bgcolor: '#4A9FE0',
+            bgcolor: brand.blue,
             fontSize: 18,
             fontWeight: 700,
             mb: 1,
@@ -113,7 +115,7 @@ export default function MenuPage() {
             p: 2,
             borderRadius: 3,
             mb: 1.5,
-            bgcolor: '#1B2D48',
+            bgcolor: brand.navy,
             boxShadow: 'none',
             border: 'none',
             cursor: 'pointer',
@@ -135,7 +137,7 @@ export default function MenuPage() {
               <span style={{ fontSize: '0.85rem', opacity: 0.45, marginLeft: 2 }}>/dia</span>
             </Typography>
             {summary && (
-              <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#2DC579' }}>
+              <Typography sx={{ fontSize: '12px', fontWeight: 600, color: brand.income }}>
                 {Math.round((summary.movements.diario / Math.max(profile.dailyBudget, 1)) * 100)}% usado hoje
               </Typography>
             )}
@@ -146,7 +148,7 @@ export default function MenuPage() {
                 sx={{
                   height: '100%',
                   width: `${Math.min(Math.round((summary.movements.diario / Math.max(profile.dailyBudget, 1)) * 100), 100)}%`,
-                  background: 'linear-gradient(90deg, #2DC579, #5ECCC8)',
+                  background: `linear-gradient(90deg, ${brand.income}, ${brand.teal})`,
                   borderRadius: 3,
                   transition: 'width 0.4s ease',
                 }}
@@ -177,9 +179,9 @@ export default function MenuPage() {
                   <Box sx={{
                     width: 34, height: 34,
                     borderRadius: '10px',
-                    bgcolor: '#1B2D48',
+                    bgcolor: brand.navy,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#4A9FE0',
+                    color: brand.blue,
                   }}>
                     {item.icon}
                   </Box>
@@ -250,13 +252,13 @@ export default function MenuPage() {
         <List sx={{ py: 1 }} disablePadding>
           <ListItemButton sx={{ mx: 1, borderRadius: 2, py: 1.25 }} onClick={handleLogout}>
             <ListItemIcon sx={{ minWidth: 44 }}>
-              <Box sx={{ width: 34, height: 34, borderRadius: '10px', bgcolor: 'rgba(232,107,82,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E86B52' }}>
+              <Box sx={{ width: 34, height: 34, borderRadius: '10px', bgcolor: alpha(brand.expense, 0.1), display: 'flex', alignItems: 'center', justifyContent: 'center', color: brand.expense }}>
                 <LogoutIcon sx={{ fontSize: 18 }} />
               </Box>
             </ListItemIcon>
             <ListItemText
               primary={t('menu.logout')}
-              slotProps={{ primary: { style: { fontWeight: 500, color: '#E86B52' } } }}
+              slotProps={{ primary: { style: { fontWeight: 500, color: brand.expense } } }}
             />
           </ListItemButton>
           <Divider sx={{ mx: 2, borderColor: 'divider' }} />
@@ -265,13 +267,13 @@ export default function MenuPage() {
             onClick={() => setResetOpen(true)}
           >
             <ListItemIcon sx={{ minWidth: 44 }}>
-              <Box sx={{ width: 34, height: 34, borderRadius: '10px', bgcolor: 'rgba(232,107,82,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#E86B52' }}>
+              <Box sx={{ width: 34, height: 34, borderRadius: '10px', bgcolor: alpha(brand.expense, 0.1), display: 'flex', alignItems: 'center', justifyContent: 'center', color: brand.expense }}>
                 <DeleteSweepIcon sx={{ fontSize: 18 }} />
               </Box>
             </ListItemIcon>
             <ListItemText
               primary={t('menu.resetAccount')}
-              slotProps={{ primary: { style: { fontWeight: 500, color: '#E86B52' } } }}
+              slotProps={{ primary: { style: { fontWeight: 500, color: brand.expense } } }}
             />
           </ListItemButton>
         </List>

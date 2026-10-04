@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react';
 import { createTheme, type Theme } from '@mui/material/styles';
+import { brand } from './tokens';
 
 interface ThemeContextType {
   mode: 'light' | 'dark';
@@ -14,16 +15,16 @@ const C = {
   // Backgrounds
   bgPage: '#F2F2F7',
   bgPaper: '#FFFFFF',
-  bgDark: '#1B2D48',      // dark navy card
-  bgDarkSurface: '#243B58',
+  bgDark: brand.navy,     // dark navy card
+  bgDarkSurface: brand.navySurface,
 
   // Brand
-  blue: '#4A9FE0',         // CTA / active
-  teal: '#5ECCC8',         // projected / future
-  green: '#2DC579',        // income / positive
-  salmon: '#E86B52',       // expenses / negative
-  orange: '#F0A030',
-  purple: '#8B5CF6',
+  blue: brand.blue,         // CTA / active
+  teal: brand.teal,         // projected / future
+  green: brand.income,        // income / positive
+  salmon: brand.expense,       // expenses / negative
+  orange: brand.warning,
+  purple: brand.purple,
 
   // Text on light bg
   textPrimary: '#1C1C1E',
@@ -46,32 +47,32 @@ function getTheme(mode: 'light' | 'dark'): Theme {
       mode,
       primary: {
         main: C.blue,
-        light: '#6EB7EA',
-        dark: '#2D85CC',
+        light: brand.blueLight,
+        dark: brand.blueDark,
         contrastText: '#FFFFFF',
       },
       secondary: {
         main: C.teal,
-        light: '#80DEDA',
-        dark: '#3EB5B1',
+        light: brand.tealLight,
+        dark: brand.tealDark,
         contrastText: '#FFFFFF',
       },
       success: {
         main: C.green,
-        light: '#5DD99A',
-        dark: '#1EA85F',
+        light: brand.incomeLight,
+        dark: brand.incomeDark,
         contrastText: '#FFFFFF',
       },
       error: {
         main: C.salmon,
-        light: '#EF907B',
-        dark: '#CB4D35',
+        light: brand.expenseLight,
+        dark: brand.expenseDark,
         contrastText: '#FFFFFF',
       },
       warning: {
         main: C.orange,
-        light: '#F5BC5C',
-        dark: '#CC841A',
+        light: brand.warningLight,
+        dark: brand.warningDark,
         contrastText: '#FFFFFF',
       },
       ...(isDark
