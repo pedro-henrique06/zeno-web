@@ -415,10 +415,10 @@ export default function HousesPage() {
                   borderTop: '1px solid rgba(255,255,255,0.07)',
                   display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 }}>
-                  <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>
+                  <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
                     {t('houses.entriesTab')}
                   </Typography>
-                  <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>
+                  <Typography sx={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
                     →
                   </Typography>
                 </Box>

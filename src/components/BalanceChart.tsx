@@ -84,7 +84,7 @@ export function BalanceChart({
         show: true,
         datetimeUTC: false,
         format: 'MMM',
-        style: { colors: labelColor, fontSize: '9px', fontFamily: '"DM Sans", sans-serif' },
+        style: { colors: labelColor, fontSize: '11px', fontFamily: '"DM Sans", sans-serif' },
       },
       axisBorder: { show: false },
       axisTicks:  { show: false },
@@ -94,7 +94,7 @@ export function BalanceChart({
       labels: {
         show: true,
         formatter: (val: number) => fmtY(val, currency),
-        style: { colors: labelColor, fontSize: '9px', fontFamily: '"DM Sans", sans-serif' },
+        style: { colors: labelColor, fontSize: '11px', fontFamily: '"DM Sans", sans-serif' },
         offsetX: -4,
       },
     },
@@ -129,7 +129,7 @@ export function BalanceChart({
               style: {
                 color: alpha(brand.income, 0.9),
                 background: 'transparent',
-                fontSize: '9px',
+                fontSize: '11px',
                 fontWeight: '700',
                 fontFamily: '"DM Sans", sans-serif',
               },

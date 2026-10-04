@@ -107,7 +107,7 @@ function ScenarioBars({ basePmt, target, rate, currency, locale }: ScenarioBarsP
             key={i}
             sx={{
               display: 'grid',
-              gridTemplateColumns: '52px 1fr 52px',
+              gridTemplateColumns: '64px 1fr 56px',
               alignItems: 'center',
               gap: 1,
               mb: 0.75,
@@ -115,7 +115,7 @@ function ScenarioBars({ basePmt, target, rate, currency, locale }: ScenarioBarsP
           >
             <Typography
               sx={{
-                fontSize: '11px',
+                fontSize: '12px',
                 fontWeight: isBase ? 700 : 500,
                 color: isBase ? 'text.primary' : 'text.secondary',
                 textAlign: 'right',
@@ -157,7 +157,7 @@ function ScenarioBars({ basePmt, target, rate, currency, locale }: ScenarioBarsP
 
             <Typography
               sx={{
-                fontSize: '11px',
+                fontSize: '12px',
                 fontWeight: isBase ? 700 : 400,
                 color: isBase ? barColor : 'text.secondary',
                 fontVariantNumeric: 'tabular-nums',
@@ -173,7 +173,7 @@ function ScenarioBars({ basePmt, target, rate, currency, locale }: ScenarioBarsP
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: '52px 1fr 52px',
+          gridTemplateColumns: '64px 1fr 56px',
           gap: 1,
           mt: 0.5,
         }}
@@ -181,7 +181,7 @@ function ScenarioBars({ basePmt, target, rate, currency, locale }: ScenarioBarsP
         <Box />
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           {['0', '5a', '10a', '15a', '20a', '25a'].map((l) => (
-            <Typography key={l} sx={{ fontSize: '9px', color: 'text.disabled' }}>
+            <Typography key={l} sx={{ fontSize: '11px', color: 'text.disabled' }}>
               {l}
             </Typography>
           ))}
@@ -216,7 +216,7 @@ function StatTile({
     >
       <Typography
         sx={{
-          fontSize: '9px',
+          fontSize: '11px',
           fontWeight: 700,
           letterSpacing: '0.6px',
           textTransform: 'uppercase',
@@ -320,10 +320,10 @@ export default function GoalsPage() {
       >
         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1 }}>
           <Box>
-            <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', mb: 0.25 }}>
+            <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', mb: 0.25 }}>
               Taxa de juros (a.a.)
             </Typography>
-            <Typography sx={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>
+            <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '1.5rem', fontWeight: 600, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>
               {rate.toFixed(2)}%
             </Typography>
           </Box>
@@ -343,9 +343,9 @@ export default function GoalsPage() {
           }}
         />
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: -0.5 }}>
-          <Typography sx={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>2%</Typography>
-          <Typography sx={{ fontSize: '9px', color: 'rgba(255,255,255,0.45)' }}>Sugestão: Selic/CDI (~14%)</Typography>
-          <Typography sx={{ fontSize: '9px', color: 'rgba(255,255,255,0.3)' }}>25%</Typography>
+          <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>2%</Typography>
+          <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)' }}>Sugestão: Selic/CDI (~14%)</Typography>
+          <Typography sx={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)' }}>25%</Typography>
         </Box>
       </Paper>
 
@@ -402,10 +402,10 @@ export default function GoalsPage() {
                 textAlign: 'center',
               }}
             >
-              <Typography sx={{ fontSize: '9.5px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', mb: 0.25 }}>
+              <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.45)', mb: 0.25 }}>
                 Tempo necessário
               </Typography>
-              <Typography sx={{ fontSize: '2rem', fontWeight: 700, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>
+              <Typography sx={{ fontFamily: '"Fraunces", serif', fontSize: '2.25rem', fontWeight: 600, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>
                 {formatMonths(months)}
               </Typography>
             </Box>
@@ -426,7 +426,7 @@ export default function GoalsPage() {
             <Typography sx={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.6px', textTransform: 'uppercase', color: 'text.secondary', mb: 0.5 }}>
               Cenários de aporte
             </Typography>
-            <Typography sx={{ fontSize: '11px', color: 'text.disabled', mb: 1.5 }}>
+            <Typography sx={{ fontSize: '12px', color: 'text.disabled', mb: 1.5 }}>
               Quanto tempo leva para atingir {fmtCurrency(target)} variando o aporte
             </Typography>
             <ScenarioBars
