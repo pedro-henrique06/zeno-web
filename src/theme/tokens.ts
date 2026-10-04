@@ -51,6 +51,8 @@ export const surfaces = {
     textDisabled: '#8A8A92',
     hover: 'rgba(0,0,0,0.025)',
     nav: 'rgba(255,255,255,0.97)',
+    /** Background of the login / register screens. */
+    auth: '#F7F5F0',
   },
   dark: {
     page: '#0B111B',
@@ -62,5 +64,6 @@ export const surfaces = {
     textDisabled: '#7A8CA3',
     hover: 'rgba(255,255,255,0.04)',
     nav: 'rgba(20,29,45,0.97)',
+    auth: '#0B111B',
   },
 } as const;
