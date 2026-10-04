@@ -205,7 +205,8 @@
     "alreadyMember": "Este usuario ya es miembro.",
     "inviteError": "No se pudo invitar al miembro.",
     "activeGroup": "grupo activo",
-    "activeGroups": "grupos activos"
+    "activeGroups": "grupos activos",
+    "budgetTab": "Presupuesto"
   },
   "entryForm": {
     "editTitle": "Editar movimiento",
@@ -373,5 +374,34 @@
     "ruleTag": "Usar la etiqueta",
     "ruleAdd": "Añadir regla",
     "ruleDelete": "Borrar regla"
+  },
+  "houseBudget": {
+    "loadError": "No se pudo cargar el presupuesto de la casa. Inténtalo de nuevo.",
+    "totalIncome": "Ingresos combinados de la casa",
+    "residents_one": "{{count}} residente",
+    "residents_other": "{{count}} residentes",
+    "noIncome": "Los residentes no registraron ingresos este mes.",
+    "needs": "Necesidades",
+    "wants": "Deseos (saldo libre)",
+    "savings": "Meta",
+    "freePerPerson": "Libre por persona",
+    "freeHint": "{{amount}} del 30%, dividido por igual entre {{count}} residentes.",
+    "goalTitle": "Meta de la casa",
+    "goalName": "Nombre de la meta",
+    "goalTarget": "Valor de la meta",
+    "goalSave": "Guardar meta",
+    "goalEdit": "Editar",
+    "goalRemove": "Quitar",
+    "goalCreate": "Definir meta de la casa",
+    "goalEmptyOwner": "Define una meta: el 20% de cada mes va a ella.",
+    "goalEmptyMember": "El dueño de la casa aún no definió una meta.",
+    "goalOf": "{{saved}} de {{target}}",
+    "goalRemaining": "faltan {{time}}",
+    "goalReached": "Meta alcanzada",
+    "goalNoEstimate": "sin estimación",
+    "goalMonthly": "Aporte de este mes (20%): {{amount}}",
+    "goalError": "No se pudo guardar. Inténtalo de nuevo.",
+    "personalGoal": "Tu meta personal (adicional, solo tú la ves)",
+    "privacy": "Solo se muestran los totales de la casa: nadie ve los ingresos, el saldo ni los movimientos de los demás. Los importes se suman sin conversión de moneda."
   }
 }

@@ -41,6 +41,7 @@ import { alpha } from '@mui/material/styles';
 import { brand } from '@/theme/tokens';
 import { clickableProps } from '@/utils/a11y';
 import { EmptyState } from '@/components/EmptyState';
+import { HouseBudgetTab } from '@/components/HouseBudgetTab';
 
 const AVATAR_COLORS = [brand.blue, brand.income, brand.warning, brand.purple, brand.teal, brand.expense];
 
@@ -90,13 +91,22 @@ function HouseDetailDialog({ house, open, onClose }: { house: House; open: boole
         {house.name}
       </DialogTitle>
 
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ px: 2, borderBottom: 1, borderColor: 'divider' }}>
+      <Tabs
+        value={tab}
+        onChange={(_, v) => setTab(v)}
+        variant="scrollable"
+        scrollButtons={false}
+        sx={{ px: 2, borderBottom: 1, borderColor: 'divider' }}
+      >
+        <Tab label={t('houses.budgetTab')} />
         <Tab label={t('houses.entriesTab')} />
         <Tab label={t('houses.membersTab')} icon={<GroupIcon fontSize="small" />} iconPosition="end" />
       </Tabs>
 
       <DialogContent sx={{ px: 0, minHeight: 200 }}>
-        {tab === 0 && (
+        {tab === 0 && <HouseBudgetTab house={house} />}
+
+        {tab === 1 && (
           loadingEntries ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
               <CircularProgress size={32} />
@@ -130,7 +140,7 @@ function HouseDetailDialog({ house, open, onClose }: { house: House; open: boole
           )
         )}
 
-        {tab === 1 && (
+        {tab === 2 && (
           <Box sx={{ px: 3, pt: 2 }}>
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
               {t('houses.owner')}
