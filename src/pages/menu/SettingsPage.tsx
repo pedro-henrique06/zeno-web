@@ -28,6 +28,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import WidgetsIcon from '@mui/icons-material/Widgets';
+import BoltIcon from '@mui/icons-material/Bolt';
+import { CaptureDialog } from '@/components/CaptureDialog';
 import { WidgetDialog } from '@/components/WidgetDialog';
 import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
@@ -100,6 +102,7 @@ export default function SettingsPage() {
 
   const [resetOpen, setResetOpen] = useState(false);
   const [widgetOpen, setWidgetOpen] = useState(false);
+  const [captureOpen, setCaptureOpen] = useState(false);
   const [pushErrorMsg, setPushErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -192,6 +195,16 @@ export default function SettingsPage() {
           />
           <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
         </ListItemButton>
+        <Divider sx={{ mx: 2 }} />
+        <ListItemButton onClick={() => setCaptureOpen(true)} sx={ROW_SX}>
+          <IconBadge><BoltIcon /></IconBadge>
+          <ListItemText
+            primary={t('capture.item')}
+            secondary={t('capture.itemHint')}
+            slotProps={{ primary: { style: { fontWeight: 500 } } }}
+          />
+          <ChevronRightIcon fontSize="small" sx={{ color: 'text.disabled' }} />
+        </ListItemButton>
       </SectionCard>
 
       <SectionLabel>{t('settings.sectionAccount')}</SectionLabel>
@@ -217,6 +230,7 @@ export default function SettingsPage() {
       </SectionCard>
 
       <WidgetDialog open={widgetOpen} onClose={() => setWidgetOpen(false)} />
+      <CaptureDialog open={captureOpen} onClose={() => setCaptureOpen(false)} />
 
       <Snackbar
         open={!!pushErrorMsg}
