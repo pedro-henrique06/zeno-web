@@ -8,7 +8,7 @@ O front do Zeno: um único app em React Native com Expo (SDK 57) e Expo Router, 
 2. No terminal: `npm install && npx expo start`
 3. No iPhone, instale o **Expo Go** (App Store) e leia o QR code do terminal. O app abre e atualiza ao vivo.
 
-A URL da API vem de `app.json` (`extra.apiUrl`). Para apontar para outro servidor, crie `mobile/.env` com `EXPO_PUBLIC_API_URL=https://.../api`.
+A URL da API vem de `app.json` (`extra.apiUrl`). Para apontar para outro servidor, crie `.env` com `EXPO_PUBLIC_API_URL=https://.../api`.
 
 ## Publicar / instalar com ícone próprio
 
