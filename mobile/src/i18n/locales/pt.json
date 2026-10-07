@@ -406,5 +406,23 @@
     "fixedNone": "Nenhum gasto fixo ligado à casa. Marque lançamentos recorrentes de saída com esta casa.",
     "fixedLeft": "Gastos fixos da casa: {{fixed}} · sobram {{amount}} dos 50%",
     "fixedOver": "Gastos fixos da casa: {{fixed}} · passam {{amount}} dos 50%"
+  },
+  "push": {
+    "title": "Notificações",
+    "daily": "Resumo diário",
+    "dailyOn": "Ativo às {{hour}}h",
+    "dailyOff": "Desativado",
+    "hour": "Horário do aviso",
+    "test": "Enviar notificação de teste",
+    "testing": "Enviando…",
+    "devices_one": "{{count}} aparelho registrado",
+    "devices_other": "{{count}} aparelhos registrados",
+    "notConfigured": "O servidor não está configurado para enviar notificações.",
+    "simulator": "Notificações só funcionam em um aparelho real.",
+    "denied": "Permissão negada. Ative as notificações do Zeno nos Ajustes do iPhone.",
+    "noProject": "Falta o projectId do EAS. Rode `eas init` na pasta mobile.",
+    "error": "Não foi possível ativar as notificações.",
+    "sent": "Notificação enviada.",
+    "hourLabel": "{{hour}}h"
   }
 }
