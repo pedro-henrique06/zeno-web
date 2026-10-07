@@ -1,0 +1,79 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import * as houseApi from '@/api/house';
+import type { CreateHouseRequest, SaveHouseGoalRequest, UpdateHouseRequest } from '@/types';
+
+export function useHouses() {
+  return useQuery({ queryKey: ['houses'], queryFn: houseApi.getHouses });
+}
+
+export function useHouseEntries(houseId: string | null) {
+  return useQuery({
+    queryKey: ['house-entries', houseId],
+    queryFn: () => houseApi.getHouseEntries(houseId!),
+    enabled: !!houseId,
+  });
+}
+
+export function useCreateHouse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: CreateHouseRequest) => houseApi.createHouse(data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['houses'] }),
+  });
+}
+
+export function useUpdateHouse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: UpdateHouseRequest) => houseApi.updateHouse(data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['houses'] }),
+  });
+}
+
+export function useDeleteHouse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => houseApi.deleteHouse(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['houses'] }),
+  });
+}
+
+export function useAddHouseMember(houseId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (email: string) => houseApi.addHouseMember(houseId, email),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['houses'] }),
+  });
+}
+
+export function useRemoveHouseMember(houseId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (memberId: string) => houseApi.removeHouseMember(houseId, memberId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['houses'] }),
+  });
+}
+
+export function useHouseBudget(houseId: string | null, month: number, year: number) {
+  return useQuery({
+    queryKey: ['house-budget', houseId, month, year],
+    queryFn: () => houseApi.getHouseBudget(houseId!, month, year),
+    enabled: !!houseId,
+  });
+}
+
+export function useSaveHouseGoal(houseId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: SaveHouseGoalRequest) => houseApi.saveHouseGoal(houseId, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['house-budget', houseId] }),
+  });
+}
+
+export function useDeleteHouseGoal(houseId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => houseApi.deleteHouseGoal(houseId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['house-budget', houseId] }),
+  });
+}
