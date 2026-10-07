@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "Zeno",
+    "slug": "zeno",
+    "scheme": "zeno",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B111B"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.zeno.mobile"
+    },
+    "android": {
+      "package": "app.zeno.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#1B2D48",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "color": "#4A9FE0"
+        }
+      ],
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0B111B",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "apiUrl": "https://zeno-production-51bb.up.railway.app/api"
+    }
+  }
+}
