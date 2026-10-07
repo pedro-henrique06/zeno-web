@@ -28,6 +28,18 @@ Instalar no iPhone ou publicar na App Store exige uma conta Apple Developer (pag
 - `src/api`, `src/hooks`, `src/types`, `src/utils`, `src/i18n`: mesma camada de dados do app web (React Query + axios), com o token guardado no Keychain (`expo-secure-store`).
 - `src/ui`: componentes base (texto, botão, campo, cartão, sheet). `src/theme`: tokens de marca, claro/escuro.
 
-## Ainda não portado do app web
+## Funcionalidades
 
-Metas (simulador), Casas (orçamento 50/30/20), horizontes anuais dos Totais, widget e captura por Apple Pay (a captura continua pelo Atalhos do iOS, não depende do app), notificações push e login com Google.
+Login e cadastro (e-mail ou Google), Saldos, Totais (com horizontes anuais e meta), Lançamentos, Tags, Metas (simulador salvo na conta), Casas (moradores, lançamentos, orçamento 50/30/20 e meta da casa), previsão de diário, notificações push (resumo diário e teste), e a configuração do widget e da captura por Apple Pay (chaves, script do Scriptable e regras por tag).
+
+## Notificações push
+
+O servidor envia pelo serviço de push do Expo, então não precisa de credencial do Firebase. No app: Menu, Configurações, Notificações. Para o token funcionar, vincule o projeto uma vez com `eas init` (grava o `projectId` em `app.json`, em `extra.eas.projectId`). No Expo Go no iPhone dá para testar; no app instalado via EAS o iOS pede a permissão normalmente.
+
+## Login com Google
+
+O app abre o fluxo do servidor no navegador e volta pelo esquema `zeno://`. Esse retorno só funciona no app instalado (build do EAS); no Expo Go o esquema é outro, então teste o Google no build `preview`. Não é preciso mudar nada no Google Cloud (o redirecionamento continua sendo o do servidor).
+
+## CI
+
+`.github/workflows/mobile.yml` roda `tsc` e gera o bundle iOS a cada PR que mexe em `mobile/`.

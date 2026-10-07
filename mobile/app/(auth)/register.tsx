@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Button, Field, Segmented, Txt } from '@/ui';
-import { AuthShell, errorMessage } from '@/ui/AuthShell';
+import { AuthShell, GoogleButton, errorMessage } from '@/ui/AuthShell';
 import { useLogin, useRegister } from '@/hooks/useAuth';
 import type { Currency, Language } from '@/types';
 import { brand } from '@/theme/ThemeContext';
@@ -95,6 +95,7 @@ export default function RegisterScreen() {
         loading={busy}
         disabled={!form.name || !form.email || !form.password}
       />
+      <GoogleButton label={t('auth.register.googleButton')} onError={setError} />
     </AuthShell>
   );
 }

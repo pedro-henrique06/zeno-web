@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Button, Field, Txt } from '@/ui';
-import { AuthShell, errorMessage } from '@/ui/AuthShell';
+import { AuthShell, GoogleButton, errorMessage } from '@/ui/AuthShell';
 import { useLogin } from '@/hooks/useAuth';
 import { brand } from '@/theme/ThemeContext';
 
@@ -63,6 +63,7 @@ export default function LoginScreen() {
         loading={login.isPending}
         disabled={!email || !password}
       />
+      <GoogleButton label={t('auth.login.googleButton')} onError={setError} />
     </AuthShell>
   );
 }
