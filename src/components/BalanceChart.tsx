@@ -1,179 +1,61 @@
-import ReactApexChart from 'react-apexcharts';
-import { useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { useProfile } from '@/hooks/useUser';
-import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
-import type { ApexOptions } from 'apexcharts';
-import { alpha } from '@mui/material/styles';
-import { brand } from '@/theme/tokens';
-import type { Currency } from '@/types';
+import { useState } from 'react';
+import { View } from 'react-native';
+import Svg, { Circle, Line, Path } from 'react-native-svg';
+import { brand, useTheme } from '@/theme/ThemeContext';
 
 export interface ChartPoint {
-  x: number; // timestamp ms
+  x: number;
   y: number;
 }
 
-interface BalanceChartProps {
-  past: ChartPoint[];
-  future: ChartPoint[];
-  todayX?: number | null;
-  todayY?: number | null;
-  height?: number;
-  currency?: Currency;
-}
-
-function fmtY(val: number, currency: Currency = 'BRL'): string {
-  const abs = Math.abs(val);
-  const sign = val < 0 ? '-' : '';
-  const sym = CURRENCY_SYMBOLS[currency];
-  if (abs >= 1_000_000) return `${sign}${sym}${(abs / 1_000_000).toFixed(1)}M`;
-  if (abs >= 1_000)     return `${sign}${sym}${(abs / 1_000).toFixed(abs >= 100_000 ? 0 : 1)}k`;
-  return `${sign}${sym}${abs.toFixed(0)}`;
-}
-
+/** Year balance line: solid for what already happened, dashed teal for the projection. */
 export function BalanceChart({
   past,
   future,
   todayX,
   todayY,
   height = 160,
-  currency,
-}: BalanceChartProps) {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
-  const { t } = useTranslation();
-  const { data: profile } = useProfile();
-  const locale = LANGUAGE_LOCALES[profile?.language ?? 'PtBR'];
+}: {
+  past: ChartPoint[];
+  future: ChartPoint[];
+  todayX: number | null;
+  todayY: number | null;
+  height?: number;
+}) {
+  const { colors } = useTheme();
+  const [width, setWidth] = useState(0);
 
-  if (past.length < 2) return null;
+  const all = [...past, ...future];
+  if (all.length < 2) return null;
 
-  const hasFuture = future.length > 1;
+  const pad = 8;
+  const minX = Math.min(...all.map((p) => p.x));
+  const maxX = Math.max(...all.map((p) => p.x));
+  const rawMin = Math.min(...all.map((p) => p.y), 0);
+  const rawMax = Math.max(...all.map((p) => p.y), 0);
+  const span = rawMax - rawMin || 1;
 
-  const series = hasFuture
-    ? [
-        { name: t('balances.chartPast'), data: past },
-        { name: t('balances.chartFuture'), data: future },
-      ]
-    : [{ name: t('balances.chartPast'), data: past }];
-
-  const labelColor = theme.palette.text.secondary;
-  const gridColor  = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
-
-  const options: ApexOptions = {
-    chart: {
-      type: 'area',
-      height,
-      toolbar:    { show: false },
-      zoom:       { enabled: false },
-      background: 'transparent',
-      fontFamily: '"DM Sans", sans-serif',
-      animations: { enabled: true, speed: 700, easing: 'easeout' },
-    },
-    colors: hasFuture ? [brand.income, brand.teal] : [brand.income],
-    fill: {
-      type: 'gradient',
-      gradient: {
-        type: 'vertical',
-        shadeIntensity: 0,
-        opacityFrom: 0.22,
-        opacityTo: 0.01,
-        stops: [0, 100],
-      },
-    },
-    stroke: {
-      curve: 'smooth',
-      width:     hasFuture ? [2.5, 2] : [2.5],
-      dashArray: hasFuture ? [0, 6]   : [0],
-    },
-    xaxis: {
-      type: 'datetime',
-      labels: {
-        show: true,
-        datetimeUTC: false,
-        format: 'MMM',
-        style: { colors: labelColor, fontSize: '11px', fontFamily: '"DM Sans", sans-serif' },
-      },
-      axisBorder: { show: false },
-      axisTicks:  { show: false },
-      tooltip:    { enabled: false },
-    },
-    yaxis: {
-      labels: {
-        show: true,
-        formatter: (val: number) => fmtY(val, currency),
-        style: { colors: labelColor, fontSize: '11px', fontFamily: '"DM Sans", sans-serif' },
-        offsetX: -4,
-      },
-    },
-    grid: {
-      borderColor: gridColor,
-      padding: { left: 0, right: 6, top: -8, bottom: -4 },
-    },
-    dataLabels: { enabled: false },
-    markers:    { size: 0, hover: { size: 5 } },
-    legend: {
-      show: hasFuture,
-      position: 'top',
-      horizontalAlign: 'right',
-      fontSize: '12px',
-      fontFamily: '"DM Sans", sans-serif',
-      labels: { colors: labelColor },
-      markers: { size: 5, offsetX: -2 },
-      itemMargin: { horizontal: 8 },
-    },
-    tooltip: {
-      theme: isDark ? 'dark' : 'light',
-      shared: true,
-      intersect: false,
-      x: { format: 'dd MMM' },
-      y: {
-        formatter: (v: number) =>
-          v.toLocaleString(locale, { style: 'currency', currency: currency ?? 'BRL' }),
-      },
-    },
-    annotations: {
-      xaxis: todayX != null
-        ? [{
-            x: todayX,
-            borderColor: alpha(brand.income, 0.4),
-            strokeDashArray: 4,
-            label: {
-              text: t('balances.chartToday'),
-              position: 'top',
-              borderColor: 'transparent',
-              style: {
-                color: alpha(brand.income, 0.9),
-                background: 'transparent',
-                fontSize: '11px',
-                fontWeight: '700',
-                fontFamily: '"DM Sans", sans-serif',
-              },
-            },
-          }]
-        : [],
-      points: todayX != null && todayY != null
-        ? [{
-            x: todayX,
-            y: todayY,
-            marker: {
-              size: 5,
-              fillColor: brand.income,
-              strokeColor: alpha(brand.income, 0.25),
-              strokeWidth: 7,
-            },
-            label: { text: '' },
-          }]
-        : [],
-    },
-    theme: { mode: isDark ? 'dark' : 'light' },
-  };
+  const sx = (x: number) => pad + ((x - minX) / (maxX - minX || 1)) * (width - pad * 2);
+  const sy = (y: number) => pad + (1 - (y - rawMin) / span) * (height - pad * 2);
+  const toPath = (pts: ChartPoint[]) => pts.map((p, i) => `${i ? 'L' : 'M'}${sx(p.x).toFixed(1)},${sy(p.y).toFixed(1)}`).join(' ');
 
   return (
-    <ReactApexChart
-      options={options}
-      series={series}
-      type="area"
-      height={height}
-    />
+    <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)} style={{ height }}>
+      {width > 0 && (
+        <Svg width={width} height={height}>
+          <Line x1={pad} x2={width - pad} y1={sy(0)} y2={sy(0)} stroke={colors.divider} strokeWidth={1} strokeDasharray="3 4" />
+          {past.length > 1 && <Path d={toPath(past)} stroke={brand.blue} strokeWidth={2.5} fill="none" strokeLinejoin="round" strokeLinecap="round" />}
+          {future.length > 1 && (
+            <Path d={toPath(future)} stroke={brand.teal} strokeWidth={2.5} fill="none" strokeDasharray="6 5" strokeLinejoin="round" strokeLinecap="round" />
+          )}
+          {todayX !== null && todayY !== null && (
+            <>
+              <Circle cx={sx(todayX)} cy={sy(todayY)} r={9} fill={brand.blue} opacity={0.2} />
+              <Circle cx={sx(todayX)} cy={sy(todayY)} r={4.5} fill={brand.blue} stroke={colors.page} strokeWidth={2} />
+            </>
+          )}
+        </Svg>
+      )}
+    </View>
   );
 }
