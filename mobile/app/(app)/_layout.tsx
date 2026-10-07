@@ -28,6 +28,7 @@ export default function AppLayout() {
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="profile" options={{ title: t('editProfile.title') }} />
       <Stack.Screen name="daily-budget" options={{ title: t('dailyBudget.title') }} />
+      <Stack.Screen name="goals" options={{ title: t('menu.goals') }} />
       <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
     </Stack>
   );

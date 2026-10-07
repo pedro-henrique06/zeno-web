@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Card, Loading, Money, Row, Screen, Section, Txt } from '@/ui';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
+import { GoalCard } from '@/components/GoalCard';
 import { useSummary } from '@/hooks/useSummary';
 import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
@@ -60,6 +61,8 @@ export default function TotalsScreen() {
               ))}
             </View>
           </Card>
+
+          <GoalCard currency={profile?.currency} language={profile?.language} />
 
           <Section title={t('dashboard.monthlyCalculations')}>
             <Row
