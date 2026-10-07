@@ -29,6 +29,8 @@ export default function AppLayout() {
       <Stack.Screen name="profile" options={{ title: t('editProfile.title') }} />
       <Stack.Screen name="daily-budget" options={{ title: t('dailyBudget.title') }} />
       <Stack.Screen name="goals" options={{ title: t('menu.goals') }} />
+      <Stack.Screen name="houses/index" options={{ title: t('houses.title') }} />
+      <Stack.Screen name="houses/[id]" options={{ title: t('houses.title') }} />
       <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
     </Stack>
   );
