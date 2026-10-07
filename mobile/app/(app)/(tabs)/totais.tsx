@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Card, Loading, Money, Row, Screen, Section, Txt } from '@/ui';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
@@ -14,6 +15,7 @@ import { brand, useTheme } from '@/theme/ThemeContext';
 export default function TotalsScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const router = useRouter();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
@@ -77,6 +79,10 @@ export default function TotalsScreen() {
               subtitle={t('dashboard.dailyAverageHint')}
               right={<Txt style={{ fontWeight: '700' }}>{money(data.dailyAverageReal)}</Txt>}
             />
+          </Section>
+
+          <Section>
+            <Row icon="stats-chart-outline" title={t('dashboard.title')} subtitle={t('dashboard.subtitle', { month: year })} onPress={() => router.push('/horizon')} last />
           </Section>
 
           <Section title={t('dashboard.monthMovements')}>
