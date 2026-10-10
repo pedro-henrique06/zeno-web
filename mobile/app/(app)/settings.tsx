@@ -17,7 +17,7 @@ const DEFAULT_ZONE = 'America/Sao_Paulo';
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
-  const { mode, toggleTheme } = useTheme();
+  const { mode, colors, toggleTheme } = useTheme();
   const { data: preference } = useNotificationPreference();
   const enable = useEnableNotifications();
   const disable = useDisableNotifications();
@@ -59,7 +59,7 @@ export default function SettingsScreen() {
           last
           icon={mode === 'dark' ? 'moon-outline' : 'sunny-outline'}
           title={mode === 'dark' ? t('settings.lightMode') : t('settings.darkMode')}
-          right={<Switch value={mode === 'dark'} onValueChange={toggleTheme} trackColor={{ true: brand.blue }} />}
+          right={<Switch value={mode === 'dark'} onValueChange={toggleTheme} trackColor={{ false: colors.textDisabled, true: brand.blueAction }} ios_backgroundColor={colors.textDisabled} />}
         />
       </Section>
 
@@ -68,7 +68,7 @@ export default function SettingsScreen() {
           icon="notifications-outline"
           title={t('push.daily')}
           subtitle={enabled ? t('push.dailyOn', { hour }) : t('push.dailyOff')}
-          right={<Switch value={enabled} disabled={busy} onValueChange={toggle} trackColor={{ true: brand.blue }} />}
+          right={<Switch value={enabled} disabled={busy} onValueChange={toggle} trackColor={{ false: colors.textDisabled, true: brand.blueAction }} ios_backgroundColor={colors.textDisabled} />}
           last={!enabled}
         />
         {enabled && (

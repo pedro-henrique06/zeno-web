@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useState, type ReactNode, type RefObject } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import { brand, fonts, useTheme } from '@/theme/ThemeContext';
 
@@ -91,7 +92,7 @@ export function Button({
 }) {
   const { colors } = useTheme();
   const bg =
-    variant === 'primary' ? brand.blue : variant === 'danger' ? brand.expense : variant === 'secondary' ? colors.raised : 'transparent';
+    variant === 'primary' ? brand.blueAction : variant === 'danger' ? brand.expenseDark : variant === 'secondary' ? colors.raised : 'transparent';
   const fg = variant === 'secondary' || variant === 'ghost' ? colors.text : '#fff';
   const inactive = disabled || loading;
   return (
@@ -125,9 +126,10 @@ export function Button({
 export function Field({
   label,
   error,
+  trailing,
   style,
   ...rest
-}: TextInputProps & { label?: string; error?: string | null }) {
+}: TextInputProps & { label?: string; error?: string | null; trailing?: ReactNode }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   return (
@@ -137,29 +139,34 @@ export function Field({
           {label}
         </Txt>
       )}
-      <TextInput
-        placeholderTextColor={colors.textDisabled}
-        {...rest}
-        onFocus={(e) => {
-          setFocused(true);
-          rest.onFocus?.(e);
-        }}
-        onBlur={(e) => {
-          setFocused(false);
-          rest.onBlur?.(e);
-        }}
-        style={[
-          styles.input,
-          {
-            color: colors.text,
-            backgroundColor: colors.paper,
-            borderColor: error ? brand.expense : focused ? brand.blue : colors.divider,
-          },
-          style,
-        ]}
-      />
+      <View style={{ justifyContent: 'center' }}>
+        <TextInput
+          placeholderTextColor={colors.textDisabled}
+          accessibilityLabel={label}
+          {...rest}
+          onFocus={(e) => {
+            setFocused(true);
+            rest.onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setFocused(false);
+            rest.onBlur?.(e);
+          }}
+          style={[
+            styles.input,
+            {
+              color: colors.text,
+              backgroundColor: colors.paper,
+              borderColor: error ? colors.expense : focused ? brand.blue : colors.divider,
+            },
+            trailing ? { paddingRight: 48 } : null,
+            style,
+          ]}
+        />
+        {trailing ? <View style={{ position: 'absolute', right: 4 }}>{trailing}</View> : null}
+      </View>
       {error ? (
-        <Txt variant="caption" color={brand.expense} style={{ marginTop: 4 }}>
+        <Txt variant="caption" color={colors.expense} style={{ marginTop: 4 }}>
           {error}
         </Txt>
       ) : null}
@@ -193,7 +200,7 @@ export function Segmented<T extends string | number>({
               style={{
                 fontFamily: fonts.medium,
                 fontSize: 12,
-                color: active ? (o.color ?? brand.blue) : 'rgba(255,255,255,0.5)',
+                color: active ? (o.color ?? brand.blue) : 'rgba(255,255,255,0.7)',
               }}
             >
               {o.label}
@@ -236,11 +243,11 @@ export function Row({
     >
       {icon && (
         <View style={[styles.badge, { backgroundColor: danger ? brand.expense + '20' : brand.navy }]}>
-          <Ionicons name={icon} size={18} color={danger ? brand.expense : brand.blue} />
+          <Ionicons name={icon} size={18} color={danger ? colors.expense : brand.blue} />
         </View>
       )}
       <View style={{ flex: 1 }}>
-        <Txt variant="body" color={danger ? brand.expense : undefined} style={{ fontFamily: fonts.medium }}>
+        <Txt variant="body" color={danger ? colors.expense : undefined} style={{ fontFamily: fonts.medium }}>
           {title}
         </Txt>
         {subtitle ? (
@@ -275,25 +282,33 @@ export function Section({ title, children }: { title?: string; children: ReactNo
   );
 }
 
+/** Bottom space a screen needs so its last row isn't hidden behind the <Fab />. */
+export const FAB_CLEARANCE = 96;
+
 export function Screen({
   children,
   refreshing,
   onRefresh,
   scroll = true,
   padded = true,
+  withFab,
+  scrollRef,
 }: {
   children: ReactNode;
   refreshing?: boolean;
   onRefresh?: () => void;
   scroll?: boolean;
   padded?: boolean;
+  withFab?: boolean;
+  scrollRef?: RefObject<ScrollView | null>;
 }) {
   const { colors } = useTheme();
-  const content = padded ? { padding: 16, paddingBottom: 40 } : undefined;
+  const content = padded ? { padding: 16, paddingBottom: withFab ? FAB_CLEARANCE : 40 } : undefined;
   return (
     <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.page }}>
       {scroll ? (
         <ScrollView
+          ref={scrollRef}
           contentContainerStyle={content}
           keyboardShouldPersistTaps="handled"
           refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={brand.blue} /> : undefined}
@@ -320,12 +335,13 @@ export function Sheet({
 }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, backgroundColor: colors.page }}>
         <View style={[styles.sheetHeader, { borderBottomColor: colors.divider }]}>
           <Txt variant="title">{title}</Txt>
-          <Pressable accessibilityRole="button" accessibilityLabel="Fechar" onPress={onClose} hitSlop={12}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('common.close')} onPress={onClose} hitSlop={12}>
             <Ionicons name="close" size={24} color={colors.textSecondary} />
           </Pressable>
         </View>
@@ -334,6 +350,20 @@ export function Sheet({
         </ScrollView>
       </KeyboardAvoidingView>
     </Modal>
+  );
+}
+
+/** Floating "new entry" button, bottom-right. Pair with <Screen withFab />. */
+export function Fab({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={({ pressed }) => [styles.fab, { opacity: pressed ? 0.85 : 1 }]}
+    >
+      <Ionicons name="add" size={30} color="#fff" />
+    </Pressable>
   );
 }
 
@@ -350,6 +380,21 @@ export function Empty({ icon, title, subtitle }: { icon: keyof typeof Ionicons.g
           {subtitle}
         </Txt>
       )}
+    </View>
+  );
+}
+
+/** Failed load: what happened plus a way out, instead of a dead-end line of red text. */
+export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  return (
+    <View style={{ alignItems: 'center', paddingVertical: 40, paddingHorizontal: 24 }}>
+      <Ionicons name="cloud-offline-outline" size={40} color={colors.textDisabled} />
+      <Txt variant="small" muted style={{ marginTop: 12, textAlign: 'center' }}>
+        {message}
+      </Txt>
+      {onRetry && <Button variant="secondary" icon="refresh" title={t('common.retry')} onPress={onRetry} style={{ marginTop: 16, alignSelf: 'stretch' }} />}
     </View>
   );
 }
@@ -371,5 +416,21 @@ const styles = StyleSheet.create({
   segment: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 9, borderRadius: 10, paddingHorizontal: 4 },
   listRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, paddingHorizontal: 14, gap: 12 },
   badge: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  fab: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: brand.blueAction,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
   sheetHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 16, borderBottomWidth: StyleSheet.hairlineWidth },
 });

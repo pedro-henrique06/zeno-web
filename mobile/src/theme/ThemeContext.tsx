@@ -25,6 +25,10 @@ export interface Palette {
   hover: string;
   nav: string;
   auth: string;
+  /** Income/expense/projection text on page or paper. On navy cards keep using `brand.*`. */
+  income: string;
+  expense: string;
+  teal: string;
 }
 
 interface ThemeContextType {
@@ -49,6 +53,9 @@ function paletteFor(mode: Mode): Palette {
     hover: s.hover,
     nav: s.nav,
     auth: s.auth,
+    income: s.income,
+    expense: s.expense,
+    teal: s.teal,
   };
 }
 

@@ -31,7 +31,7 @@ export default function TabsLayout() {
     >
       {tab('index', t('appLayout.balances'), 'wallet-outline', 'wallet')}
       {tab('totais', t('appLayout.totals'), 'pie-chart-outline', 'pie-chart')}
-      {tab('entries', t('entries.title'), 'list-outline', 'list')}
+      {tab('entries', t('appLayout.entries'), 'list-outline', 'list')}
       {tab('tags', t('appLayout.tags'), 'pricetags-outline', 'pricetags')}
       {tab('menu', t('appLayout.menu'), 'menu-outline', 'menu')}
     </Tabs>

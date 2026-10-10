@@ -31,9 +31,9 @@ export default function MenuScreen() {
 
       <Section>
         <Row icon="person-outline" title={t('menu.editProfile')} onPress={() => router.push('/profile')} />
-        <Row icon="speedometer-outline" title={t('menu.dailyBudget')} onPress={() => router.push('/daily-budget')} />
-        <Row icon="home-outline" title={t('menu.houses')} onPress={() => router.push('/houses')} />
-        <Row icon="flag-outline" title={t('menu.goals')} onPress={() => router.push('/goals')} />
+        <Row icon="speedometer-outline" title={t('menu.dailyBudget')} subtitle={t('menu.dailyBudgetHint')} onPress={() => router.push('/daily-budget')} />
+        <Row icon="home-outline" title={t('menu.houses')} subtitle={t('menu.housesHint')} onPress={() => router.push('/houses')} />
+        <Row icon="flag-outline" title={t('menu.goals')} subtitle={t('menu.goalsHint')} onPress={() => router.push('/goals')} />
         <Row icon="phone-portrait-outline" title={t('capture.item')} subtitle={t('capture.itemHint')} onPress={() => router.push('/iphone')} />
         <Row icon="settings-outline" title={t('menu.settings')} onPress={() => router.push('/settings')} last />
       </Section>

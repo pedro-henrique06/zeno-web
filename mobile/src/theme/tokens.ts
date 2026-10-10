@@ -12,6 +12,8 @@ export const brand = {
   blue: '#4A9FE0',
   blueLight: '#6EB7EA',
   blueDark: '#2D85CC',
+  /** Filled controls with white text/icons (CTA buttons, FAB): 4.7:1 against white. */
+  blueAction: '#2378BD',
 
   /** Projected / future values. */
   teal: '#5ECCC8',
@@ -35,6 +37,9 @@ export const brand = {
 
   /** Credit card kind / avatar palette. */
   purple: '#8B5CF6',
+
+  /** Text on any filled semantic color above (chips, badges): ≥4.4:1 on all of them, where white fails. */
+  ink: '#0B111B',
 } as const;
 
 export type BrandColor = keyof typeof brand;
@@ -48,11 +53,15 @@ export const surfaces = {
     divider: '#E5E5EA',
     textPrimary: '#1C1C1E',
     textSecondary: '#6E6E73',
-    textDisabled: '#8A8A92',
+    textDisabled: '#707076',
     hover: 'rgba(0,0,0,0.025)',
     nav: 'rgba(255,255,255,0.97)',
     /** Background of the login / register screens. */
     auth: '#F7F5F0',
+    /** Semantic text on page/paper: darker than the brand hues to keep 4.5:1. */
+    income: '#137A45',
+    expense: '#C2412B',
+    teal: '#1F7A77',
   },
   dark: {
     page: '#0B111B',
@@ -65,5 +74,8 @@ export const surfaces = {
     hover: 'rgba(255,255,255,0.04)',
     nav: 'rgba(20,29,45,0.97)',
     auth: '#0B111B',
+    income: brand.income,
+    expense: brand.expense,
+    teal: brand.teal,
   },
 } as const;

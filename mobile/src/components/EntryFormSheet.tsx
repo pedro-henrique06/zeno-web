@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, Switch, View } from 'react-native';
+import { Alert, Pressable, Switch, TextInput, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
@@ -11,10 +11,13 @@ import { useProfile } from '@/hooks/useUser';
 import { EntryKind, type Entry } from '@/types';
 import { EntryKindColors, useEntryKindLabels } from '@/utils/entryKind';
 import { CURRENCY_SYMBOLS, LANGUAGE_LOCALES } from '@/utils/currency';
-import { brand, useTheme } from '@/theme/ThemeContext';
+import { brand, fonts, useTheme, type Palette } from '@/theme/ThemeContext';
 
 const MAX_VALUE_CENTS = 99_999_999_99;
 const KINDS = [EntryKind.Entrada, EntryKind.Saida, EntryKind.Diario, EntryKind.Economia, EntryKind.Cartao];
+
+const amountColor = (kind: EntryKind, colors: Palette) =>
+  kind === EntryKind.Entrada ? colors.income : kind === EntryKind.Economia ? colors.teal : colors.expense;
 
 function Chips<T extends string>({ items, value, onChange }: { items: { id: T; label: string }[]; value: T; onChange: (id: T) => void }) {
   const { colors } = useTheme();
@@ -63,6 +66,13 @@ export function EntryFormSheet({
   const { t } = useTranslation();
   const { colors } = useTheme();
   const kindLabels = useEntryKindLabels();
+  const kindHints: Record<EntryKind, string> = {
+    [EntryKind.Entrada]: t('addEntrySheet.descriptions.entrada'),
+    [EntryKind.Saida]: t('addEntrySheet.descriptions.saida'),
+    [EntryKind.Diario]: t('addEntrySheet.descriptions.diario'),
+    [EntryKind.Economia]: t('addEntrySheet.descriptions.economia'),
+    [EntryKind.Cartao]: t('addEntrySheet.descriptions.cartao'),
+  };
   const { data: profile } = useProfile();
   const { data: tags } = useTags();
   const { data: houses } = useHouses();
@@ -109,11 +119,13 @@ export function EntryFormSheet({
   };
 
   const busy = create.isPending || update.isPending || remove.isPending;
-  const canSave = title.trim().length > 0 && cents > 0;
+  const canSave = cents > 0;
+  // An empty title falls back to the tag, then the kind, so a quick "R$ 24,50 · Mercado" is enough to save.
+  const fallbackTitle = tags?.find((tag) => tag.id === tagId)?.name ?? kindLabels[kind];
 
   const save = () => {
     const payload = {
-      title: title.trim(),
+      title: title.trim() || fallbackTitle,
       value: cents / 100,
       kind,
       description,
@@ -130,11 +142,11 @@ export function EntryFormSheet({
   const confirmDelete = () => {
     if (!entry) return;
     Alert.alert(
-      t('entryForm.deleteConfirmTitle'),
+      t('entryForm.deleteConfirmTitle', { name: entry.title }),
       entry.isRecurring ? t('entryForm.deleteRecurringMessage') : t('entryForm.deleteConfirmMessage'),
       [
-        { text: t('common.cancel'), style: 'cancel' },
-        { text: t('entryForm.delete'), style: 'destructive', onPress: () => remove.mutate(entry.id, { onSuccess: onClose }) },
+        { text: t('common.keep'), style: 'cancel' },
+        { text: t('entryForm.deleteConfirmButton'), style: 'destructive', onPress: () => remove.mutate(entry.id, { onSuccess: onClose }) },
       ],
     );
   };
@@ -143,10 +155,32 @@ export function EntryFormSheet({
 
   return (
     <Sheet visible={visible} onClose={onClose} title={isEditing ? t('entryForm.editTitle') : t('entryForm.newTitle')}>
+      {/* Amount first: it's the one thing every entry needs, so it gets the focus and the big type. */}
+      <Txt variant="label" muted style={{ marginBottom: 6 }}>
+        {`${t('entryForm.value')} (${symbol})`}
+      </Txt>
+      <TextInput
+        accessibilityLabel={`${t('entryForm.value')} (${symbol})`}
+        value={display}
+        onChangeText={onValueChange}
+        keyboardType="number-pad"
+        selectTextOnFocus
+        autoFocus={!isEditing}
+        style={{
+          fontFamily: fonts.display,
+          fontSize: 40,
+          letterSpacing: -1,
+          color: cents > 0 ? amountColor(kind, colors) : colors.textDisabled,
+          paddingVertical: 4,
+          marginBottom: 14,
+          fontVariant: ['tabular-nums'],
+        }}
+      />
+
       <Txt variant="label" muted style={{ marginBottom: 6 }}>
         {t('entryForm.type')}
       </Txt>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
         {KINDS.map((k) => {
           const active = k === kind;
           return (
@@ -164,22 +198,19 @@ export function EntryFormSheet({
                 borderColor: active ? EntryKindColors[k] : colors.divider,
               }}
             >
-              <Txt variant="small" color={active ? '#fff' : undefined}>
+              <Txt variant="small" color={active ? brand.ink : undefined} style={active ? { fontFamily: fonts.bold } : undefined}>
                 {kindLabels[k]}
               </Txt>
             </Pressable>
           );
         })}
       </View>
+      {/* The kind names are the app's own vocabulary; one line says what each one means. */}
+      <Txt variant="caption" muted style={{ marginBottom: 14 }}>
+        {kindHints[kind]}
+      </Txt>
 
-      <Field label={t('entryForm.titleField')} value={title} onChangeText={setTitle} />
-      <Field
-        label={`${t('entryForm.value')} (${symbol})`}
-        value={display}
-        onChangeText={onValueChange}
-        keyboardType="number-pad"
-        selectTextOnFocus
-      />
+      <Field label={t('entryForm.titleField')} value={title} onChangeText={setTitle} placeholder={t('entryForm.titlePlaceholder')} />
 
       <Txt variant="label" muted style={{ marginBottom: 6 }}>
         {t('entryForm.date')}
@@ -222,13 +253,13 @@ export function EntryFormSheet({
 
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
         <Txt>{t('entryForm.recurring')}</Txt>
-        <Switch value={isRecurring} onValueChange={setIsRecurring} trackColor={{ true: brand.blue }} />
+        <Switch value={isRecurring} onValueChange={setIsRecurring} trackColor={{ false: colors.textDisabled, true: brand.blueAction }} ios_backgroundColor={colors.textDisabled} />
       </View>
       {isRecurring && (
         <>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <Txt>{t('entryForm.hasRecurrenceEndDate')}</Txt>
-            <Switch value={hasEnd} onValueChange={setHasEnd} trackColor={{ true: brand.blue }} />
+            <Switch value={hasEnd} onValueChange={setHasEnd} trackColor={{ false: colors.textDisabled, true: brand.blueAction }} ios_backgroundColor={colors.textDisabled} />
           </View>
           {hasEnd && (
             <View style={{ alignItems: 'flex-start', marginBottom: 10 }}>
@@ -250,6 +281,11 @@ export function EntryFormSheet({
         loading={create.isPending || update.isPending}
         disabled={!canSave || busy}
       />
+      {!canSave && (
+        <Txt variant="caption" muted style={{ marginTop: 6, textAlign: 'center' }}>
+          {t('entryForm.valueRequired')}
+        </Txt>
+      )}
       {isEditing && (
         <Button style={{ marginTop: 10 }} variant="ghost" title={t('entryForm.delete')} onPress={confirmDelete} disabled={busy} />
       )}
