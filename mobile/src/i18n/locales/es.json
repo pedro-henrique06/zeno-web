@@ -184,16 +184,18 @@
     "statsExpenses": "Gastos",
     "statsForecast": "Saldo previsto",
     "chartPast": "Realizado",
-    "chartFuture": "Proyectado",
+    "chartFuture": "Previsto",
     "chartToday": "HOY",
     "carriedOver": "Saldo anterior {{value}}",
     "savedThisMonth": "Ahorrado {{value}}",
-    "chartHint": "Línea punteada: proyección hasta diciembre",
     "legendIncome": "Ingreso",
     "legendExpense": "Gasto",
     "legendProjected": "Previsto",
     "dayA11y": "Día {{day}}. Saldo {{balance}}",
-    "andMore": "+{{count}}"
+    "andMore": "+{{count}}",
+    "chartScrubHint": "Arrastra para ver cada día",
+    "chartA11y": "Gráfico del saldo del mes, de {{start}} el día 1 a {{end}} a fin de mes.",
+    "balanceOn": "Saldo el {{date}}"
   },
   "categories": {
     "searchPlaceholder": "Buscar etiquetas",

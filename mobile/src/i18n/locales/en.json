@@ -188,12 +188,14 @@
     "chartToday": "TODAY",
     "carriedOver": "Carried over {{value}}",
     "savedThisMonth": "Saved {{value}}",
-    "chartHint": "Dashed line: projection through December",
     "legendIncome": "Income",
     "legendExpense": "Spending",
     "legendProjected": "Projected",
     "dayA11y": "Day {{day}}. Balance {{balance}}",
-    "andMore": "+{{count}}"
+    "andMore": "+{{count}}",
+    "chartScrubHint": "Drag to see each day",
+    "chartA11y": "Balance chart for the month, from {{start}} on day 1 to {{end}} at month end.",
+    "balanceOn": "Balance on {{date}}"
   },
   "categories": {
     "searchPlaceholder": "Search tags",

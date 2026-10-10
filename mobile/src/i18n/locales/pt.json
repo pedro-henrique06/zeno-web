@@ -184,16 +184,18 @@
     "currentBalance": "Saldo atual",
     "upcoming": "Próximos lançamentos",
     "chartPast": "Realizado",
-    "chartFuture": "Projetado",
+    "chartFuture": "Previsto",
     "chartToday": "HOJE",
     "carriedOver": "Saldo anterior {{value}}",
     "savedThisMonth": "Guardado {{value}}",
-    "chartHint": "Linha tracejada: projeção até dezembro",
     "legendIncome": "Entrada",
     "legendExpense": "Gasto",
     "legendProjected": "Previsto",
     "dayA11y": "Dia {{day}}. Saldo {{balance}}",
-    "andMore": "+{{count}}"
+    "andMore": "+{{count}}",
+    "chartScrubHint": "Arraste para ver cada dia",
+    "chartA11y": "Gráfico do saldo no mês, de {{start}} no dia 1 a {{end}} no fim do mês.",
+    "balanceOn": "Saldo em {{date}}"
   },
   "categories": {
     "searchPlaceholder": "Buscar tags",

@@ -5,9 +5,9 @@ import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { Card, Empty, Fab, Loading, Money, Screen, Segmented, Txt, ErrorState } from '@/ui';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
-import { BalanceChart, type ChartPoint } from '@/components/BalanceChart';
+import { BalanceChart } from '@/components/BalanceChart';
 import { EntryFormSheet } from '@/components/EntryFormSheet';
-import { useBalances, useBalancesHorizon } from '@/hooks/useBalances';
+import { useBalances } from '@/hooks/useBalances';
 import { useEntries } from '@/hooks/useEntries';
 import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
@@ -17,15 +17,36 @@ import { brand, useTheme } from '@/theme/ThemeContext';
 const dayNet = (d: BalanceDay) => d.entrada - d.saida - d.diario - d.economia - d.cartao;
 const daySpending = (d: BalanceDay) => d.saida + d.cartao + d.diario;
 
-function Header({ days, currency, language }: { days: BalanceDay[]; currency?: any; language?: any }) {
-  const { t } = useTranslation();
+function Header({
+  days,
+  selected,
+  month,
+  year,
+  currency,
+  language,
+}: {
+  days: BalanceDay[];
+  selected: BalanceDay | null;
+  month: number;
+  year: number;
+  currency?: any;
+  language?: any;
+}) {
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const current = days.find((d) => d.isToday) ?? [...days].reverse().find((d) => !d.isProjected) ?? days[0];
-  const balance = current?.balance ?? 0;
+  // While the chart is being scrubbed the headline becomes that day's balance, like the iPhone Stocks app.
+  const shown = selected ?? current;
+  const balance = shown?.balance ?? 0;
+  const label = selected
+    ? t('balances.balanceOn', {
+        date: new Intl.DateTimeFormat(i18n.language, { day: 'numeric', month: 'long' }).format(new Date(year, month - 1, selected.day)),
+      })
+    : t('balances.currentBalance');
   return (
-    <View style={{ marginBottom: 12 }}>
+    <View style={{ marginBottom: 12 }} accessibilityLiveRegion="polite">
       <Txt variant="label" muted>
-        {t('balances.currentBalance')}
+        {label}
       </Txt>
       <Money style={{ fontSize: 40, letterSpacing: -1.5, color: balance < 0 ? colors.expense : colors.text }}>
         {balance < 0 ? '−' : ''}
@@ -283,10 +304,10 @@ export default function BalancesScreen() {
   const [year, setYear] = useState(now.getFullYear());
   const [view, setView] = useState<'lista' | 'calendario'>('lista');
   const [sheet, setSheet] = useState<{ open: boolean; date?: string }>({ open: false });
+  const [scrubbed, setScrubbed] = useState<BalanceDay | null>(null);
 
   const { data: profile } = useProfile();
   const { data, isLoading, isError, refetch, isRefetching } = useBalances(month, year);
-  const { data: horizon } = useBalancesHorizon(year, true);
   // Same query key as the Entries tab, so this is shared from cache.
   const { data: entries } = useEntries(month, year, 1, 200);
 
@@ -300,32 +321,6 @@ export default function BalancesScreen() {
     return map;
   }, [entries]);
 
-  const chart = useMemo(() => {
-    const past: ChartPoint[] = [];
-    const future: ChartPoint[] = [];
-    let todayX: number | null = null;
-    let todayY: number | null = null;
-    let bridged = false;
-    horizon?.months.forEach((m) =>
-      m.days.forEach((d) => {
-        const x = new Date(m.year, m.month - 1, d.day).getTime();
-        if (d.isToday) {
-          todayX = x;
-          todayY = d.balance;
-        }
-        if (!d.isProjected) past.push({ x, y: d.balance });
-        else {
-          if (!bridged && past.length) {
-            future.push(past[past.length - 1]);
-            bridged = true;
-          }
-          future.push({ x, y: d.balance });
-        }
-      }),
-    );
-    return { past, future, todayX, todayY };
-  }, [horizon]);
-
   const goToDay = (day: number) => {
     const date = dayjs(new Date(year, month - 1, day)).format('YYYY-MM-DD');
     router.navigate({ pathname: '/entries', params: { month: String(month), year: String(year), date } });
@@ -336,7 +331,7 @@ export default function BalancesScreen() {
   return (
     <View style={{ flex: 1 }}>
       <Screen refreshing={isRefetching} onRefresh={refetch} withFab>
-        <MonthSwitcher month={month} year={year} onChange={(m, y) => (setMonth(m), setYear(y))} />
+        <MonthSwitcher month={month} year={year} onChange={(m, y) => (setMonth(m), setYear(y), setScrubbed(null))} />
         {isLoading ? (
           <Loading />
         ) : isError ? (
@@ -345,17 +340,10 @@ export default function BalancesScreen() {
           <>
             {days.length > 0 && (
               <>
-                <Header days={days} currency={profile?.currency} language={profile?.language} />
-                {chart.past.length > 1 && (
-                  <View style={{ marginBottom: 12 }}>
-                    <BalanceChart {...chart} height={150} />
-                    {chart.future.length > 1 && (
-                      <Txt variant="caption" muted style={{ marginTop: 4 }}>
-                        {t('balances.chartHint')}
-                      </Txt>
-                    )}
-                  </View>
-                )}
+                <Header days={days} selected={scrubbed} month={month} year={year} currency={profile?.currency} language={profile?.language} />
+                <View style={{ marginBottom: 16 }}>
+                  <BalanceChart days={days} month={month} year={year} currency={profile?.currency} language={profile?.language} onSelect={setScrubbed} />
+                </View>
                 <Stats days={days} currency={profile?.currency} language={profile?.language} />
               </>
             )}
