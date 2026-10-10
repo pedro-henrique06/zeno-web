@@ -43,15 +43,3 @@ export function generateIcsForRecurringEntry(entry: {
 
   return lines.join('\r\n');
 }
-
-export function downloadIcs(filename: string, content: string): void {
-  const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = filename.replace(/[^\w\s-]/g, '').trim() + '.ics';
-  document.body.appendChild(anchor);
-  anchor.click();
-  document.body.removeChild(anchor);
-  URL.revokeObjectURL(url);
-}

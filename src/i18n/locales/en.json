@@ -406,5 +406,23 @@
     "fixedNone": "No fixed expenses linked to the house. Tag recurring expense entries with this house.",
     "fixedLeft": "House fixed expenses: {{fixed}} · {{amount}} left of the 50%",
     "fixedOver": "House fixed expenses: {{fixed}} · {{amount}} over the 50%"
+  },
+  "push": {
+    "title": "Notifications",
+    "daily": "Daily summary",
+    "dailyOn": "On at {{hour}}:00",
+    "dailyOff": "Off",
+    "hour": "Notification time",
+    "test": "Send a test notification",
+    "testing": "Sending…",
+    "devices_one": "{{count}} device registered",
+    "devices_other": "{{count}} devices registered",
+    "notConfigured": "The server is not set up to send notifications.",
+    "simulator": "Notifications only work on a real device.",
+    "denied": "Permission denied. Turn on Zeno notifications in iPhone Settings.",
+    "noProject": "The EAS projectId is missing. Run `eas init` in the mobile folder.",
+    "error": "Could not turn notifications on.",
+    "sent": "Notification sent.",
+    "hourLabel": "{{hour}}:00"
   }
 }

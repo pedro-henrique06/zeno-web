@@ -1,72 +1,36 @@
-import { Box, IconButton, Typography } from '@mui/material';
+import { Pressable, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useProfile } from '@/hooks/useUser';
-import { LANGUAGE_LOCALES } from '@/utils/currency';
-import { clickableProps } from '@/utils/a11y';
+import { Txt } from '@/ui';
+import { useTheme } from '@/theme/ThemeContext';
 
-interface MonthSwitcherProps {
-  month: number;
-  year: number;
-  onChange: (month: number, year: number) => void;
-  endAdornment?: React.ReactNode;
-}
+const MONTHS_PT = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
 
-export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwitcherProps) {
-  const { t } = useTranslation();
-  const { data: profile } = useProfile();
-  const date = new Date(year, month - 1, 1);
-  const label = new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], {
-    month: 'short',
-    year: '2-digit',
-  }).format(date);
+export function MonthSwitcher({ month, year, onChange }: { month: number; year: number; onChange: (month: number, year: number) => void }) {
+  const { t, i18n } = useTranslation();
+  const { colors } = useTheme();
 
   const shift = (delta: number) => {
     const next = new Date(year, month - 1 + delta, 1);
     onChange(next.getMonth() + 1, next.getFullYear());
   };
 
-  const today = new Date();
+  const label =
+    i18n.language === 'pt'
+      ? MONTHS_PT[month - 1]
+      : new Intl.DateTimeFormat(i18n.language, { month: 'long' }).format(new Date(year, month - 1, 1));
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-      <Box
-        {...clickableProps(() => onChange(today.getMonth() + 1, today.getFullYear()))}
-        aria-label={t('common.currentMonth')}
-        sx={{
-          width: 36,
-          height: 36,
-          borderRadius: 2,
-          bgcolor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-        }}
-      >
-        <Typography sx={{ fontWeight: 700, fontSize: 14, color: 'text.secondary', lineHeight: 1 }}>
-          {today.getDate()}
-        </Typography>
-      </Box>
-
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <IconButton size="small" aria-label={t('common.previousMonth')} onClick={() => shift(-1)}>
-          <ChevronLeftIcon />
-        </IconButton>
-        <Typography sx={{ fontWeight: 700, minWidth: 90, textAlign: 'center', textTransform: 'capitalize' }}>
-          {label}
-        </Typography>
-        <IconButton size="small" aria-label={t('common.nextMonth')} onClick={() => shift(1)}>
-          <ChevronRightIcon />
-        </IconButton>
-      </Box>
-
-      <Box sx={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {endAdornment}
-      </Box>
-    </Box>
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+      <Pressable accessibilityRole="button" accessibilityLabel={t('common.previousMonth')} hitSlop={12} onPress={() => shift(-1)}>
+        <Ionicons name="chevron-back" size={24} color={colors.textSecondary} />
+      </Pressable>
+      <Txt variant="title" style={{ textTransform: 'capitalize' }}>
+        {label} {year}
+      </Txt>
+      <Pressable accessibilityRole="button" accessibilityLabel={t('common.nextMonth')} hitSlop={12} onPress={() => shift(1)}>
+        <Ionicons name="chevron-forward" size={24} color={colors.textSecondary} />
+      </Pressable>
+    </View>
   );
 }

@@ -1,96 +1,86 @@
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { User } from '@/types';
+import { session } from '@/lib/session';
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
-  login: (token: string, user?: User, refreshToken?: string) => void;
-  logout: () => void;
+  /** false until the stored session was read from the keychain. */
+  ready: boolean;
   isAuthenticated: boolean;
+  login: (token: string, user?: User, refreshToken?: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+function decodeBase64(input: string): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const clean = input.replace(/-/g, '+').replace(/_/g, '/').replace(/=+$/, '');
+  let bits = 0;
+  let value = 0;
+  const bytes: number[] = [];
+  for (const c of clean) {
+    value = (value << 6) | chars.indexOf(c);
+    bits += 6;
+    if (bits >= 8) {
+      bits -= 8;
+      bytes.push((value >> bits) & 0xff);
+    }
+  }
+  return decodeURIComponent(bytes.map((b) => '%' + b.toString(16).padStart(2, '0')).join(''));
+}
+
 function parseJwtPayload(token: string): User {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(
-    atob(base64)
-      .split('')
-      .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-      .join(''),
-  );
-  const payload = JSON.parse(jsonPayload);
-  return {
-    id: payload.sub,
-    name: payload.name,
-    email: payload.email,
-  };
+  const payload = JSON.parse(decodeBase64(token.split('.')[1]));
+  return { id: payload.sub, name: payload.name, email: payload.email };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        return parseJwtPayload(token);
-      } catch {
-        localStorage.removeItem('token');
-        return null;
-      }
-    }
-    return null;
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [ready, setReady] = useState(false);
 
-  const [token, setToken] = useState<string | null>(() =>
-    localStorage.getItem('token'),
-  );
-
-  const loginFn = useCallback((newToken: string, newUser?: User, newRefreshToken?: string) => {
-    localStorage.setItem('token', newToken);
-    if (newRefreshToken) {
-      localStorage.setItem('refreshToken', newRefreshToken);
-    }
-    setToken(newToken);
-    setUser(newUser ?? parseJwtPayload(newToken));
-  }, []);
-
-  const logoutFn = useCallback(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    setToken(null);
+  const logout = useCallback(async () => {
+    await session.clear();
     setUser(null);
   }, []);
 
-  useEffect(() => {
-    if (token) {
-      try {
-        setUser(parseJwtPayload(token));
-      } catch {
-        logoutFn();
-      }
-    }
-  }, [token, logoutFn]);
+  const login = useCallback(async (token: string, newUser?: User, refreshToken?: string) => {
+    await session.save(token, refreshToken);
+    setUser(newUser ?? parseJwtPayload(token));
+  }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        login: loginFn,
-        logout: logoutFn,
-        isAuthenticated: !!token,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  useEffect(() => {
+    let cancelled = false;
+    session.load().then((token) => {
+      if (cancelled) return;
+      if (token) {
+        try {
+          setUser(parseJwtPayload(token));
+        } catch {
+          session.clear();
+        }
+      }
+      setReady(true);
+    });
+    session.setSessionLostHandler(() => {
+      logout();
+    });
+    return () => {
+      cancelled = true;
+      session.setSessionLostHandler(null);
+    };
+  }, [logout]);
+
+  const value = useMemo(
+    () => ({ user, ready, isAuthenticated: !!user, login, logout }),
+    [user, ready, login, logout],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 }

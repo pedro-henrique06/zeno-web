@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# Zeno (Expo / React Native)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O front do Zeno: um único app em React Native com Expo (SDK 57) e Expo Router, que roda no iPhone/Android e também como site (`npx expo export --platform web`, servido pelo `Dockerfile`). O antigo site em React + MUI (PWA) foi aposentado.
 
-Currently, two official plugins are available:
+## Rodar no iPhone (sem Mac)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Instale o Node.js 22+ no PC.
+2. No terminal: `npm install && npx expo start`
+3. No iPhone, instale o **Expo Go** (App Store) e leia o QR code do terminal. O app abre e atualiza ao vivo.
 
-## React Compiler
+A URL da API vem de `app.json` (`extra.apiUrl`). Para apontar para outro servidor, crie `.env` com `EXPO_PUBLIC_API_URL=https://.../api`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Publicar / instalar com ícone próprio
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+npm i -g eas-cli
+eas login
+eas build -p ios --profile preview      # build na nuvem, instala no aparelho
+eas build -p ios --profile production   # para a App Store
+eas submit -p ios
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Instalar no iPhone ou publicar na App Store exige uma conta Apple Developer (paga). O `bundleIdentifier` está em `app.json`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Estrutura
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `app/` rotas (Expo Router): `(auth)` login/cadastro, `(app)/(tabs)` Saldos, Totais, Lançamentos, Tags e Menu, e telas empilhadas (perfil, previsão de diário, configurações).
+- `src/api`, `src/hooks`, `src/types`, `src/utils`, `src/i18n`: mesma camada de dados do app web (React Query + axios), com o token guardado no Keychain (`expo-secure-store`).
+- `src/ui`: componentes base (texto, botão, campo, cartão, sheet). `src/theme`: tokens de marca, claro/escuro.
+
+## Funcionalidades
+
+Login e cadastro (e-mail ou Google), Saldos, Totais (com horizontes anuais e meta), Lançamentos, Tags, Metas (simulador salvo na conta), Casas (moradores, lançamentos, orçamento 50/30/20 e meta da casa), previsão de diário, notificações push (resumo diário e teste), e a configuração do widget e da captura por Apple Pay (chaves, script do Scriptable e regras por tag).
+
+## Notificações push
+
+O servidor envia pelo serviço de push do Expo, então não precisa de credencial do Firebase. No app: Menu, Configurações, Notificações. Para o token funcionar, vincule o projeto uma vez com `eas init` (grava o `projectId` em `app.json`, em `extra.eas.projectId`). No Expo Go no iPhone dá para testar; no app instalado via EAS o iOS pede a permissão normalmente.
+
+## Login com Google
+
+O app abre o fluxo do servidor no navegador e volta pelo esquema `zeno://`. Esse retorno só funciona no app instalado (build do EAS); no Expo Go o esquema é outro, então teste o Google no build `preview`. Não é preciso mudar nada no Google Cloud (o redirecionamento continua sendo o do servidor).
+
+## CI
+
+`.github/workflows/mobile.yml` roda `tsc` e gera os bundles iOS e web a cada PR.
+
+## Site (web)
+
+O `Dockerfile` gera a versão web do mesmo app e a serve na porta `$PORT`. O login com Google no site volta por `/auth/callback`. `public/sw.js` desinstala o service worker do site antigo, para quem já o tinha instalado não ficar preso na versão velha.
