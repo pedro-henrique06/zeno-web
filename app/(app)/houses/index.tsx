@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Button, Empty, Field, Loading, Row, Screen, Section, Sheet, Txt } from '@/ui';
+import { Button, Empty, Field, Loading, Row, Screen, Section, Sheet, Txt, ErrorState } from '@/ui';
 import { useCreateHouse, useHouses } from '@/hooks/useHouses';
-import { brand } from '@/theme/ThemeContext';
+import { brand, useTheme } from '@/theme/ThemeContext';
 
 export default function HousesScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const router = useRouter();
   const { data: houses, isLoading, isError, refetch, isRefetching } = useHouses();
   const create = useCreateHouse();
@@ -33,9 +34,7 @@ export default function HousesScreen() {
       {isLoading ? (
         <Loading />
       ) : isError ? (
-        <Txt color={brand.expense} style={{ marginTop: 24, textAlign: 'center' }}>
-          {t('houses.loadError')}
-        </Txt>
+        <ErrorState message={t('houses.loadError')} onRetry={refetch} />
       ) : !houses || houses.length === 0 ? (
         <Empty icon="home-outline" title={t('houses.emptyTitle')} subtitle={t('houses.emptySubtitle')} />
       ) : (

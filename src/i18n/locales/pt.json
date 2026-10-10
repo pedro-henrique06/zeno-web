@@ -7,7 +7,10 @@
     "noTag": "Sem tag",
     "currentMonth": "Mês atual",
     "previousMonth": "Mês anterior",
-    "nextMonth": "Próximo mês"
+    "nextMonth": "Próximo mês",
+    "close": "Fechar",
+    "retry": "Tentar de novo",
+    "keep": "Manter"
   },
   "currency": {
     "BRL": "Real brasileiro (R$)",
@@ -24,7 +27,7 @@
       "tagline": "Organize suas finanças",
       "subtitle": "Entre para continuar",
       "title": "Entrar",
-      "email": "Email",
+      "email": "E-mail",
       "password": "Senha",
       "showPassword": "Mostrar senha",
       "hidePassword": "Ocultar senha",
@@ -34,19 +37,21 @@
       "googleButton": "Entrar com Google",
       "noAccount": "Não tem uma conta?",
       "createAccount": "Criar conta",
-      "genericError": "Não foi possível entrar. Verifique seus dados.",
-      "welcome": "Bem-vindo de volta."
+      "genericError": "Não conseguimos entrar. Confira o e-mail e a senha e tente de novo.",
+      "welcome": "Que bom te ver de novo.",
+      "emailPlaceholder": "voce@email.com",
+      "passwordPlaceholder": "Sua senha"
     },
     "register": {
       "tagline": "Crie sua conta",
       "title": "Criar conta",
       "name": "Nome",
-      "email": "Email",
+      "email": "E-mail",
       "phone": "Telefone",
       "document": "CPF/CNPJ",
-      "birthDate": "Data de Nascimento",
+      "birthDate": "Data de nascimento",
       "password": "Senha",
-      "confirmPassword": "Confirmar Senha",
+      "confirmPassword": "Confirmar senha",
       "currency": "Moeda",
       "language": "Idioma",
       "showPassword": "Mostrar senha",
@@ -56,8 +61,8 @@
       "submitting": "Criando conta...",
       "haveAccount": "Já tem uma conta?",
       "login": "Entrar",
-      "passwordMismatch": "As senhas não conferem",
-      "genericError": "Não foi possível criar a conta.",
+      "passwordMismatch": "As senhas não são iguais.",
+      "genericError": "Não conseguimos criar sua conta. Tente de novo em instantes.",
       "welcome": "Vamos começar."
     }
   },
@@ -65,7 +70,7 @@
     "title": "Menu",
     "editProfile": "Editar perfil",
     "dailyBudget": "Previsão de diário",
-    "goals": "Simulador de Metas",
+    "goals": "Simulador de metas",
     "houses": "Minhas casas",
     "tags": "Tags",
     "settings": "Configurações",
@@ -78,7 +83,10 @@
     "resetAccountTitle": "Zerar conta",
     "resetAccountWarning": "Tem certeza que deseja zerar sua conta? Todos os lançamentos e saldos serão removidos.",
     "resetAccountInfo": "Esta ação não pode ser desfeita.",
-    "version": "Versão {{version}}"
+    "version": "Versão {{version}}",
+    "dailyBudgetHint": "Quanto você costuma gastar por dia",
+    "goalsHint": "Descubra quando você chega lá",
+    "housesHint": "Divida contas com quem mora com você"
   },
   "settings": {
     "title": "Configurações",
@@ -103,9 +111,9 @@
   },
   "editProfile": {
     "title": "Editar perfil",
-    "loadError": "Não foi possível carregar o perfil. Tente novamente.",
+    "loadError": "Não conseguimos carregar seu perfil. Confira sua internet e tente de novo.",
     "name": "Nome",
-    "email": "Email",
+    "email": "E-mail",
     "phone": "Telefone",
     "document": "CPF/CNPJ",
     "birthDate": "Data de nascimento",
@@ -115,15 +123,18 @@
   },
   "dailyBudget": {
     "title": "Previsão de diário",
-    "loadError": "Não foi possível carregar a previsão de diário. Tente novamente.",
+    "loadError": "Não conseguimos carregar sua previsão de diário. Confira sua internet e tente de novo.",
     "totalMonthly": "Total mensal",
     "dividedBy": "Dividido por",
-    "days": "{{count}} dias"
+    "days": "{{count}} dias",
+    "deleteTitle": "Tirar “{{name}}” da previsão?",
+    "deleteMessage": "Seu gasto diário previsto será recalculado sem esse valor.",
+    "deleteButton": "Tirar da previsão"
   },
   "dashboard": {
-    "loadError": "Não foi possível carregar o resumo. Tente novamente.",
+    "loadError": "Não conseguimos carregar o resumo do mês. Confira sua internet e tente de novo.",
     "monthlyCalculations": "Cálculos do mês",
-    "performance": "Performance",
+    "performance": "Resultado",
     "moneyLeftOver": "Sobrou dinheiro",
     "moneyShort": "Faltou dinheiro",
     "saved": "Economizado",
@@ -133,57 +144,78 @@
     "monthMovements": "Movimentações do mês",
     "seeAll": "Ver todas",
     "income": "Entradas",
-    "expenses": "Saídas",
+    "expenses": "Gastos",
     "daily": "Diários",
     "savings": "Economias",
     "cardSpending": "Gastos com cartão",
     "title": "Totais",
     "subtitle": "Resumo de {{month}}",
-    "monthBalance": "Saldo do mês",
+    "monthBalance": "Resultado do mês",
     "savedHint": "do total de entradas",
     "costOfLivingHint": "gastos para viver",
-    "dailyAverageHint": "média por dia"
+    "dailyAverageHint": "média por dia",
+    "monthBalanceHint": "Entradas menos gastos",
+    "savedColumn": "Guardado",
+    "afterSaving": "Depois de guardar: {{value}}",
+    "projectedDaily": "Inclui {{value}} de diário previsto até o fim do mês"
   },
   "entries": {
     "title": "Lançamentos",
     "new": "Novo",
-    "loadError": "Não foi possível carregar os lançamentos. Tente novamente.",
+    "loadError": "Não conseguimos carregar seus lançamentos. Confira sua internet e tente de novo.",
     "filter": "Filtro:",
     "date": "Data",
     "titleColumn": "Título",
     "type": "Tipo",
     "tag": "Tag",
     "value": "Valor",
-    "emptyTitle": "Nenhum lançamento este mês",
-    "emptySubtitle": "Adicione um lançamento para começar a controlar suas finanças."
+    "emptyTitle": "Nenhum lançamento neste mês",
+    "emptySubtitle": "Toque em + para registrar o que entrou ou saiu."
   },
   "balances": {
-    "loadError": "Não foi possível carregar os saldos. Tente novamente.",
+    "loadError": "Não conseguimos carregar seus saldos. Confira sua internet e tente de novo.",
     "horizonTooltip": "Horizonte de saldos",
     "day": "Dia",
     "balances": "Saldos",
     "all": "Todas",
     "statsIncome": "Entradas",
-    "statsExpenses": "Saídas",
+    "statsExpenses": "Gastos",
     "statsForecast": "Saldo previsto",
     "currentBalance": "Saldo atual",
     "upcoming": "Próximos lançamentos",
     "chartPast": "Realizado",
-    "chartFuture": "Projetado",
-    "chartToday": "HOJE"
+    "chartFuture": "Previsto",
+    "chartToday": "HOJE",
+    "carriedOver": "Saldo anterior {{value}}",
+    "savedThisMonth": "Guardado {{value}}",
+    "legendIncome": "Entrada",
+    "legendExpense": "Gasto",
+    "legendProjected": "Previsto",
+    "dayA11y": "Dia {{day}}. Saldo {{balance}}",
+    "andMore": "+{{count}}",
+    "chartScrubHint": "Arraste para ver cada dia",
+    "chartA11y": "Gráfico do saldo no mês, de {{start}} no dia 1 a {{end}} no fim do mês.",
+    "balanceOn": "Saldo em {{date}}"
   },
   "categories": {
     "searchPlaceholder": "Buscar tags",
-    "loadError": "Não foi possível carregar as tags. Tente novamente.",
-    "emptyTitle": "Sem tags por aqui...",
-    "emptySubtitle": "Crie uma tag para organizar seus lançamentos.",
+    "loadError": "Não conseguimos carregar suas tags. Confira sua internet e tente de novo.",
+    "emptyTitle": "Nenhuma tag ainda",
+    "emptySubtitle": "Tags agrupam gastos parecidos, como Mercado ou Transporte. Crie a primeira para ver quanto vai para cada uma.",
     "editTitle": "Editar tag",
     "newTitle": "Nova tag",
-    "name": "Nome"
+    "name": "Nome",
+    "title": "Tags",
+    "monthCount_one": "{{count}} lançamento este mês",
+    "monthCount_other": "{{count}} lançamentos este mês",
+    "noUse": "Sem lançamentos este mês",
+    "deleteTitle": "Excluir a tag “{{name}}”?",
+    "deleteMessage": "Os lançamentos com essa tag continuam no app, só ficam sem tag.",
+    "deleteButton": "Excluir tag"
   },
   "houses": {
     "title": "Minhas casas",
-    "loadError": "Não foi possível carregar as casas. Tente novamente.",
+    "loadError": "Não conseguimos carregar suas casas. Confira sua internet e tente de novo.",
     "emptyTitle": "Nenhuma casa cadastrada",
     "emptySubtitle": "Cadastre uma casa para vincular aos seus lançamentos recorrentes.",
     "newTitle": "Nova casa",
@@ -201,18 +233,21 @@
     "invite": "Convidar",
     "noMembers": "Nenhum membro convidado",
     "noMembersHint": "Convide outros usuários para compartilhar esta casa.",
-    "memberNotFound": "Usuário não encontrado com este e-mail.",
+    "memberNotFound": "Ninguém usa o Zeno com esse e-mail. Confira o endereço ou peça para a pessoa criar uma conta.",
     "alreadyMember": "Este usuário já é membro.",
-    "inviteError": "Não foi possível convidar o membro.",
+    "inviteError": "Não conseguimos enviar o convite. Tente de novo em instantes.",
     "activeGroup": "grupo ativo",
     "activeGroups": "grupos ativos",
-    "budgetTab": "Orçamento"
+    "budgetTab": "Orçamento",
+    "deleteTitle": "Excluir a casa “{{name}}”?",
+    "deleteMessage": "Os membros perdem o acesso a ela. Seus lançamentos continuam na sua conta. Não dá para desfazer.",
+    "deleteButton": "Excluir casa"
   },
   "entryForm": {
     "editTitle": "Editar lançamento",
     "newTitle": "Novo lançamento",
-    "save": "Salvar",
-    "create": "Criar",
+    "save": "Salvar alterações",
+    "create": "Adicionar lançamento",
     "type": "Tipo",
     "titleField": "Título",
     "value": "Valor",
@@ -221,15 +256,18 @@
     "noHouse": "Nenhuma casa",
     "date": "Data",
     "recurring": "Repetir todo mês",
-    "hasRecurrenceEndDate": "Possui data de término?",
-    "recurrenceEndDate": "Encerrar recorrência em",
+    "hasRecurrenceEndDate": "Para de repetir em alguma data?",
+    "recurrenceEndDate": "Última repetição em",
     "description": "Descrição",
     "delete": "Excluir",
-    "deleteConfirmTitle": "Excluir lançamento",
-    "deleteConfirmMessage": "Tem certeza que deseja excluir este lançamento? Esta ação não pode ser desfeita.",
-    "deleteRecurringMessage": "Este é um lançamento recorrente. Ao excluir, todas as ocorrências (passadas e futuras) serão removidas permanentemente.",
+    "deleteConfirmTitle": "Excluir “{{name}}”?",
+    "deleteConfirmMessage": "O lançamento será apagado e seu saldo, recalculado. Não dá para desfazer.",
+    "deleteRecurringMessage": "Este lançamento se repete todo mês. Todas as ocorrências, passadas e futuras, serão apagadas. Não dá para desfazer.",
     "addToCalendar": "Adicionar à agenda",
-    "addToCalendarHint": "Baixa um arquivo .ics com lembrete 2 dias antes. Abra no Apple Calendar ou Google Calendar para adicionar à sua agenda."
+    "addToCalendarHint": "Baixa um arquivo .ics com lembrete 2 dias antes. Abra no Apple Calendar ou Google Calendar para adicionar à sua agenda.",
+    "valueRequired": "Informe um valor para continuar",
+    "titlePlaceholder": "Opcional (usa a tag se vazio)",
+    "deleteConfirmButton": "Excluir lançamento"
   },
   "monthlyExpenseCategory": {
     "descriptionPlaceholder": "Descrição",
@@ -239,10 +277,10 @@
   "addEntrySheet": {
     "title": "Adicionar",
     "descriptions": {
-      "entrada": "Dinheiro que entrou",
-      "saida": "Conta ou despesa fixa",
-      "diario": "Gasto do dia a dia",
-      "economia": "Dinheiro guardado",
+      "entrada": "Dinheiro que entrou, como salário ou um freela",
+      "saida": "Conta fixa, como aluguel, luz ou internet",
+      "diario": "Gasto do dia a dia, como mercado, café ou transporte",
+      "economia": "Dinheiro que você guardou: sai do saldo, mas não conta como gasto",
       "cartao": "Compra no cartão de crédito"
     }
   },
@@ -260,9 +298,9 @@
       "day": "Dia"
     },
     "performance": {
-      "title": "Performance",
-      "loadError": "Não foi possível carregar a performance.",
-      "explanation": "Performance é como uma foto do seu mês financeiro: é a diferença entre quanto entrou e quanto saiu. Entradas menos saídas (fixas, diárias, economias, cartão e previsão de diário) = performance.",
+      "title": "Resultado",
+      "loadError": "Não conseguimos carregar o resultado. Confira sua internet e tente de novo.",
+      "explanation": "O resultado mostra se sobrou ou faltou dinheiro no mês: tudo o que entrou menos os gastos (saídas, diários, cartão e o diário previsto para os dias que faltam). O que você guardou em Economia não entra nessa conta.",
       "totalByMonth": "Total por mês"
     },
     "economized": {
@@ -293,7 +331,8 @@
     "totals": "Totais",
     "tags": "Tags",
     "houses": "Casas",
-    "menu": "Menu"
+    "menu": "Menu",
+    "entries": "Extrato"
   },
   "goals": {
     "title": "Meta",
@@ -305,7 +344,7 @@
     "remove": "Remover",
     "saved": "Meta salva na sua conta.",
     "removed": "Meta removida.",
-    "saveError": "Não foi possível salvar. Tente novamente.",
+    "saveError": "Não conseguimos salvar sua meta. Tente de novo em instantes.",
     "cardCta": "Defina uma meta",
     "cardCtaHint": "Simule e acompanhe quanto falta",
     "of": "{{saved}} de {{target}}",
@@ -376,7 +415,7 @@
     "ruleDelete": "Apagar regra"
   },
   "houseBudget": {
-    "loadError": "Não foi possível carregar o orçamento da casa. Tente novamente.",
+    "loadError": "Não conseguimos carregar o orçamento da casa. Confira sua internet e tente de novo.",
     "totalIncome": "Renda somada da casa",
     "residents_one": "{{count}} morador",
     "residents_other": "{{count}} moradores",
@@ -420,8 +459,8 @@
     "notConfigured": "O servidor não está configurado para enviar notificações.",
     "simulator": "Notificações só funcionam em um aparelho real.",
     "denied": "Permissão negada. Ative as notificações do Zeno nos Ajustes do iPhone.",
-    "noProject": "Falta o projectId do EAS. Rode `eas init` na pasta mobile.",
-    "error": "Não foi possível ativar as notificações.",
+    "noProject": "As notificações ainda não estão disponíveis nesta versão do app.",
+    "error": "Não conseguimos ativar as notificações. Tente de novo em instantes.",
     "sent": "Notificação enviada.",
     "hourLabel": "{{hour}}h"
   }

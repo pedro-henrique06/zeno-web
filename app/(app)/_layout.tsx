@@ -3,7 +3,7 @@ import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '@/hooks/useUser';
 import { LANGUAGE_TO_I18N } from '@/i18n';
-import { fonts, useTheme } from '@/theme/ThemeContext';
+import { brand, fonts, useTheme } from '@/theme/ThemeContext';
 
 export default function AppLayout() {
   const { t, i18n } = useTranslation();
@@ -18,8 +18,9 @@ export default function AppLayout() {
     <Stack
       screenOptions={{
         headerStyle: { backgroundColor: colors.page },
-        headerTintColor: colors.text,
-        headerTitleStyle: { fontFamily: fonts.bold },
+        // iOS navigation bar: accent-coloured back chevron, semibold system title.
+        headerTintColor: colors.mode === 'dark' ? brand.blue : brand.blueAction,
+        headerTitleStyle: { fontFamily: fonts.bold, fontWeight: '600', color: colors.text },
         headerShadowVisible: false,
         headerBackButtonDisplayMode: 'minimal',
         contentStyle: { backgroundColor: colors.page },
@@ -34,6 +35,7 @@ export default function AppLayout() {
       <Stack.Screen name="horizon" options={{ title: t('dashboard.title') }} />
       <Stack.Screen name="iphone" options={{ title: t('widget.section') }} />
       <Stack.Screen name="settings" options={{ title: t('settings.title') }} />
+      <Stack.Screen name="tags" options={{ title: t('categories.title') }} />
     </Stack>
   );
 }

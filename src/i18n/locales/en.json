@@ -7,7 +7,10 @@
     "noTag": "No tag",
     "currentMonth": "Current month",
     "previousMonth": "Previous month",
-    "nextMonth": "Next month"
+    "nextMonth": "Next month",
+    "close": "Close",
+    "retry": "Try again",
+    "keep": "Keep"
   },
   "currency": {
     "BRL": "Brazilian Real (R$)",
@@ -34,8 +37,10 @@
       "googleButton": "Sign in with Google",
       "noAccount": "Don't have an account?",
       "createAccount": "Create account",
-      "genericError": "Could not sign in. Check your details.",
-      "welcome": "Welcome back."
+      "genericError": "We couldn't sign you in. Check your email and password and try again.",
+      "welcome": "Good to see you again.",
+      "emailPlaceholder": "you@email.com",
+      "passwordPlaceholder": "Your password"
     },
     "register": {
       "tagline": "Create your account",
@@ -56,8 +61,8 @@
       "submitting": "Creating account...",
       "haveAccount": "Already have an account?",
       "login": "Sign in",
-      "passwordMismatch": "Passwords do not match",
-      "genericError": "Could not create account.",
+      "passwordMismatch": "The passwords don't match.",
+      "genericError": "We couldn't create your account. Try again in a moment.",
       "welcome": "Let's get started."
     }
   },
@@ -65,7 +70,7 @@
     "title": "Menu",
     "editProfile": "Edit profile",
     "dailyBudget": "Daily budget",
-    "goals": "Goal Simulator",
+    "goals": "Goal simulator",
     "houses": "My homes",
     "tags": "Tags",
     "settings": "Settings",
@@ -78,7 +83,10 @@
     "resetAccountTitle": "Reset account",
     "resetAccountWarning": "Are you sure you want to reset your account? All entries and balances will be removed.",
     "resetAccountInfo": "This action cannot be undone.",
-    "version": "Version {{version}}"
+    "version": "Version {{version}}",
+    "dailyBudgetHint": "How much you usually spend per day",
+    "goalsHint": "Find out when you'll get there",
+    "housesHint": "Split bills with the people you live with"
   },
   "settings": {
     "title": "Settings",
@@ -103,7 +111,7 @@
   },
   "editProfile": {
     "title": "Edit profile",
-    "loadError": "Could not load the profile. Try again.",
+    "loadError": "We couldn't load your profile. Check your connection and try again.",
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
@@ -115,15 +123,18 @@
   },
   "dailyBudget": {
     "title": "Daily budget",
-    "loadError": "Could not load the daily budget. Try again.",
+    "loadError": "We couldn't load your daily budget. Check your connection and try again.",
     "totalMonthly": "Monthly total",
     "dividedBy": "Divided by",
-    "days": "{{count}} days"
+    "days": "{{count}} days",
+    "deleteTitle": "Remove “{{name}}” from the budget?",
+    "deleteMessage": "Your expected daily spending will be recalculated without it.",
+    "deleteButton": "Remove"
   },
   "dashboard": {
-    "loadError": "Could not load the summary. Try again.",
+    "loadError": "We couldn't load this month's summary. Check your connection and try again.",
     "monthlyCalculations": "Monthly calculations",
-    "performance": "Performance",
+    "performance": "Result",
     "moneyLeftOver": "Money left over",
     "moneyShort": "Money short",
     "saved": "Saved",
@@ -133,21 +144,25 @@
     "monthMovements": "Month movements",
     "seeAll": "See all",
     "income": "Income",
-    "expenses": "Expenses",
+    "expenses": "Spending",
     "daily": "Daily",
     "savings": "Savings",
     "cardSpending": "Card spending",
     "title": "Totals",
     "subtitle": "Summary for {{month}}",
-    "monthBalance": "Month balance",
+    "monthBalance": "Month result",
     "savedHint": "of total income",
     "costOfLivingHint": "spending to live",
-    "dailyAverageHint": "average per day"
+    "dailyAverageHint": "average per day",
+    "monthBalanceHint": "Income minus spending",
+    "savedColumn": "Saved",
+    "afterSaving": "After saving: {{value}}",
+    "projectedDaily": "Includes {{value}} of projected daily spending until month end"
   },
   "entries": {
     "title": "Entries",
     "new": "New",
-    "loadError": "Could not load the entries. Try again.",
+    "loadError": "We couldn't load your entries. Check your connection and try again.",
     "filter": "Filter:",
     "date": "Date",
     "titleColumn": "Title",
@@ -155,10 +170,10 @@
     "tag": "Tag",
     "value": "Value",
     "emptyTitle": "No entries this month",
-    "emptySubtitle": "Add an entry to start tracking your finances."
+    "emptySubtitle": "Tap + to record money coming in or going out."
   },
   "balances": {
-    "loadError": "Could not load the balances. Try again.",
+    "loadError": "We couldn't load your balances. Check your connection and try again.",
     "horizonTooltip": "Balance horizon",
     "day": "Day",
     "balances": "Balances",
@@ -166,24 +181,41 @@
     "currentBalance": "Current balance",
     "upcoming": "Upcoming entries",
     "statsIncome": "Income",
-    "statsExpenses": "Expenses",
+    "statsExpenses": "Spending",
     "statsForecast": "Projected balance",
     "chartPast": "Actual",
     "chartFuture": "Projected",
-    "chartToday": "TODAY"
+    "chartToday": "TODAY",
+    "carriedOver": "Carried over {{value}}",
+    "savedThisMonth": "Saved {{value}}",
+    "legendIncome": "Income",
+    "legendExpense": "Spending",
+    "legendProjected": "Projected",
+    "dayA11y": "Day {{day}}. Balance {{balance}}",
+    "andMore": "+{{count}}",
+    "chartScrubHint": "Drag to see each day",
+    "chartA11y": "Balance chart for the month, from {{start}} on day 1 to {{end}} at month end.",
+    "balanceOn": "Balance on {{date}}"
   },
   "categories": {
     "searchPlaceholder": "Search tags",
-    "loadError": "Could not load the tags. Try again.",
-    "emptyTitle": "No tags around here...",
-    "emptySubtitle": "Create a tag to organize your entries.",
+    "loadError": "We couldn't load your tags. Check your connection and try again.",
+    "emptyTitle": "No tags yet",
+    "emptySubtitle": "Tags group similar spending, like Groceries or Transport. Create your first one to see where your money goes.",
     "editTitle": "Edit tag",
     "newTitle": "New tag",
-    "name": "Name"
+    "name": "Name",
+    "title": "Tags",
+    "monthCount_one": "{{count}} entry this month",
+    "monthCount_other": "{{count}} entries this month",
+    "noUse": "No entries this month",
+    "deleteTitle": "Delete the tag “{{name}}”?",
+    "deleteMessage": "Entries with this tag stay in the app; they just lose the tag.",
+    "deleteButton": "Delete tag"
   },
   "houses": {
     "title": "My homes",
-    "loadError": "Could not load homes. Try again.",
+    "loadError": "We couldn't load your homes. Check your connection and try again.",
     "emptyTitle": "No homes registered",
     "emptySubtitle": "Register a home to link it to your recurring entries.",
     "newTitle": "New home",
@@ -201,18 +233,21 @@
     "invite": "Invite",
     "noMembers": "No members invited",
     "noMembersHint": "Invite other users to share this home.",
-    "memberNotFound": "No user found with this email.",
+    "memberNotFound": "Nobody uses Zeno with that email. Check the address or ask them to create an account.",
     "alreadyMember": "This user is already a member.",
-    "inviteError": "Could not invite the member.",
+    "inviteError": "We couldn't send the invite. Try again in a moment.",
     "activeGroup": "active group",
     "activeGroups": "active groups",
-    "budgetTab": "Budget"
+    "budgetTab": "Budget",
+    "deleteTitle": "Delete the home “{{name}}”?",
+    "deleteMessage": "Members lose access to it. Your entries stay in your account. This can't be undone.",
+    "deleteButton": "Delete home"
   },
   "entryForm": {
     "editTitle": "Edit entry",
     "newTitle": "New entry",
-    "save": "Save",
-    "create": "Create",
+    "save": "Save changes",
+    "create": "Add entry",
     "type": "Type",
     "titleField": "Title",
     "value": "Value",
@@ -221,15 +256,18 @@
     "noHouse": "No home",
     "date": "Date",
     "recurring": "Repeat every month",
-    "hasRecurrenceEndDate": "Has an end date?",
-    "recurrenceEndDate": "End recurrence on",
+    "hasRecurrenceEndDate": "Stop repeating on a date?",
+    "recurrenceEndDate": "Last repeat on",
     "description": "Description",
     "delete": "Delete",
-    "deleteConfirmTitle": "Delete entry",
-    "deleteConfirmMessage": "Are you sure you want to delete this entry? This action cannot be undone.",
-    "deleteRecurringMessage": "This is a recurring entry. Deleting it will permanently remove all occurrences (past and future).",
+    "deleteConfirmTitle": "Delete “{{name}}”?",
+    "deleteConfirmMessage": "The entry will be removed and your balance recalculated. This can't be undone.",
+    "deleteRecurringMessage": "This entry repeats every month. Every occurrence, past and future, will be removed. This can't be undone.",
     "addToCalendar": "Add to calendar",
-    "addToCalendarHint": "Downloads an .ics file with a 2-day reminder. Open it in Apple Calendar or Google Calendar to add to your agenda."
+    "addToCalendarHint": "Downloads an .ics file with a 2-day reminder. Open it in Apple Calendar or Google Calendar to add to your agenda.",
+    "valueRequired": "Enter an amount to continue",
+    "titlePlaceholder": "Optional (uses the tag if empty)",
+    "deleteConfirmButton": "Delete entry"
   },
   "monthlyExpenseCategory": {
     "descriptionPlaceholder": "Description",
@@ -239,11 +277,11 @@
   "addEntrySheet": {
     "title": "Add",
     "descriptions": {
-      "entrada": "Money that came in",
-      "saida": "Bill or fixed expense",
-      "diario": "Day-to-day spending",
-      "economia": "Money saved",
-      "cartao": "Credit card purchase"
+      "entrada": "Money coming in, like salary or a side job",
+      "saida": "A fixed bill, like rent, power or internet",
+      "diario": "Everyday spending, like groceries, coffee or transport",
+      "economia": "Money you set aside: it leaves your balance but isn't spending",
+      "cartao": "A credit card purchase"
     }
   },
   "entryKind": {
@@ -260,9 +298,9 @@
       "day": "Day"
     },
     "performance": {
-      "title": "Performance",
-      "loadError": "Could not load the performance.",
-      "explanation": "Performance is like a snapshot of your financial month: it's the difference between how much came in and how much went out. Income minus expenses (fixed, daily, savings, card and daily budget forecast) = performance.",
+      "title": "Result",
+      "loadError": "We couldn't load the result. Check your connection and try again.",
+      "explanation": "The result shows whether money was left over or short this month: everything that came in minus spending (bills, daily, card and the expected daily spending for the days left). What you set aside as Savings is not part of it.",
       "totalByMonth": "Total by month"
     },
     "economized": {
@@ -293,7 +331,8 @@
     "totals": "Totals",
     "tags": "Tags",
     "houses": "Homes",
-    "menu": "Menu"
+    "menu": "Menu",
+    "entries": "Entries"
   },
   "goals": {
     "title": "Goal",
@@ -305,7 +344,7 @@
     "remove": "Remove",
     "saved": "Goal saved to your account.",
     "removed": "Goal removed.",
-    "saveError": "Could not save. Try again.",
+    "saveError": "We couldn't save your goal. Try again in a moment.",
     "cardCta": "Set a goal",
     "cardCtaHint": "Simulate and track what's left",
     "of": "{{saved}} of {{target}}",
@@ -376,7 +415,7 @@
     "ruleDelete": "Delete rule"
   },
   "houseBudget": {
-    "loadError": "Could not load the house budget. Try again.",
+    "loadError": "We couldn't load this home's budget. Check your connection and try again.",
     "totalIncome": "Combined house income",
     "residents_one": "{{count}} resident",
     "residents_other": "{{count}} residents",
@@ -420,8 +459,8 @@
     "notConfigured": "The server is not set up to send notifications.",
     "simulator": "Notifications only work on a real device.",
     "denied": "Permission denied. Turn on Zeno notifications in iPhone Settings.",
-    "noProject": "The EAS projectId is missing. Run `eas init` in the mobile folder.",
-    "error": "Could not turn notifications on.",
+    "noProject": "Notifications aren't available in this version of the app yet.",
+    "error": "We couldn't turn on notifications. Try again in a moment.",
     "sent": "Notification sent.",
     "hourLabel": "{{hour}}:00"
   }

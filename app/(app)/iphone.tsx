@@ -36,6 +36,7 @@ function Body({ children }: { children: string }) {
 
 function WidgetBlock() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const { data: status } = useWidgetKeyStatus();
   const create = useCreateWidgetKey();
   const revoke = useRevokeWidgetKey();
@@ -50,7 +51,7 @@ function WidgetBlock() {
         {t('widget.intro')}
       </Txt>
       {error && (
-        <Txt variant="small" color={brand.expense} style={{ marginTop: 8 }}>
+        <Txt variant="small" color={colors.expense} style={{ marginTop: 8 }}>
           {t('widget.error')}
         </Txt>
       )}
@@ -115,7 +116,7 @@ function RulesBlock() {
         {t('capture.rulesIntro')}
       </Txt>
       {error && (
-        <Txt variant="small" color={brand.expense} style={{ marginBottom: 8 }}>
+        <Txt variant="small" color={colors.expense} style={{ marginBottom: 8 }}>
           {t('capture.error')}
         </Txt>
       )}
@@ -129,7 +130,7 @@ function RulesBlock() {
               { text: t('capture.ruleDelete'), style: 'destructive', onPress: () => remove.mutate(rule.id) },
             ])
           }
-          right={<Txt variant="caption" color={brand.expense}>{t('capture.ruleDelete')}</Txt>}
+          right={<Txt variant="caption" color={colors.expense}>{t('capture.ruleDelete')}</Txt>}
         />
       ))}
       {tags.length === 0 ? (
@@ -187,6 +188,7 @@ function RulesBlock() {
 
 function CaptureBlock() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const { data: status } = useCaptureKeyStatus();
   const create = useCreateCaptureKey();
   const revoke = useRevokeCaptureKey();
@@ -200,7 +202,7 @@ function CaptureBlock() {
         {t('capture.intro')}
       </Txt>
       {error && (
-        <Txt variant="small" color={brand.expense} style={{ marginTop: 8 }}>
+        <Txt variant="small" color={colors.expense} style={{ marginTop: 8 }}>
           {t('capture.error')}
         </Txt>
       )}
