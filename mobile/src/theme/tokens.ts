@@ -44,36 +44,42 @@ export const brand = {
 
 export type BrandColor = keyof typeof brand;
 
-/** Neutral surfaces and text per color mode. Dark is layered: page < paper < raised. */
+/**
+ * Neutral surfaces and text per color mode, after iOS system colours (systemGroupedBackground,
+ * secondarySystemGroupedBackground, separator, label…), with secondary text nudged to keep 4.5:1.
+ */
 export const surfaces = {
   light: {
     page: '#F2F2F7',
     paper: '#FFFFFF',
     raised: '#FFFFFF',
-    divider: '#E5E5EA',
-    textPrimary: '#1C1C1E',
-    textSecondary: '#6E6E73',
+    divider: '#D8D8DC',
+    textPrimary: '#000000',
+    textSecondary: '#6C6C70',
     textDisabled: '#707076',
-    hover: 'rgba(0,0,0,0.025)',
+    hover: 'rgba(0,0,0,0.04)',
+    /** iOS tertiarySystemFill: tinted buttons, segmented track, chips. */
+    fill: 'rgba(118,118,128,0.12)',
     nav: 'rgba(255,255,255,0.97)',
     /** Background of the login / register screens. */
-    auth: '#F7F5F0',
+    auth: '#F2F2F7',
     /** Semantic text on page/paper: darker than the brand hues to keep 4.5:1. */
     income: '#137A45',
     expense: '#C2412B',
     teal: '#1F7A77',
   },
   dark: {
-    page: '#0B111B',
-    paper: '#141D2D',
-    raised: '#1B2638',
-    divider: '#243248',
-    textPrimary: '#EAF0F7',
-    textSecondary: '#93A4BA',
-    textDisabled: '#7A8CA3',
-    hover: 'rgba(255,255,255,0.04)',
-    nav: 'rgba(20,29,45,0.97)',
-    auth: '#0B111B',
+    page: '#000000',
+    paper: '#1C1C1E',
+    raised: '#2C2C2E',
+    divider: '#38383A',
+    textPrimary: '#FFFFFF',
+    textSecondary: '#98989F',
+    textDisabled: '#8D8D93',
+    hover: 'rgba(255,255,255,0.06)',
+    fill: 'rgba(118,118,128,0.24)',
+    nav: 'rgba(28,28,30,0.97)',
+    auth: '#000000',
     income: brand.income,
     expense: brand.expense,
     teal: brand.teal,

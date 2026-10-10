@@ -26,8 +26,12 @@ export default function TotalsScreen() {
   const projectedDaily = data ? data.costOfLiving - (data.movements.saida + data.movements.diario + data.movements.cartao) : 0;
 
   return (
-    <Screen refreshing={isRefetching} onRefresh={refetch}>
-      <MonthSwitcher month={month} year={year} onChange={(m, y) => (setMonth(m), setYear(y))} />
+    <Screen
+      title={t('appLayout.totals')}
+      headerRight={<MonthSwitcher compact month={month} year={year} onChange={(m, y) => (setMonth(m), setYear(y))} />}
+      refreshing={isRefetching}
+      onRefresh={refetch}
+    >
       {isLoading || !data ? (
         isError ? (
           <ErrorState message={t('dashboard.loadError')} onRetry={refetch} />
@@ -98,7 +102,7 @@ export default function TotalsScreen() {
           </Section>
 
           <Section>
-            <Row icon="stats-chart-outline" title={t('dashboard.title')} subtitle={t('dashboard.subtitle', { month: year })} onPress={() => router.push('/horizon')} last />
+            <Row icon="stats-chart" sf="chart.bar.fill" tint="#1F7A77" title={t('dashboard.title')} subtitle={t('dashboard.subtitle', { month: year })} onPress={() => router.push('/horizon')} last />
           </Section>
 
           <Section title={t('dashboard.monthMovements')}>

@@ -6,11 +6,12 @@ import { brand, surfaces } from './tokens';
 type Mode = 'light' | 'dark';
 const KEY = 'zeno.theme';
 
+/** SF Pro ('System') for interface text; Fraunces stays as the brand face for money only. */
 export const fonts = {
   display: 'Fraunces_700Bold',
-  body: 'DMSans_400Regular',
-  medium: 'DMSans_500Medium',
-  bold: 'DMSans_700Bold',
+  body: 'System',
+  medium: 'System',
+  bold: 'System',
 } as const;
 
 export interface Palette {
@@ -23,6 +24,8 @@ export interface Palette {
   textSecondary: string;
   textDisabled: string;
   hover: string;
+  /** Tinted gray fill for secondary buttons, segmented track and chips. */
+  fill: string;
   nav: string;
   auth: string;
   /** Income/expense/projection text on page or paper. On navy cards keep using `brand.*`. */
@@ -51,6 +54,7 @@ function paletteFor(mode: Mode): Palette {
     textSecondary: s.textSecondary,
     textDisabled: s.textDisabled,
     hover: s.hover,
+    fill: s.fill,
     nav: s.nav,
     auth: s.auth,
     income: s.income,

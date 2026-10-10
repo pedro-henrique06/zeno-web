@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { EntryKind } from '@/types';
+import type { SFSymbol } from 'expo-symbols';
+import type { IonName } from '@/ui/Icon';
 import { brand } from '@/theme/tokens';
 
 export const EntryKindColors: Record<EntryKind, string> = {
@@ -32,3 +34,12 @@ export function useEntryKindLabels(): Record<EntryKind, string> {
 export function isCredit(kind: EntryKind): boolean {
   return kind === EntryKind.Entrada;
 }
+
+/** SF Symbol (iOS) and Ionicons twin for each kind, shown in a tinted circle like Wallet transactions. */
+export const EntryKindIcons: Record<EntryKind, { sf: SFSymbol; ion: IonName }> = {
+  [EntryKind.Entrada]: { sf: 'arrow.down.left', ion: 'arrow-down' },
+  [EntryKind.Saida]: { sf: 'doc.text.fill', ion: 'document-text' },
+  [EntryKind.Diario]: { sf: 'cart.fill', ion: 'cart' },
+  [EntryKind.Economia]: { sf: 'banknote.fill', ion: 'cash' },
+  [EntryKind.Cartao]: { sf: 'creditcard.fill', ion: 'card' },
+};

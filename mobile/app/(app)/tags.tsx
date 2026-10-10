@@ -67,14 +67,11 @@ export default function TagsScreen() {
 
   return (
     <Screen refreshing={isRefetching} onRefresh={refetch}>
-      <Txt variant="heading" style={{ marginBottom: 14 }}>
-        {t('categories.title')}
-      </Txt>
-      <Button title={t('categories.newTitle')} icon="add" onPress={() => show(null)} />
+      <Button variant="secondary" title={t('categories.newTitle')} icon="add" sf="plus" onPress={() => show(null)} />
       {isLoading ? (
         <Loading />
       ) : !tags || tags.length === 0 ? (
-        <Empty icon="pricetags-outline" title={t('categories.emptyTitle')} subtitle={t('categories.emptySubtitle')} />
+        <Empty icon="pricetags-outline" sf="tag" title={t('categories.emptyTitle')} subtitle={t('categories.emptySubtitle')} />
       ) : (
         <Section>
           {sorted.map((tag, i) => {
@@ -82,7 +79,9 @@ export default function TagsScreen() {
             return (
               <View key={tag.id}>
                 <Row
-                  icon="pricetag-outline"
+                  icon="pricetag"
+                  sf="tag.fill"
+                  tint="#7A4FD6"
                   title={tag.name}
                   subtitle={u ? t('categories.monthCount', { count: u.count }) : t('categories.noUse')}
                   right={
@@ -96,7 +95,7 @@ export default function TagsScreen() {
                   last={i === sorted.length - 1}
                 />
                 {u && (
-                  <View style={{ position: 'absolute', left: 60, right: 14, bottom: 6, height: 3, borderRadius: 2, backgroundColor: colors.hover }}>
+                  <View style={{ position: 'absolute', left: 58, right: 16, bottom: 6, height: 3, borderRadius: 2, backgroundColor: colors.fill }}>
                     <View style={{ width: `${(u.spent / maxSpent) * 100}%`, height: 3, borderRadius: 2, backgroundColor: brand.expense }} />
                   </View>
                 )}

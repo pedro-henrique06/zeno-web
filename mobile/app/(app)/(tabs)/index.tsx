@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { Card, Empty, Fab, Loading, Money, Screen, Segmented, Txt, ErrorState } from '@/ui';
+import { Card, Empty, ErrorState, Icon, Loading, Money, Screen, Segmented, Txt } from '@/ui';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { BalanceChart } from '@/components/BalanceChart';
-import { EntryFormSheet } from '@/components/EntryFormSheet';
 import { useBalances } from '@/hooks/useBalances';
 import { useEntries } from '@/hooks/useEntries';
 import { useProfile } from '@/hooks/useUser';
@@ -44,11 +43,11 @@ function Header({
       })
     : t('balances.currentBalance');
   return (
-    <View style={{ marginBottom: 12 }} accessibilityLiveRegion="polite">
-      <Txt variant="label" muted>
+    <View style={{ marginTop: 8, marginBottom: 8 }} accessibilityLiveRegion="polite">
+      <Txt variant="small" muted style={{ fontWeight: '500' }}>
         {label}
       </Txt>
-      <Money style={{ fontSize: 40, letterSpacing: -1.5, color: balance < 0 ? colors.expense : colors.text }}>
+      <Money style={{ fontSize: 46, letterSpacing: -1.8, marginTop: 2, color: balance < 0 ? colors.expense : colors.text }}>
         {balance < 0 ? '−' : ''}
         {formatCurrency(Math.abs(balance), currency, language)}
       </Money>
@@ -56,8 +55,10 @@ function Header({
   );
 }
 
+/** One card, three columns divided by hairlines: the month at a glance. */
 function Stats({ days, currency, language }: { days: BalanceDay[]; currency?: any; language?: any }) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const money = (v: number) => formatCurrency(v, currency, language);
   const income = days.reduce((s, d) => s + d.entrada, 0);
   const expenses = days.reduce((s, d) => s + daySpending(d), 0);
@@ -66,31 +67,31 @@ function Stats({ days, currency, language }: { days: BalanceDay[]; currency?: an
   // Balances are cumulative, so what came from earlier months is the first day's balance minus its own movements.
   const carriedOver = days.length ? days[0].balance - dayNet(days[0]) : 0;
   const items = [
-    { label: t('balances.statsIncome'), value: income, color: brand.income },
-    { label: t('balances.statsExpenses'), value: expenses, color: brand.expense },
-    { label: t('balances.statsForecast'), value: forecast, color: forecast >= 0 ? brand.teal : brand.expense },
+    { label: t('balances.statsIncome'), value: income, color: colors.income },
+    { label: t('balances.statsExpenses'), value: expenses, color: colors.expense },
+    { label: t('balances.statsForecast'), value: forecast, color: forecast >= 0 ? colors.text : colors.expense },
   ];
-  // Spell out the terms the three cards leave out, so carried over + income − spending − saved = forecast.
+  // Spell out the terms the three columns leave out, so carried over + income − spending − saved = forecast.
   const extras = [
     Math.abs(carriedOver) >= 0.005 && t('balances.carriedOver', { value: money(carriedOver) }),
     saved > 0 && t('balances.savedThisMonth', { value: money(saved) }),
   ].filter(Boolean);
   return (
-    <View style={{ marginBottom: 16 }}>
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        {items.map((s) => (
-          <Card key={s.label} dark style={{ flex: 1, padding: 12 }}>
-            <Txt variant="label" color="rgba(255,255,255,0.7)" style={{ fontSize: 9, letterSpacing: 0.6, marginBottom: 4 }} numberOfLines={1} adjustsFontSizeToFit>
+    <View style={{ marginTop: 20 }}>
+      <Card style={{ flexDirection: 'row', paddingHorizontal: 0, paddingVertical: 14 }}>
+        {items.map((s, i) => (
+          <View key={s.label} style={[{ flex: 1, paddingHorizontal: 12 }, i > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: colors.divider }]}>
+            <Txt variant="caption" muted numberOfLines={1} adjustsFontSizeToFit>
               {s.label}
             </Txt>
-            <Money color={s.color} style={{ fontSize: 14, color: s.color }} numberOfLines={1} adjustsFontSizeToFit>
+            <Money style={{ fontSize: 17, color: s.color, marginTop: 3 }} numberOfLines={1} adjustsFontSizeToFit>
               {money(s.value)}
             </Money>
-          </Card>
+          </View>
         ))}
-      </View>
+      </Card>
       {extras.length > 0 && (
-        <Txt variant="caption" muted style={{ marginTop: 8, textAlign: 'right' }}>
+        <Txt variant="caption" muted style={{ marginTop: 7, marginHorizontal: 16 }}>
           {extras.join('  ·  ')}
         </Txt>
       )}
@@ -131,10 +132,10 @@ function Calendar({
   const rows = Array.from({ length: cells.length / 7 }, (_, r) => cells.slice(r * 7, r * 7 + 7));
 
   return (
-    <View>
+    <Card style={{ paddingHorizontal: 8 }}>
       <View style={{ flexDirection: 'row', marginBottom: 4 }}>
         {WEEKDAYS.map((d, i) => (
-          <Txt key={i} variant="caption" muted style={{ flex: 1, textAlign: 'center' }}>
+          <Txt key={i} variant="caption" muted style={{ flex: 1, textAlign: 'center', fontWeight: '600' }}>
             {d}
           </Txt>
         ))}
@@ -154,49 +155,42 @@ function Calendar({
                 accessibilityRole="button"
                 accessibilityLabel={t('balances.dayA11y', { day, balance: formatCurrency(info?.balance ?? 0, currency, language) })}
                 onPress={() => onDay(day)}
-                style={{
+                style={({ pressed }) => ({
                   flex: 1,
                   aspectRatio: 1,
-                  margin: 1,
-                  borderRadius: 8,
+                  margin: 2,
+                  borderRadius: 100,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: isToday ? brand.blueAction : projected ? brand.teal + '1f' : 'transparent',
-                }}
+                  backgroundColor: isToday ? brand.blueAction : pressed ? colors.hover : 'transparent',
+                })}
               >
-                <Txt variant="small" color={isToday ? '#fff' : projected ? colors.teal : colors.text}>
+                <Txt variant="body" color={isToday ? '#fff' : projected ? colors.textSecondary : colors.text} style={{ fontWeight: isToday ? '600' : '400' }}>
                   {day}
                 </Txt>
-                <View style={{ flexDirection: 'row', gap: 3, position: 'absolute', bottom: 4 }}>
-                  {hasIncome && <Dot color={isToday ? '#fff' : projected ? colors.teal : colors.income} />}
-                  {hasExpense && <Dot color={isToday ? '#fff' : projected ? colors.teal : colors.expense} />}
+                <View style={{ flexDirection: 'row', gap: 3, position: 'absolute', bottom: 3 }}>
+                  {hasIncome && <Dot color={isToday ? '#fff' : colors.income} size={5} />}
+                  {hasExpense && <Dot color={isToday ? '#fff' : colors.expense} size={5} />}
                 </View>
               </Pressable>
             );
           })}
         </View>
       ))}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 16, marginTop: 10 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 16, marginTop: 8 }}>
         {[
           { color: colors.income, label: t('balances.legendIncome') },
           { color: colors.expense, label: t('balances.legendExpense') },
         ].map((l) => (
           <View key={l.label} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Dot color={l.color} size={8} />
+            <Dot color={l.color} size={7} />
             <Txt variant="caption" muted>
               {l.label}
             </Txt>
           </View>
         ))}
-        {/* Projected days are tinted cells, so the key is a swatch, not a dot. */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <View style={{ width: 12, height: 12, borderRadius: 3, backgroundColor: brand.teal + '1f', borderWidth: 1, borderColor: colors.teal }} />
-          <Txt variant="caption" muted>
-            {t('balances.legendProjected')}
-          </Txt>
-        </View>
       </View>
-    </View>
+    </Card>
   );
 }
 
@@ -210,84 +204,72 @@ function daySummary(entries: Entry[] | undefined, more: (n: number) => string): 
 
 function DayList({
   days,
+  month,
+  year,
   entriesByDay,
   currency,
   language,
   onDay,
 }: {
   days: BalanceDay[];
+  month: number;
+  year: number;
   entriesByDay: Map<number, Entry[]>;
   currency?: any;
   language?: any;
   onDay: (day: number) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const money = (v: number) => formatCurrency(v, currency, language);
+  const weekday = (day: number) => new Intl.DateTimeFormat(i18n.language, { weekday: 'long' }).format(new Date(year, month - 1, day));
   const shown = days.filter((d) => d.entrada + d.saida + d.diario + d.cartao + d.economia > 0 || d.isToday);
-  if (shown.length === 0) return <Empty icon="receipt-outline" title={t('entries.emptyTitle')} subtitle={t('entries.emptySubtitle')} />;
+  if (shown.length === 0) return <Empty icon="receipt-outline" sf="list.bullet.rectangle" title={t('entries.emptyTitle')} subtitle={t('entries.emptySubtitle')} />;
   return (
-    <View>
+    <View style={[styles.group, { backgroundColor: colors.paper }]}>
       {shown.map((d, i) => {
         const expense = daySpending(d);
         const summary = daySummary(entriesByDay.get(d.day), (count) => t('balances.andMore', { count }));
+        const last = i === shown.length - 1;
         return (
           <Pressable
             key={d.day}
             accessibilityRole="button"
             accessibilityLabel={[t('balances.dayA11y', { day: d.day, balance: money(d.balance) }), summary].filter(Boolean).join('. ')}
             onPress={() => onDay(d.day)}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 12,
-              paddingVertical: 11,
-              borderTopWidth: i ? 0.5 : 0,
-              borderTopColor: colors.divider,
-              opacity: d.isProjected ? 0.6 : 1,
-            }}
+            style={({ pressed }) => [styles.dayRow, { opacity: d.isProjected ? 0.55 : 1 }, pressed && { backgroundColor: colors.hover }]}
           >
-            <View
-              style={{
-                width: 30,
-                height: 30,
-                borderRadius: 15,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: d.isToday ? brand.blueAction : colors.hover,
-              }}
-            >
-              <Txt variant="caption" color={d.isToday ? '#fff' : undefined} style={{ fontWeight: '700' }}>
+            {/* Calendar-style date chip, like the Wallet and Calendar apps. */}
+            <View style={[styles.dayChip, { backgroundColor: d.isToday ? brand.blueAction : colors.fill }]}>
+              <Txt variant="caption" color={d.isToday ? '#fff' : colors.text} style={{ fontWeight: '700', fontSize: 15 }}>
                 {d.day}
               </Txt>
             </View>
             <View style={{ flex: 1 }}>
-              {summary ? (
-                <Txt variant="small" numberOfLines={1}>
-                  {summary}
-                </Txt>
-              ) : null}
-              <View style={{ flexDirection: 'row', gap: 8 }}>
+              <Txt numberOfLines={1} style={{ textTransform: summary ? 'none' : 'capitalize' }}>
+                {summary || weekday(d.day)}
+              </Txt>
+              <View style={{ flexDirection: 'row', gap: 8, marginTop: 1 }}>
                 {d.entrada > 0 && (
-                  <Txt variant="caption" color={colors.income} style={{ fontWeight: '700' }}>
+                  <Txt variant="caption" color={colors.income} style={{ fontWeight: '600' }}>
                     +{money(d.entrada)}
                   </Txt>
                 )}
                 {expense > 0 && (
-                  <Txt variant="caption" color={colors.expense} style={{ fontWeight: '700' }}>
+                  <Txt variant="caption" color={colors.expense} style={{ fontWeight: '600' }}>
                     −{money(expense)}
                   </Txt>
                 )}
                 {d.economia > 0 && (
-                  <Txt variant="caption" color={colors.teal} style={{ fontWeight: '700' }}>
+                  <Txt variant="caption" color={colors.teal} style={{ fontWeight: '600' }}>
                     −{money(d.economia)}
                   </Txt>
                 )}
               </View>
             </View>
-            <Txt variant="small" color={d.balance >= 0 ? colors.income : colors.expense} style={{ minWidth: 84, textAlign: 'right', fontWeight: '700' }}>
-              {money(d.balance)}
-            </Txt>
+            <Money style={{ fontSize: 16, color: d.balance >= 0 ? colors.text : colors.expense }}>{money(d.balance)}</Money>
+            <Icon sf="chevron.right" ion="chevron-forward" size={12} color={colors.textDisabled} />
+            {!last && <View style={[styles.separator, { backgroundColor: colors.divider }]} />}
           </Pressable>
         );
       })}
@@ -297,13 +279,11 @@ function DayList({
 
 export default function BalancesScreen() {
   const { t } = useTranslation();
-  const { colors } = useTheme();
   const router = useRouter();
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
   const [view, setView] = useState<'lista' | 'calendario'>('lista');
-  const [sheet, setSheet] = useState<{ open: boolean; date?: string }>({ open: false });
   const [scrubbed, setScrubbed] = useState<BalanceDay | null>(null);
 
   const { data: profile } = useProfile();
@@ -329,44 +309,49 @@ export default function BalancesScreen() {
   const days = data?.days ?? [];
 
   return (
-    <View style={{ flex: 1 }}>
-      <Screen refreshing={isRefetching} onRefresh={refetch} withFab>
-        <MonthSwitcher month={month} year={year} onChange={(m, y) => (setMonth(m), setYear(y), setScrubbed(null))} />
-        {isLoading ? (
-          <Loading />
-        ) : isError ? (
-          <ErrorState message={t('balances.loadError')} onRetry={refetch} />
-        ) : (
-          <>
-            {days.length > 0 && (
-              <>
-                <Header days={days} selected={scrubbed} month={month} year={year} currency={profile?.currency} language={profile?.language} />
-                <View style={{ marginBottom: 16 }}>
-                  <BalanceChart days={days} month={month} year={year} currency={profile?.currency} language={profile?.language} onSelect={setScrubbed} />
-                </View>
-                <Stats days={days} currency={profile?.currency} language={profile?.language} />
-              </>
-            )}
-            <View style={{ marginBottom: 12 }}>
-              <Segmented
-                value={view}
-                onChange={setView}
-                options={[
-                  { value: 'lista', label: 'Lista' },
-                  { value: 'calendario', label: 'Calendário', color: brand.teal },
-                ]}
-              />
-            </View>
-            {view === 'calendario' ? (
-              <Calendar days={days} month={month} year={year} currency={profile?.currency} language={profile?.language} onDay={goToDay} />
-            ) : (
-              <DayList days={days} entriesByDay={entriesByDay} currency={profile?.currency} language={profile?.language} onDay={goToDay} />
-            )}
-          </>
-        )}
-      </Screen>
-      <Fab label={t('entryForm.newTitle')} onPress={() => setSheet({ open: true })} />
-      <EntryFormSheet visible={sheet.open} defaultDate={sheet.date} onClose={() => setSheet({ open: false })} />
-    </View>
+    <Screen
+      title={t('appLayout.balances')}
+      headerRight={<MonthSwitcher compact month={month} year={year} onChange={(m, y) => (setMonth(m), setYear(y), setScrubbed(null))} />}
+      refreshing={isRefetching}
+      onRefresh={refetch}
+    >
+      {isLoading ? (
+        <Loading />
+      ) : isError ? (
+        <ErrorState message={t('balances.loadError')} onRetry={refetch} />
+      ) : (
+        <>
+          {days.length > 0 && (
+            <>
+              <Header days={days} selected={scrubbed} month={month} year={year} currency={profile?.currency} language={profile?.language} />
+              <BalanceChart days={days} month={month} year={year} currency={profile?.currency} language={profile?.language} onSelect={setScrubbed} />
+              <Stats days={days} currency={profile?.currency} language={profile?.language} />
+            </>
+          )}
+          <View style={{ marginTop: 24, marginBottom: 12 }}>
+            <Segmented
+              value={view}
+              onChange={setView}
+              options={[
+                { value: 'lista', label: 'Lista' },
+                { value: 'calendario', label: 'Calendário' },
+              ]}
+            />
+          </View>
+          {view === 'calendario' ? (
+            <Calendar days={days} month={month} year={year} currency={profile?.currency} language={profile?.language} onDay={goToDay} />
+          ) : (
+            <DayList days={days} month={month} year={year} entriesByDay={entriesByDay} currency={profile?.currency} language={profile?.language} onDay={goToDay} />
+          )}
+        </>
+      )}
+    </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  group: { borderRadius: 22, borderCurve: 'continuous', overflow: 'hidden' },
+  dayRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 14, minHeight: 60 },
+  dayChip: { width: 38, height: 38, borderRadius: 11, borderCurve: 'continuous', alignItems: 'center', justifyContent: 'center' },
+  separator: { position: 'absolute', left: 64, right: 0, bottom: 0, height: StyleSheet.hairlineWidth },
+});

@@ -228,7 +228,7 @@ export function BalanceChart({
             </Txt>
           </View>
         ) : null}
-        <Txt variant="caption" muted={!sel} style={{ marginLeft: 'auto', fontFamily: sel ? fonts.bold : fonts.body }}>
+        <Txt variant="caption" muted={!sel} style={{ marginLeft: 'auto', fontWeight: sel ? '600' : '400' }}>
           {sel ? `${dateLabel(sel.d.day)}${sel.d.isProjected ? ` · ${t('balances.legendProjected')}` : ''}` : t('balances.chartScrubHint')}
         </Txt>
       </View>

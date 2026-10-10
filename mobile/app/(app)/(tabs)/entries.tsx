@@ -1,28 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, View, type ScrollView } from 'react-native';
+import { Pressable, StyleSheet, View, type ScrollView } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Empty, Fab, Loading, Screen, Txt, ErrorState } from '@/ui';
+import { Empty, ErrorState, Icon, Loading, Money, Screen, Txt, useAccent } from '@/ui';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { EntryFormSheet } from '@/components/EntryFormSheet';
 import { useEntries } from '@/hooks/useEntries';
 import { useTags } from '@/hooks/useTags';
 import { useProfile } from '@/hooks/useUser';
 import { groupEntriesByDate } from '@/utils/groupEntriesByDate';
-import { EntryKindColors, isCredit, useEntryKindLabels } from '@/utils/entryKind';
+import { EntryKindColors, EntryKindIcons, isCredit, useEntryKindLabels } from '@/utils/entryKind';
 import { formatCurrency } from '@/utils/currency';
 import { EntryKind, type Entry } from '@/types';
-import { brand, useTheme } from '@/theme/ThemeContext';
+import { useTheme } from '@/theme/ThemeContext';
 
 export default function EntriesScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const accent = useAccent();
   const params = useLocalSearchParams<{ month?: string; year?: string; date?: string }>();
   const now = new Date();
   const [month, setMonth] = useState(Number(params.month) || now.getMonth() + 1);
   const [year, setYear] = useState(Number(params.year) || now.getFullYear());
   const [editing, setEditing] = useState<Entry | null>(null);
-  const [creating, setCreating] = useState(false);
   const [focusDate, setFocusDate] = useState<string | undefined>(params.date);
 
   const scrollRef = useRef<ScrollView>(null);
@@ -62,14 +62,19 @@ export default function EntriesScreen() {
 
   return (
     <View style={{ flex: 1 }}>
-      <Screen refreshing={isRefetching} onRefresh={refetch} withFab scrollRef={scrollRef}>
-        <MonthSwitcher month={month} year={year} onChange={(m, y) => (setMonth(m), setYear(y), setFocusDate(undefined))} />
+      <Screen
+        title={t('appLayout.entries')}
+        headerRight={<MonthSwitcher compact month={month} year={year} onChange={(m, y) => (setMonth(m), setYear(y), setFocusDate(undefined))} />}
+        refreshing={isRefetching}
+        onRefresh={refetch}
+        scrollRef={scrollRef}
+      >
         {isLoading ? (
           <Loading />
         ) : isError ? (
           <ErrorState message={t('entries.loadError')} onRetry={refetch} />
         ) : groups.length === 0 ? (
-          <Empty icon="receipt-outline" title={t('entries.emptyTitle')} subtitle={t('entries.emptySubtitle')} />
+          <Empty icon="receipt-outline" sf="list.bullet.rectangle" title={t('entries.emptyTitle')} subtitle={t('entries.emptySubtitle')} />
         ) : (
           groups.map((group) => {
             const focused = group.key === focusDate;
@@ -80,10 +85,10 @@ export default function EntriesScreen() {
                   groupY.current.set(group.key, e.nativeEvent.layout.y);
                   if (focusDate && group.key <= focusDate) scrollToFocus();
                 }}
-                style={{ marginBottom: 18 }}
+                style={{ marginTop: 18 }}
               >
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6, paddingHorizontal: 4 }}>
-                  <Txt variant="label" color={focused ? brand.blue : undefined} muted={!focused}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 7, paddingHorizontal: 16 }}>
+                  <Txt variant="label" color={focused ? accent : undefined} muted={!focused}>
                     {group.label}
                   </Txt>
                   <Txt variant="caption" color={group.total >= 0 ? colors.income : colors.expense} style={{ fontWeight: '700' }}>
@@ -94,10 +99,11 @@ export default function EntriesScreen() {
                 <View
                   style={{
                     backgroundColor: colors.paper,
-                    borderRadius: 16,
+                    borderRadius: 22,
+                    borderCurve: 'continuous',
                     overflow: 'hidden',
-                    borderWidth: focused ? 1.5 : 0.5,
-                    borderColor: focused ? brand.blue : colors.divider,
+                    borderWidth: 2,
+                    borderColor: focused ? accent : 'transparent',
                   }}
                 >
                   {group.entries.map((entry, i) => {
@@ -114,15 +120,17 @@ export default function EntriesScreen() {
                           flexDirection: 'row',
                           alignItems: 'center',
                           gap: 12,
-                          padding: 14,
-                          borderTopWidth: i ? 0.5 : 0,
-                          borderTopColor: colors.divider,
+                          paddingVertical: 11,
+                          paddingHorizontal: 14,
                           backgroundColor: pressed ? colors.hover : 'transparent',
                         })}
                       >
-                        <View style={{ width: 8, height: 36, borderRadius: 4, backgroundColor: EntryKindColors[entry.kind] }} />
+                        {/* Wallet-style transaction icon: the kind as an SF Symbol in a tinted circle. */}
+                        <View style={{ width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', backgroundColor: EntryKindColors[entry.kind] + '29' }}>
+                          <Icon sf={EntryKindIcons[entry.kind].sf} ion={EntryKindIcons[entry.kind].ion} size={17} color={EntryKindColors[entry.kind]} />
+                        </View>
                         <View style={{ flex: 1 }}>
-                          <Txt numberOfLines={1} style={{ fontWeight: '600' }}>
+                          <Txt numberOfLines={1} style={{ fontWeight: '500' }}>
                             {entry.title}
                             {entry.isRecurring ? '  ↻' : ''}
                           </Txt>
@@ -131,9 +139,10 @@ export default function EntriesScreen() {
                             {tag ? ` · ${tag}` : ''}
                           </Txt>
                         </View>
-                        <Txt color={amountColor(entry.kind)} style={{ fontWeight: '700', fontVariant: ['tabular-nums'] }}>
-                          {amount}
-                        </Txt>
+                        <Money style={{ fontSize: 17, color: amountColor(entry.kind) }}>{amount}</Money>
+                        {i < group.entries.length - 1 && (
+                          <View style={{ position: 'absolute', left: 64, right: 0, bottom: 0, height: StyleSheet.hairlineWidth, backgroundColor: colors.divider }} />
+                        )}
                       </Pressable>
                     );
                   })}
@@ -143,8 +152,7 @@ export default function EntriesScreen() {
           })
         )}
       </Screen>
-      <Fab label={t('entryForm.newTitle')} onPress={() => setCreating(true)} />
-      <EntryFormSheet visible={creating || !!editing} entry={editing} defaultDate={focusDate} onClose={() => (setCreating(false), setEditing(null))} />
+      <EntryFormSheet visible={!!editing} entry={editing} defaultDate={focusDate} onClose={() => setEditing(null)} />
     </View>
   );
 }
