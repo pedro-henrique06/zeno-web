@@ -1,45 +1,34 @@
 import axios, { type AxiosResponse } from 'axios';
+import Constants from 'expo-constants';
 import type { ApiResponse, AuthResponse } from '@/types';
+import { session } from '@/lib/session';
 
 const AUTH_ENDPOINTS_WITHOUT_REFRESH = ['/auth/login', '/auth/register', '/auth/refresh-token'];
 
+export const API_URL: string =
+  process.env.EXPO_PUBLIC_API_URL ?? (Constants.expoConfig?.extra?.apiUrl as string | undefined) ?? '';
+
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: API_URL,
+  headers: { 'Content-Type': 'application/json' },
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (session.token) {
+    config.headers.Authorization = `Bearer ${session.token}`;
   }
   return config;
 });
 
-function logoutAndRedirect() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('refreshToken');
-  window.location.href = '/login';
-}
-
 let refreshPromise: Promise<string> | null = null;
 
 async function refreshAccessToken(): Promise<string> {
-  const storedRefreshToken = localStorage.getItem('refreshToken');
-  if (!storedRefreshToken) {
+  const stored = session.refreshToken;
+  if (!stored) {
     throw new Error('Sem refresh token disponível.');
   }
-
-  const response = await apiClient.post<AuthResponse>('/auth/refresh-token', {
-    refreshToken: storedRefreshToken,
-  });
-
-  localStorage.setItem('token', response.data.token);
-  if (response.data.refreshToken) {
-    localStorage.setItem('refreshToken', response.data.refreshToken);
-  }
+  const response = await apiClient.post<AuthResponse>('/auth/refresh-token', { refreshToken: stored });
+  await session.save(response.data.token, response.data.refreshToken);
   return response.data.token;
 }
 
@@ -56,8 +45,8 @@ apiClient.interceptors.response.use(
       !AUTH_ENDPOINTS_WITHOUT_REFRESH.includes(originalRequest.url);
 
     if (!canRetryWithRefresh) {
-      if (status === 401) {
-        logoutAndRedirect();
+      if (status === 401 && !AUTH_ENDPOINTS_WITHOUT_REFRESH.includes(originalRequest?.url)) {
+        session.notifySessionLost();
       }
       return Promise.reject(error);
     }
@@ -72,7 +61,7 @@ apiClient.interceptors.response.use(
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
       return apiClient(originalRequest);
     } catch {
-      logoutAndRedirect();
+      session.notifySessionLost();
       return Promise.reject(error);
     }
   },

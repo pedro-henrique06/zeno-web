@@ -13,11 +13,13 @@ export const LANGUAGE_LOCALES: Record<Language, string> = {
 };
 
 export function formatCurrency(value: number, currency: Currency = 'BRL', language: Language = 'PtBR'): string {
+  // Hermes rejects signDisplay: 'negative', so emulate it: round to cents and
+  // collapse -0 to 0 so tiny negatives don't render as "-R$ 0,00".
+  const rounded = Math.round(value * 100) / 100 || 0;
   return new Intl.NumberFormat(LANGUAGE_LOCALES[language], {
     style: 'currency',
     currency,
-    signDisplay: 'negative',
-  }).format(value);
+  }).format(rounded);
 }
 
 export function formatDate(date: string | Date, language: Language = 'PtBR'): string {

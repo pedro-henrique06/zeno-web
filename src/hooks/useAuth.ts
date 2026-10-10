@@ -1,17 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as authApi from '@/api/auth';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import type { LoginRequest, RegisterRequest } from '@/types';
 
 export function useLogin() {
   const { login: loginAuth } = useAuth();
-  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
-    onSuccess: (response) => {
-      loginAuth(
+    onSuccess: async (response) => {
+      await loginAuth(
         response.token,
         {
           id: response.userId,
@@ -20,7 +18,6 @@ export function useLogin() {
         },
         response.refreshToken,
       );
-      navigate('/');
     },
   });
 }
@@ -33,40 +30,34 @@ export function useRegister() {
 
 export function useLogout() {
   const { logout: logoutAuth } = useAuth();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => authApi.logout(),
     onSuccess: () => {
-      logoutAuth();
+      void logoutAuth();
       queryClient.clear();
-      navigate('/login');
     },
     onError: () => {
-      logoutAuth();
+      void logoutAuth();
       queryClient.clear();
-      navigate('/login');
     },
   });
 }
 
 export function useResetAccount() {
   const { logout: logoutAuth } = useAuth();
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => authApi.resetAccount(),
     onSuccess: () => {
-      logoutAuth();
+      void logoutAuth();
       queryClient.clear();
-      navigate('/login');
     },
     onError: () => {
-      logoutAuth();
+      void logoutAuth();
       queryClient.clear();
-      navigate('/login');
     },
   });
 }

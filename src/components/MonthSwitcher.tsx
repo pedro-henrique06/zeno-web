@@ -1,72 +1,72 @@
-import { Box, IconButton, Typography } from '@mui/material';
+import { Pressable, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useProfile } from '@/hooks/useUser';
-import { LANGUAGE_LOCALES } from '@/utils/currency';
-import { clickableProps } from '@/utils/a11y';
+import { Icon, Txt, useAccent } from '@/ui';
+import { useTheme } from '@/theme/ThemeContext';
 
-interface MonthSwitcherProps {
+const MONTHS_PT = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+
+/**
+ * ‹ Outubro 2026 › as a gray capsule. `compact` (next to a large title) shortens the month and drops
+ * the year when it's the current one.
+ */
+export function MonthSwitcher({
+  month,
+  year,
+  onChange,
+  compact,
+}: {
   month: number;
   year: number;
   onChange: (month: number, year: number) => void;
-  endAdornment?: React.ReactNode;
-}
-
-export function MonthSwitcher({ month, year, onChange, endAdornment }: MonthSwitcherProps) {
-  const { t } = useTranslation();
-  const { data: profile } = useProfile();
-  const date = new Date(year, month - 1, 1);
-  const label = new Intl.DateTimeFormat(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], {
-    month: 'short',
-    year: '2-digit',
-  }).format(date);
+  compact?: boolean;
+}) {
+  const { t, i18n } = useTranslation();
+  const { colors } = useTheme();
+  const accent = useAccent();
 
   const shift = (delta: number) => {
+    Haptics.selectionAsync().catch(() => {});
     const next = new Date(year, month - 1 + delta, 1);
     onChange(next.getMonth() + 1, next.getFullYear());
   };
 
-  const today = new Date();
+  const date = new Date(year, month - 1, 1);
+  const longName = i18n.language === 'pt' ? MONTHS_PT[month - 1] : new Intl.DateTimeFormat(i18n.language, { month: 'long' }).format(date);
+  const shortName = new Intl.DateTimeFormat(i18n.language, { month: 'short' }).format(date).replace('.', '');
+  const showYear = !compact || year !== new Date().getFullYear();
+  const label = `${compact ? shortName : longName}${showYear ? ` ${year}` : ''}`;
+
+  // 44pt targets even though the capsule looks smaller: Apple's minimum touch size.
+  const arrow = (delta: number) => (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={delta < 0 ? t('common.previousMonth') : t('common.nextMonth')}
+      onPress={() => shift(delta)}
+      hitSlop={8}
+      style={({ pressed }) => ({ width: 36, height: 36, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.5 : 1 })}
+    >
+      <Icon sf={delta < 0 ? 'chevron.left' : 'chevron.right'} ion={delta < 0 ? 'chevron-back' : 'chevron-forward'} size={14} color={accent} weight="bold" />
+    </Pressable>
+  );
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-      <Box
-        {...clickableProps(() => onChange(today.getMonth() + 1, today.getFullYear()))}
-        aria-label={t('common.currentMonth')}
-        sx={{
-          width: 36,
-          height: 36,
-          borderRadius: 2,
-          bgcolor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-        }}
-      >
-        <Typography sx={{ fontWeight: 700, fontSize: 14, color: 'text.secondary', lineHeight: 1 }}>
-          {today.getDate()}
-        </Typography>
-      </Box>
-
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <IconButton size="small" aria-label={t('common.previousMonth')} onClick={() => shift(-1)}>
-          <ChevronLeftIcon />
-        </IconButton>
-        <Typography sx={{ fontWeight: 700, minWidth: 90, textAlign: 'center', textTransform: 'capitalize' }}>
-          {label}
-        </Typography>
-        <IconButton size="small" aria-label={t('common.nextMonth')} onClick={() => shift(1)}>
-          <ChevronRightIcon />
-        </IconButton>
-      </Box>
-
-      <Box sx={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {endAdornment}
-      </Box>
-    </Box>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: compact ? 'auto' : 'center',
+        backgroundColor: colors.fill,
+        borderRadius: 100,
+        paddingHorizontal: 2,
+        marginBottom: compact ? 0 : 12,
+      }}
+    >
+      {arrow(-1)}
+      <Txt variant="small" style={{ fontWeight: '600', textTransform: 'capitalize', minWidth: compact ? 44 : 120, textAlign: 'center' }} accessibilityLiveRegion="polite">
+        {label}
+      </Txt>
+      {arrow(1)}
+    </View>
   );
 }

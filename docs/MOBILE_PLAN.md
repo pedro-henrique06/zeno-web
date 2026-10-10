@@ -28,3 +28,7 @@ Regra combinada: tudo é desenvolvido na branch `claude/frontend-backend-mongo-s
 - **Push no iOS** exige build com EAS e conta Apple Developer; no Expo Go funciona para teste.
 - **Migração de criptografia** é ação sua em produção (backup, `dry-run`, `run`); está descrita no PR do backend.
 - **Login com Google** exige configurar o esquema de retorno no Google Cloud; o código fica pronto e a configuração é sua.
+
+
+## Fase 10: aposentadoria do site antigo
+O site em React + MUI (`src/` antigo, Vite, PWA) foi removido. O app Expo passou para a raiz do repositório e o `Dockerfile` serve a versão web dele, para o endereço do site continuar funcionando.
