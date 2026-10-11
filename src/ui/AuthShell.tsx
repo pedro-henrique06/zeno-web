@@ -1,11 +1,13 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Txt } from '@/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import { loginWithGoogle } from '@/lib/googleLogin';
+import { loginWithApple } from '@/api/auth';
 import { brand, useTheme } from '@/theme/ThemeContext';
 
 export function AuthShell({
@@ -70,4 +72,47 @@ export function GoogleButton({ label, onError }: { label: string; onError: (mess
   };
 
   return <Button variant="secondary" icon="logo-google" title={label} onPress={run} loading={busy} style={{ marginTop: 12 }} />;
+}
+
+/**
+ * Sign in with Apple, using Apple's own button (its look is required by the Human Interface
+ * Guidelines). iOS only: it renders nothing where the native sheet isn't available.
+ */
+export function AppleButton({ mode, onError }: { mode: 'signIn' | 'signUp'; onError: (message: string) => void }) {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  const { login } = useAuth();
+  const [available, setAvailable] = useState(false);
+
+  useEffect(() => {
+    AppleAuthentication.isAvailableAsync().then(setAvailable).catch(() => setAvailable(false));
+  }, []);
+
+  if (!available) return null;
+
+  const run = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [AppleAuthentication.AppleAuthenticationScope.FULL_NAME, AppleAuthentication.AppleAuthenticationScope.EMAIL],
+      });
+      if (!credential.identityToken) return onError(t('auth.login.genericError'));
+      // Apple hands over the name only on the first sign-in, so it travels with the token.
+      const fullName = credential.fullName ? AppleAuthentication.formatFullName(credential.fullName) : undefined;
+      const result = await loginWithApple(credential.identityToken, fullName || undefined);
+      await login(result.token, { id: result.userId, name: result.name, email: result.email }, result.refreshToken);
+    } catch (err) {
+      if ((err as { code?: string })?.code === 'ERR_REQUEST_CANCELED') return;
+      onError(errorMessage(err, t('auth.login.genericError')));
+    }
+  };
+
+  return (
+    <AppleAuthentication.AppleAuthenticationButton
+      buttonType={mode === 'signUp' ? AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP : AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+      buttonStyle={colors.mode === 'dark' ? AppleAuthentication.AppleAuthenticationButtonStyle.WHITE : AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+      cornerRadius={25}
+      style={{ height: 50, marginTop: 12 }}
+      onPress={run}
+    />
+  );
 }

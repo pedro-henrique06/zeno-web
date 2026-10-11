@@ -15,7 +15,8 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.zeno.mobile"
+      "bundleIdentifier": "app.zeno.mobile",
+      "usesAppleSignIn": true
     },
     "android": {
       "package": "app.zeno.mobile",
@@ -48,7 +49,8 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 160
         }
-      ]
+      ],
+      "expo-apple-authentication"
     ],
     "experiments": {
       "typedRoutes": true
