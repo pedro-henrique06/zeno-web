@@ -17,6 +17,15 @@ export async function loginWithApple(identityToken: string, fullName?: string): 
   return response.data;
 }
 
+/** Asks the server to email a 6-digit reset code (same answer whether or not the account exists). */
+export async function forgotPassword(email: string): Promise<void> {
+  await apiClient.post('/auth/forgot-password', { email });
+}
+
+export async function resetPassword(data: { email: string; code: string; newPassword: string; confirmNewPassword: string }): Promise<void> {
+  await apiClient.post('/auth/reset-password', data);
+}
+
 export async function logout(): Promise<void> {
   await apiClient.post('/auth/logout');
 }

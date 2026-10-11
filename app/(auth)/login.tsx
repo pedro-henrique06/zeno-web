@@ -73,6 +73,12 @@ export default function LoginScreen() {
         textContentType="password"
         onSubmitEditing={submit}
       />
+      <Link
+        href={{ pathname: '/forgot-password', params: email.trim() ? { email: email.trim() } : {} }}
+        style={{ alignSelf: 'flex-end', marginTop: -6, marginBottom: 14, paddingVertical: 6, color: colors.mode === 'dark' ? brand.blue : brand.blueAction, fontWeight: '600', fontSize: 15 }}
+      >
+        {t('auth.login.forgotPassword')}
+      </Link>
       <Button
         title={login.isPending ? t('auth.login.submitting') : t('auth.login.submit')}
         onPress={submit}

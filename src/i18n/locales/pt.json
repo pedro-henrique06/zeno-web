@@ -65,6 +65,25 @@
       "genericError": "Não conseguimos criar sua conta. Tente de novo em instantes.",
       "welcome": "Vamos começar.",
       "privacyNotice": "Ao criar a conta, você concorda com a"
+    },
+    "forgot": {
+      "title": "Esqueceu a senha?",
+      "emailHint": "Digite o e-mail da sua conta. Vamos enviar um código para você criar uma nova senha.",
+      "codeHint": "Se existir uma conta com {{email}}, enviamos um código de 6 números. Ele vale por 15 minutos.",
+      "send": "Enviar código",
+      "sendError": "Não conseguimos enviar o código agora. Tente de novo em instantes.",
+      "code": "Código",
+      "newPassword": "Nova senha",
+      "confirmPassword": "Confirmar nova senha",
+      "passwordRules": "8+ caracteres, com A-Z, a-z, número e símbolo",
+      "reset": "Criar nova senha",
+      "resetError": "Não conseguimos trocar a senha. Confira o código e tente de novo.",
+      "resend": "Reenviar código",
+      "resendIn": "Reenviar código em {{seconds}}s",
+      "otherEmail": "Usar outro e-mail",
+      "backToLogin": "Voltar para o login",
+      "doneTitle": "Senha alterada",
+      "doneMessage": "Entre com a sua nova senha."
     }
   },
   "menu": {

@@ -30,9 +30,9 @@ export default function SupportScreen() {
       <Section title="Perguntas frequentes">
         <Txt variant="body" style={{ fontWeight: '600', marginBottom: 4 }}>Esqueci minha senha. E agora?</Txt>
         <P>
-          Por enquanto a troca de senha é feita pelo suporte: escreva para <Mail subject="Esqueci minha senha" /> a partir
-          do e-mail da sua conta. Se você entrou com o Google ou com a Apple, não há senha do Zeno: é só usar o mesmo
-          botão de novo.
+          Na tela de login, toque em Esqueci minha senha e digite o e-mail da conta. Você recebe um código de 6 números,
+          que vale por 15 minutos, para criar uma nova senha. Se o e-mail não chegar, confira a caixa de spam. Se você
+          entrou com o Google ou com a Apple, não há senha do Zeno: é só usar o mesmo botão de novo.
         </P>
 
         <Txt variant="body" style={{ fontWeight: '600', marginBottom: 4 }}>Como excluo minha conta?</Txt>
