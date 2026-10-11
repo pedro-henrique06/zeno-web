@@ -109,6 +109,7 @@ ${t('menu.deleteAccountInfo')}`, [
       <Section>
         <Row sf="wallet.bifold.fill" icon="wallet" tint={TINT.pink} title={t('capture.item')} subtitle={t('capture.itemHint')} onPress={() => router.push('/iphone')} />
         <Row sf="gearshape.fill" icon="settings" tint={TINT.gray} title={t('menu.settings')} onPress={() => router.push('/settings')} />
+        <Row sf="questionmark.circle.fill" icon="help-circle" tint={TINT.teal} title={t('menu.help')} onPress={() => router.push('/suporte')} />
         <Row sf="hand.raised.fill" icon="shield-checkmark" tint={TINT.blue} title={t('menu.privacy')} onPress={() => router.push('/privacidade')} last />
       </Section>
 
