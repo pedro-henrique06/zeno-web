@@ -90,7 +90,14 @@
     "resetAccountConfirm": "Borrar todo",
     "resetAccountDone": "Cuenta reiniciada",
     "resetAccountDoneInfo": "Tus datos fueron borrados. Puedes empezar de cero.",
-    "resetAccountError": "No pudimos reiniciar tu cuenta. No se borró nada; intenta de nuevo en un momento."
+    "resetAccountError": "No pudimos reiniciar tu cuenta. No se borró nada; intenta de nuevo en un momento.",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteAccountTitle": "¿Eliminar tu cuenta?",
+    "deleteAccountWarning": "Tu cuenta y todos sus datos se borrarán para siempre: movimientos, etiquetas, presupuesto diario, meta, las casas que creaste y tus claves del widget y de Apple Pay.",
+    "deleteAccountInfo": "También saldrás de las casas de otras personas. No se puede deshacer.",
+    "deleteAccountConfirm": "Eliminar cuenta",
+    "deleteAccountDone": "Tu cuenta fue eliminada.",
+    "deleteAccountError": "No pudimos eliminar tu cuenta. No se borró nada; intenta de nuevo en un momento."
   },
   "settings": {
     "title": "Configuración",

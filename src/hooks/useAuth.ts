@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import * as authApi from '@/api/auth';
+import * as userApi from '@/api/user';
 import { useAuth } from '@/contexts/AuthContext';
 import type { LoginRequest, RegisterRequest } from '@/types';
 
@@ -55,5 +56,22 @@ export function useResetAccount() {
   return useMutation({
     mutationFn: () => authApi.resetAccount(),
     onSuccess: () => queryClient.invalidateQueries(),
+  });
+}
+
+/**
+ * Permanently deletes the account. On success the local session and cache are cleared, which sends
+ * the app back to the sign-in screen; on failure nothing changes on either side.
+ */
+export function useDeleteAccount() {
+  const { logout: logoutAuth } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => userApi.deleteAccount(),
+    onSuccess: async () => {
+      await logoutAuth();
+      queryClient.clear();
+    },
   });
 }
