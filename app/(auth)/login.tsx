@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Button, Field, Txt } from '@/ui';
-import { AuthShell, GoogleButton, errorMessage } from '@/ui/AuthShell';
+import { AppleButton, AuthShell, GoogleButton, errorMessage } from '@/ui/AuthShell';
 import { useLogin } from '@/hooks/useAuth';
 import { brand, useTheme } from '@/theme/ThemeContext';
 
@@ -79,6 +79,7 @@ export default function LoginScreen() {
         loading={login.isPending}
         disabled={!email || !password}
       />
+      <AppleButton mode="signIn" onError={setError} />
       <GoogleButton label={t('auth.login.googleButton')} onError={setError} />
     </AuthShell>
   );
