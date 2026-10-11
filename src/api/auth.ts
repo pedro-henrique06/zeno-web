@@ -11,6 +11,12 @@ export async function register(data: RegisterRequest): Promise<AuthResponse> {
   return response.data;
 }
 
+/** Sign in with Apple: trades the identity token from the native Apple sheet for Zeno tokens. */
+export async function loginWithApple(identityToken: string, fullName?: string): Promise<AuthResponse> {
+  const response = await apiClient.post<AuthResponse>('/auth/apple', { identityToken, fullName });
+  return response.data;
+}
+
 export async function logout(): Promise<void> {
   await apiClient.post('/auth/logout');
 }

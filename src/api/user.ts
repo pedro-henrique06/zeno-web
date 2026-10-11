@@ -15,6 +15,11 @@ export async function changePassword(data: ChangePasswordRequest): Promise<void>
   await apiClient.put('/user/me/password', data);
 }
 
+/** Permanently deletes the account and all its data on the server. */
+export async function deleteAccount(): Promise<void> {
+  await apiClient.delete('/user/me');
+}
+
 export async function updateDailyBudget(data: UpdateDailyBudgetRequest): Promise<UserProfile> {
   const response = await apiClient.put<UserProfile>('/user/me/daily-budget', data);
   return response.data;
