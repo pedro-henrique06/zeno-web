@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon, Row, Screen, Section, Txt } from '@/ui';
 import { useDeleteAccount, useLogout, useResetAccount } from '@/hooks/useAuth';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCaptureCards } from '@/hooks/useCaptureKey';
 import { brand, useTheme } from '@/theme/ThemeContext';
 
 /** Settings-app palette for the icon squares: each row gets its own hue, like iOS Settings. */
@@ -35,6 +36,8 @@ export default function MenuScreen() {
   const logout = useLogout();
   const reset = useResetAccount();
   const deleteAccount = useDeleteAccount();
+  // Cards seen in Apple Pay captures but not yet marked credit/debit.
+  const pendingCards = (useCaptureCards().data ?? []).filter((c) => !c.type).length;
 
   const confirmReset = () =>
     Alert.alert(t('menu.resetAccountTitle'), `${t('menu.resetAccountWarning')}\n\n${t('menu.resetAccountInfo')}`, [
@@ -107,7 +110,7 @@ ${t('menu.deleteAccountInfo')}`, [
       </Section>
 
       <Section>
-        <Row sf="wallet.bifold.fill" icon="wallet" tint={TINT.pink} title={t('capture.item')} subtitle={t('capture.itemHint')} onPress={() => router.push('/iphone')} />
+        <Row sf="wallet.bifold.fill" icon="wallet" tint={TINT.pink} title={t('capture.item')} subtitle={pendingCards > 0 ? t('capture.cardsPending', { count: pendingCards }) : t('capture.itemHint')} onPress={() => router.push('/iphone')} />
         <Row sf="gearshape.fill" icon="settings" tint={TINT.gray} title={t('menu.settings')} onPress={() => router.push('/settings')} />
         <Row sf="questionmark.circle.fill" icon="help-circle" tint={TINT.teal} title={t('menu.help')} onPress={() => router.push('/suporte')} />
         <Row sf="hand.raised.fill" icon="shield-checkmark" tint={TINT.blue} title={t('menu.privacy')} onPress={() => router.push('/privacidade')} last />
