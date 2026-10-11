@@ -8,7 +8,7 @@ import { useFonts } from 'expo-font';
 import { Fraunces_700Bold } from '@expo-google-fonts/fraunces';
 import '@/i18n';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { ThemeProvider, useTheme } from '@/theme/ThemeContext';
+import { ThemeProvider, brand, useTheme } from '@/theme/ThemeContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
 
 function Gate() {
   const { isAuthenticated, ready } = useAuth();
-  const { mode } = useTheme();
+  const { mode, colors } = useTheme();
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
@@ -36,6 +36,18 @@ function Gate() {
         <Stack.Protected guard={isAuthenticated}>
           <Stack.Screen name="(app)" />
         </Stack.Protected>
+        {/* Public on purpose: reachable signed in or out, and it is the App Store privacy URL on web. */}
+        <Stack.Screen
+          name="privacidade"
+          options={{
+            headerShown: true,
+            title: '',
+            headerShadowVisible: false,
+            headerBackButtonDisplayMode: 'minimal',
+            headerStyle: { backgroundColor: colors.page },
+            headerTintColor: mode === 'dark' ? brand.blue : brand.blueAction,
+          }}
+        />
       </Stack>
     </>
   );

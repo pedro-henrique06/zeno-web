@@ -63,7 +63,8 @@
       "login": "Iniciar sesión",
       "passwordMismatch": "Las contraseñas no son iguales.",
       "genericError": "No pudimos crear tu cuenta. Intenta de nuevo en un momento.",
-      "welcome": "Empecemos."
+      "welcome": "Empecemos.",
+      "privacyNotice": "Al crear la cuenta, aceptas la"
     }
   },
   "menu": {
