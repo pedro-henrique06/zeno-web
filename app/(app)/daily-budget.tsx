@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert, View } from 'react-native';
 import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Empty, Field, Loading, Money, Row, Screen, Section, Sheet, Txt } from '@/ui';
+import { Button, Card, Empty, Field, Loading, Money, Row, Screen, Section, Sheet, Txt, ErrorState } from '@/ui';
 import {
   useCreateMonthlyExpenseCategory,
   useDeleteMonthlyExpenseCategory,
@@ -12,12 +12,13 @@ import {
 import { useProfile, useUpdateDailyBudget } from '@/hooks/useUser';
 import { CURRENCY_SYMBOLS, formatCurrency } from '@/utils/currency';
 import type { MonthlyExpenseCategory } from '@/types';
-import { brand } from '@/theme/ThemeContext';
+import { brand, useTheme } from '@/theme/ThemeContext';
 
 export default function DailyBudgetScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const { data: profile } = useProfile();
-  const { data: categories, isLoading, isError } = useMonthlyExpenseCategories();
+  const { data: categories, isLoading, isError, refetch } = useMonthlyExpenseCategories();
   const { mutate: syncDailyBudget } = useUpdateDailyBudget();
   const create = useCreateMonthlyExpenseCategory();
   const update = useUpdateMonthlyExpenseCategory();
@@ -57,16 +58,16 @@ export default function DailyBudgetScreen() {
 
   const confirmDelete = () => {
     if (!editing) return;
-    Alert.alert(t('entryForm.deleteConfirmTitle'), editing.name, [
-      { text: t('common.cancel'), style: 'cancel' },
-      { text: t('entryForm.delete'), style: 'destructive', onPress: () => remove.mutate(editing.id, { onSuccess: close }) },
+    Alert.alert(t('dailyBudget.deleteTitle', { name: editing.name }), t('dailyBudget.deleteMessage'), [
+      { text: t('common.keep'), style: 'cancel' },
+      { text: t('dailyBudget.deleteButton'), style: 'destructive', onPress: () => remove.mutate(editing.id, { onSuccess: close }) },
     ]);
   };
 
   return (
     <Screen>
       {isError ? (
-        <Txt color={brand.expense}>{t('dailyBudget.loadError')}</Txt>
+        <ErrorState message={t('dailyBudget.loadError')} onRetry={refetch} />
       ) : isLoading ? (
         <Loading />
       ) : (

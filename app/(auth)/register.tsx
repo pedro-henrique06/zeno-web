@@ -5,10 +5,11 @@ import { Button, Field, Segmented, Txt } from '@/ui';
 import { AuthShell, GoogleButton, errorMessage } from '@/ui/AuthShell';
 import { useLogin, useRegister } from '@/hooks/useAuth';
 import type { Currency, Language } from '@/types';
-import { brand } from '@/theme/ThemeContext';
+import { brand, useTheme } from '@/theme/ThemeContext';
 
 export default function RegisterScreen() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
   const [currency, setCurrency] = useState<Currency>('BRL');
   const [language, setLanguage] = useState<Language>('PtBR');
@@ -51,7 +52,7 @@ export default function RegisterScreen() {
       }
     >
       {error ? (
-        <Txt variant="small" color={brand.expense} style={{ marginBottom: 12 }}>
+        <Txt variant="small" color={colors.expense} style={{ marginBottom: 12 }}>
           {error}
         </Txt>
       ) : null}

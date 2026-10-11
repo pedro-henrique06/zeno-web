@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Field, Loading, Screen, Segmented, Txt } from '@/ui';
+import { Button, Field, Loading, Screen, Segmented, Txt, ErrorState } from '@/ui';
 import { useProfile, useUpdateCurrency, useUpdateLanguage, useUpdateProfile } from '@/hooks/useUser';
 import type { Currency, Language, UserProfile } from '@/types';
-import { brand } from '@/theme/ThemeContext';
+import { brand, useTheme } from '@/theme/ThemeContext';
 
 function ProfileForm({ profile }: { profile: UserProfile }) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const update = useUpdateProfile();
   const updateCurrency = useUpdateCurrency();
   const updateLanguage = useUpdateLanguage();
@@ -34,7 +35,7 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
         options={(['PtBR', 'EnUS', 'Es'] as Language[]).map((l) => ({ value: l, label: t(`language.${l}`) }))}
       />
       {update.isError && (
-        <Txt variant="small" color={brand.expense} style={{ marginTop: 12 }}>
+        <Txt variant="small" color={colors.expense} style={{ marginTop: 12 }}>
           {t('auth.register.genericError')}
         </Txt>
       )}
@@ -51,13 +52,14 @@ function ProfileForm({ profile }: { profile: UserProfile }) {
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
-  const { data: profile, isLoading, isError } = useProfile();
+  const { colors } = useTheme();
+  const { data: profile, isLoading, isError, refetch } = useProfile();
   return (
     <Screen>
       {isLoading ? (
         <Loading />
       ) : isError || !profile ? (
-        <Txt color={brand.expense}>{t('editProfile.loadError')}</Txt>
+        <ErrorState message={t('editProfile.loadError')} onRetry={refetch} />
       ) : (
         <ProfileForm profile={profile} />
       )}

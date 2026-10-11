@@ -17,7 +17,7 @@ import { useProfile } from '@/hooks/useUser';
 import { formatCurrency } from '@/utils/currency';
 import { useEntryKindLabels } from '@/utils/entryKind';
 import type { House } from '@/types';
-import { brand } from '@/theme/ThemeContext';
+import { brand, useTheme } from '@/theme/ThemeContext';
 
 type Tab = 'budget' | 'entries' | 'members';
 
@@ -45,6 +45,7 @@ function EntriesTab({ house }: { house: House }) {
 
 function MembersTab({ house, isOwner }: { house: House; isOwner: boolean }) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const { user } = useAuth();
   const add = useAddHouseMember(house.id);
   const remove = useRemoveHouseMember(house.id);
@@ -83,7 +84,7 @@ function MembersTab({ house, isOwner }: { house: House; isOwner: boolean }) {
               title={m.name}
               subtitle={m.email}
               onPress={isOwner ? () => confirmRemove(m.userId, m.name) : undefined}
-              right={isOwner ? <Txt variant="caption" color={brand.expense}>{t('entryForm.delete')}</Txt> : undefined}
+              right={isOwner ? <Txt variant="caption" color={colors.expense}>{t('entryForm.delete')}</Txt> : undefined}
               last={i === members.length - 1}
             />
           ))}
@@ -119,9 +120,9 @@ function Settings({ house }: { house: House }) {
   const [description, setDescription] = useState(house.description ?? '');
 
   const confirmDelete = () =>
-    Alert.alert(t('entryForm.deleteConfirmTitle'), house.name, [
-      { text: t('common.cancel'), style: 'cancel' },
-      { text: t('entryForm.delete'), style: 'destructive', onPress: () => remove.mutate(house.id, { onSuccess: () => router.back() }) },
+    Alert.alert(t('houses.deleteTitle', { name: house.name }), t('houses.deleteMessage'), [
+      { text: t('common.keep'), style: 'cancel' },
+      { text: t('houses.deleteButton'), style: 'destructive', onPress: () => remove.mutate(house.id, { onSuccess: () => router.back() }) },
     ]);
 
   return (

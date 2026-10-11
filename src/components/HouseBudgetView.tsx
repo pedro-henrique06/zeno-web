@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Field, Loading, Money, Txt } from '@/ui';
+import { Button, Card, Field, Loading, Money, Txt, ErrorState } from '@/ui';
 import { MoneyInput } from '@/components/MoneyInput';
 import { MonthSwitcher } from '@/components/MonthSwitcher';
 import { useDeleteHouseGoal, useHouseBudget, useSaveHouseGoal } from '@/hooks/useHouses';
@@ -37,6 +37,7 @@ function Slice({ label, value, pct, color, note }: { label: string; value: strin
 
 function HouseGoalBlock({ house, budget, money }: { house: House; budget: HouseBudget; money: (v: number) => string }) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const save = useSaveHouseGoal(house.id);
   const remove = useDeleteHouseGoal(house.id);
   const goal = budget.goal;
@@ -62,7 +63,7 @@ function HouseGoalBlock({ house, budget, money }: { house: House; budget: HouseB
         <Field label={t('houseBudget.goalName')} value={name} onChangeText={setName} maxLength={60} />
         <MoneyInput label={t('houseBudget.goalTarget')} value={target} onChange={setTarget} currency={budget.currency} />
         {error && (
-          <Txt variant="small" color={brand.expense} style={{ marginBottom: 8 }}>
+          <Txt variant="small" color={colors.expense} style={{ marginBottom: 8 }}>
             {t('houseBudget.goalError')}
           </Txt>
         )}
@@ -124,16 +125,14 @@ export function HouseBudgetView({ house }: { house: House }) {
   const now = new Date();
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
-  const { data: budget, isLoading, isError } = useHouseBudget(house.id, month, year);
+  const { data: budget, isLoading, isError, refetch } = useHouseBudget(house.id, month, year);
   const { data: personalGoal } = useGoal();
   const { colors } = useTheme();
 
   if (isLoading) return <Loading />;
   if (isError || !budget) {
     return (
-      <Txt color={brand.expense} style={{ textAlign: 'center', marginTop: 24 }}>
-        {t('houseBudget.loadError')}
-      </Txt>
+      <ErrorState message={t('houseBudget.loadError')} onRetry={refetch} />
     );
   }
 
