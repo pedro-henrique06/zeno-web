@@ -40,3 +40,20 @@ export function useDeleteCaptureRule() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['capture-rules'] }),
   });
 }
+
+export function useCaptureCards(enabled = true) {
+  return useQuery({ queryKey: ['capture-cards'], queryFn: captureApi.getCaptureCards, enabled });
+}
+
+/** Classifying a card can change the kind of past entries, so every money view refetches. */
+export function useClassifyCaptureCard() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: captureApi.classifyCaptureCard,
+    onSuccess: () => {
+      for (const key of ['capture-cards', 'entries', 'balances', 'balances-horizon', 'summary']) {
+        queryClient.invalidateQueries({ queryKey: [key] });
+      }
+    },
+  });
+}

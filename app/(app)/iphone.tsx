@@ -1,19 +1,22 @@
 import { useMemo, useState } from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Button, Field, Loading, Row, Screen, Section, Txt } from '@/ui';
+import { Button, Field, Icon, Loading, Row, Screen, Section, Txt } from '@/ui';
 import { CopyField } from '@/components/CopyField';
 import { API_URL } from '@/api/client';
 import { useCreateWidgetKey, useRevokeWidgetKey, useWidgetKeyStatus } from '@/hooks/useWidgetKey';
 import {
   useAddCaptureRule,
+  useCaptureCards,
   useCaptureKeyStatus,
+  useClassifyCaptureCard,
   useCaptureRules,
   useCreateCaptureKey,
   useDeleteCaptureRule,
   useRevokeCaptureKey,
 } from '@/hooks/useCaptureKey';
 import { useTags } from '@/hooks/useTags';
+import type { CaptureCard } from '@/api/capture';
 import { buildWidgetScript } from '@/utils/widgetScript';
 import { brand, useTheme } from '@/theme/ThemeContext';
 
@@ -186,6 +189,88 @@ function RulesBlock() {
   );
 }
 
+/**
+ * The Wallet cards seen in captures. Credit cards' purchases become "Gasto com cartão" (they land on the
+ * bill), debit ones "Diário". Classifying can also move the card's earlier purchases.
+ */
+function CardsBlock() {
+  const { t } = useTranslation();
+  const { colors } = useTheme();
+  const { data: cards = [] } = useCaptureCards();
+  const classify = useClassifyCaptureCard();
+
+  const choose = (card: CaptureCard, type: 'credit' | 'debit') => {
+    if (card.type === type) return;
+    const run = (applyToPast: boolean) =>
+      classify.mutate(
+        { id: card.id, type, applyToPast },
+        {
+          onSuccess: (r) => {
+            if (r.updatedEntries > 0) Alert.alert(t('capture.cardsUpdated', { count: r.updatedEntries }));
+          },
+          onError: () => Alert.alert(t('capture.error')),
+        },
+      );
+    if (card.purchaseCount === 0) return run(false);
+    Alert.alert(
+      t(type === 'credit' ? 'capture.cardsAskCredit' : 'capture.cardsAskDebit', { name: card.name }),
+      t('capture.cardsAskPast', { count: card.purchaseCount }),
+      [
+        { text: t('capture.cardsOnlyNext'), onPress: () => run(false) },
+        { text: t('capture.cardsApplyPast'), onPress: () => run(true) },
+      ],
+    );
+  };
+
+  if (cards.length === 0)
+    return (
+      <Txt variant="small" muted style={{ padding: 14 }}>
+        {t('capture.cardsEmpty')}
+      </Txt>
+    );
+
+  return (
+    <View>
+      {cards.map((card, i) => {
+        const tint = card.type === 'credit' ? '#7A4FD6' : card.type === 'debit' ? '#C26A00' : '#636366';
+        const status = card.type === 'credit' ? t('capture.cardsCredit') : card.type === 'debit' ? t('capture.cardsDebit') : t('capture.cardsUnclassified');
+        return (
+          <View key={card.id} style={[styles.cardRow, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.divider }]}>
+            <View style={[styles.cardIcon, { backgroundColor: tint }]}>
+              <Icon sf="creditcard.fill" ion="card" size={15} color="#fff" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Txt numberOfLines={1}>{card.name}</Txt>
+              <Txt variant="caption" color={card.type ? colors.textSecondary : colors.expense}>
+                {t('capture.cardsPurchases', { count: card.purchaseCount })} · {status}
+              </Txt>
+            </View>
+            <View style={[styles.pills, { backgroundColor: colors.fill }]} accessibilityRole="radiogroup">
+              {(['credit', 'debit'] as const).map((type) => {
+                const active = card.type === type;
+                return (
+                  <Pressable
+                    key={type}
+                    accessibilityRole="radio"
+                    accessibilityState={{ selected: active }}
+                    accessibilityLabel={`${card.name}: ${type === 'credit' ? t('capture.cardsCredit') : t('capture.cardsDebit')}`}
+                    onPress={() => choose(card, type)}
+                    style={[styles.pill, active && { backgroundColor: colors.mode === 'dark' ? '#636366' : '#FFFFFF' }]}
+                  >
+                    <Txt variant="caption" style={{ fontWeight: active ? '600' : '400' }}>
+                      {type === 'credit' ? t('capture.cardsCredit') : t('capture.cardsDebit')}
+                    </Txt>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </View>
+        );
+      })}
+    </View>
+  );
+}
+
 function CaptureBlock() {
   const { t } = useTranslation();
   const { colors } = useTheme();
@@ -269,6 +354,9 @@ export default function IphoneScreen() {
       <Section title={t('capture.title')}>
         <CaptureBlock />
       </Section>
+      <Section title={t('capture.cardsTitle')} footer={t('capture.cardsFooter')}>
+        <CardsBlock />
+      </Section>
       <Section title={t('capture.rulesTitle')}>
         <View style={{ padding: 14 }}>
           <RulesBlock />
@@ -277,3 +365,10 @@ export default function IphoneScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  cardRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 14 },
+  cardIcon: { width: 30, height: 30, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  pills: { flexDirection: 'row', borderRadius: 100, padding: 2 },
+  pill: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 100 },
+});

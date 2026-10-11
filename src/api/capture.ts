@@ -40,3 +40,24 @@ export async function addCaptureRule(data: { match: string; tagId: string }): Pr
 export async function deleteCaptureRule(id: string): Promise<void> {
   await apiClient.delete(`/capture/rules/${id}`);
 }
+
+/** A Wallet card seen in Apple Pay captures. type: "credit", "debit", or null until classified. */
+export interface CaptureCard {
+  id: string;
+  name: string;
+  type: 'credit' | 'debit' | null;
+  purchaseCount: number;
+  lastSeenAt: string;
+}
+
+export async function getCaptureCards(): Promise<CaptureCard[]> {
+  return unwrap(apiClient.get('/capture/cards'));
+}
+
+export async function classifyCaptureCard(data: {
+  id: string;
+  type: 'credit' | 'debit';
+  applyToPast: boolean;
+}): Promise<{ card: CaptureCard; updatedEntries: number }> {
+  return unwrap(apiClient.put(`/capture/cards/${data.id}`, { type: data.type, applyToPast: data.applyToPast }));
+}
