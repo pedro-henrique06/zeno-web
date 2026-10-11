@@ -65,6 +65,25 @@
       "genericError": "We couldn't create your account. Try again in a moment.",
       "welcome": "Let's get started.",
       "privacyNotice": "By creating an account you agree to the"
+    },
+    "forgot": {
+      "title": "Forgot your password?",
+      "emailHint": "Enter your account email. We'll send you a code to create a new password.",
+      "codeHint": "If there's an account for {{email}}, we sent a 6-digit code. It's valid for 15 minutes.",
+      "send": "Send code",
+      "sendError": "We couldn't send the code right now. Try again in a moment.",
+      "code": "Code",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "passwordRules": "8+ characters with A-Z, a-z, a number and a symbol",
+      "reset": "Create new password",
+      "resetError": "We couldn't change your password. Check the code and try again.",
+      "resend": "Resend code",
+      "resendIn": "Resend code in {{seconds}}s",
+      "otherEmail": "Use another email",
+      "backToLogin": "Back to sign in",
+      "doneTitle": "Password changed",
+      "doneMessage": "Sign in with your new password."
     }
   },
   "menu": {
@@ -76,7 +95,7 @@
     "tags": "Tags",
     "settings": "Settings",
     "suggestions": "Send suggestions",
-    "help": "Help",
+    "help": "Help & support",
     "terms": "Terms of use",
     "privacy": "Privacy policy",
     "logout": "Log out",

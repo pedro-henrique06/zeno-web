@@ -26,6 +26,15 @@ function Gate() {
 
   if (!ready) return null;
 
+  const publicPage = {
+    headerShown: true,
+    title: '',
+    headerShadowVisible: false,
+    headerBackButtonDisplayMode: 'minimal' as const,
+    headerStyle: { backgroundColor: colors.page },
+    headerTintColor: mode === 'dark' ? brand.blue : brand.blueAction,
+  };
+
   return (
     <>
       <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
@@ -36,18 +45,9 @@ function Gate() {
         <Stack.Protected guard={isAuthenticated}>
           <Stack.Screen name="(app)" />
         </Stack.Protected>
-        {/* Public on purpose: reachable signed in or out, and it is the App Store privacy URL on web. */}
-        <Stack.Screen
-          name="privacidade"
-          options={{
-            headerShown: true,
-            title: '',
-            headerShadowVisible: false,
-            headerBackButtonDisplayMode: 'minimal',
-            headerStyle: { backgroundColor: colors.page },
-            headerTintColor: mode === 'dark' ? brand.blue : brand.blueAction,
-          }}
-        />
+        {/* Public on purpose: reachable signed in or out; on web they are the App Store privacy and support URLs. */}
+        <Stack.Screen name="privacidade" options={publicPage} />
+        <Stack.Screen name="suporte" options={publicPage} />
       </Stack>
     </>
   );

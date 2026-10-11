@@ -1,47 +1,12 @@
-import type { ReactNode } from 'react';
-import { Linking, View } from 'react-native';
-import { Card, Screen, Txt, useAccent } from '@/ui';
+import { Card, Screen, Txt } from '@/ui';
+import { DocSection as Section, Item, Mail, P } from '@/components/DocPage';
 
 /**
  * Public privacy policy. Lives outside the (auth)/(app) groups so it opens signed in or not, and on
  * the web build it is the URL given to the App Store (…/privacidade). Written in Portuguese, the
  * app's primary market language; keep it in sync with what the API actually stores.
  */
-const CONTACT = 'pedrohc.souza@icloud.com';
 const UPDATED = '11 de outubro de 2026';
-
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <View style={{ marginTop: 24 }}>
-      <Txt variant="title" accessibilityRole="header" style={{ marginBottom: 8 }}>
-        {title}
-      </Txt>
-      {children}
-    </View>
-  );
-}
-
-function P({ children }: { children: ReactNode }) {
-  return <Txt style={{ lineHeight: 24, marginBottom: 10 }}>{children}</Txt>;
-}
-
-function Item({ children }: { children: ReactNode }) {
-  return (
-    <View style={{ flexDirection: 'row', gap: 8, marginBottom: 6, paddingRight: 8 }}>
-      <Txt style={{ lineHeight: 24 }}>•</Txt>
-      <Txt style={{ flex: 1, lineHeight: 24 }}>{children}</Txt>
-    </View>
-  );
-}
-
-function Mail() {
-  const accent = useAccent();
-  return (
-    <Txt color={accent} style={{ fontWeight: '600' }} accessibilityRole="link" onPress={() => Linking.openURL(`mailto:${CONTACT}`)}>
-      {CONTACT}
-    </Txt>
-  );
-}
 
 export default function PrivacyPolicyScreen() {
   return (

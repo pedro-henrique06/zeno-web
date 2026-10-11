@@ -65,6 +65,25 @@
       "genericError": "No pudimos crear tu cuenta. Intenta de nuevo en un momento.",
       "welcome": "Empecemos.",
       "privacyNotice": "Al crear la cuenta, aceptas la"
+    },
+    "forgot": {
+      "title": "¿Olvidaste tu contraseña?",
+      "emailHint": "Escribe el correo de tu cuenta. Te enviaremos un código para crear una nueva contraseña.",
+      "codeHint": "Si existe una cuenta con {{email}}, enviamos un código de 6 números. Vale por 15 minutos.",
+      "send": "Enviar código",
+      "sendError": "No pudimos enviar el código ahora. Intenta de nuevo en un momento.",
+      "code": "Código",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar nueva contraseña",
+      "passwordRules": "8+ caracteres con A-Z, a-z, número y símbolo",
+      "reset": "Crear nueva contraseña",
+      "resetError": "No pudimos cambiar tu contraseña. Revisa el código e intenta de nuevo.",
+      "resend": "Reenviar código",
+      "resendIn": "Reenviar código en {{seconds}}s",
+      "otherEmail": "Usar otro correo",
+      "backToLogin": "Volver al inicio de sesión",
+      "doneTitle": "Contraseña cambiada",
+      "doneMessage": "Inicia sesión con tu nueva contraseña."
     }
   },
   "menu": {
@@ -76,7 +95,7 @@
     "tags": "Etiquetas",
     "settings": "Configuración",
     "suggestions": "Enviar sugerencias",
-    "help": "Ayuda",
+    "help": "Ayuda y soporte",
     "terms": "Términos de uso",
     "privacy": "Política de privacidad",
     "logout": "Cerrar sesión",
