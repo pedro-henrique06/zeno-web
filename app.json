@@ -16,6 +16,9 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.zeno.mobile",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
       "usesAppleSignIn": true
     },
     "android": {
@@ -56,7 +59,12 @@
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "https://zeno-production-51bb.up.railway.app/api"
-    }
+      "apiUrl": "https://zeno-production-51bb.up.railway.app/api",
+      "router": {},
+      "eas": {
+        "projectId": "2e1cb39d-6239-4184-92e9-1473eef16f94"
+      }
+    },
+    "owner": "pedropuduia"
   }
 }
