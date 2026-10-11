@@ -80,13 +80,17 @@
     "privacy": "Política de privacidade",
     "logout": "Sair",
     "resetAccount": "Zerar conta",
-    "resetAccountTitle": "Zerar conta",
-    "resetAccountWarning": "Tem certeza que deseja zerar sua conta? Todos os lançamentos e saldos serão removidos.",
-    "resetAccountInfo": "Esta ação não pode ser desfeita.",
+    "resetAccountTitle": "Apagar todos os seus dados?",
+    "resetAccountWarning": "Seus lançamentos, tags, previsão de diário e meta serão apagados, e o saldo volta a zero.",
+    "resetAccountInfo": "Sua conta, o login e as casas compartilhadas continuam. Não dá para desfazer.",
     "version": "Versão {{version}}",
     "dailyBudgetHint": "Quanto você costuma gastar por dia",
     "goalsHint": "Descubra quando você chega lá",
-    "housesHint": "Divida contas com quem mora com você"
+    "housesHint": "Divida contas com quem mora com você",
+    "resetAccountConfirm": "Apagar tudo",
+    "resetAccountDone": "Conta zerada",
+    "resetAccountDoneInfo": "Seus dados foram apagados. Você pode começar do zero.",
+    "resetAccountError": "Não conseguimos zerar sua conta. Nada foi apagado; tente de novo em instantes."
   },
   "settings": {
     "title": "Configurações",

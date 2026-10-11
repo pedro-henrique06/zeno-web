@@ -80,13 +80,17 @@
     "privacy": "Política de privacidad",
     "logout": "Cerrar sesión",
     "resetAccount": "Resetear cuenta",
-    "resetAccountTitle": "Resetear cuenta",
-    "resetAccountWarning": "¿Estás seguro de que deseas resetear tu cuenta? Todos los movimientos y saldos serán eliminados.",
-    "resetAccountInfo": "Esta acción no se puede deshacer.",
+    "resetAccountTitle": "¿Borrar todos tus datos?",
+    "resetAccountWarning": "Se borrarán tus movimientos, etiquetas, presupuesto diario y meta, y tu saldo volverá a cero.",
+    "resetAccountInfo": "Tu cuenta, el inicio de sesión y las casas compartidas se conservan. No se puede deshacer.",
     "version": "Versión {{version}}",
     "dailyBudgetHint": "Cuánto sueles gastar por día",
     "goalsHint": "Descubre cuándo llegarás",
-    "housesHint": "Divide gastos con quienes viven contigo"
+    "housesHint": "Divide gastos con quienes viven contigo",
+    "resetAccountConfirm": "Borrar todo",
+    "resetAccountDone": "Cuenta reiniciada",
+    "resetAccountDoneInfo": "Tus datos fueron borrados. Puedes empezar de cero.",
+    "resetAccountError": "No pudimos reiniciar tu cuenta. No se borró nada; intenta de nuevo en un momento."
   },
   "settings": {
     "title": "Configuración",

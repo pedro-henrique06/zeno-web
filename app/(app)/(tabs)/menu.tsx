@@ -38,7 +38,15 @@ export default function MenuScreen() {
   const confirmReset = () =>
     Alert.alert(t('menu.resetAccountTitle'), `${t('menu.resetAccountWarning')}\n\n${t('menu.resetAccountInfo')}`, [
       { text: t('common.cancel'), style: 'cancel' },
-      { text: t('menu.resetAccount'), style: 'destructive', onPress: () => reset.mutate() },
+      {
+        text: t('menu.resetAccountConfirm'),
+        style: 'destructive',
+        onPress: () =>
+          reset.mutate(undefined, {
+            onSuccess: () => Alert.alert(t('menu.resetAccountDone'), t('menu.resetAccountDoneInfo')),
+            onError: () => Alert.alert(t('menu.resetAccountError')),
+          }),
+      },
     ]);
 
   return (

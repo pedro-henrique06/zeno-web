@@ -45,19 +45,15 @@ export function useLogout() {
   });
 }
 
+/**
+ * Wipes the account's financial data on the server. The user stays signed in and every screen refetches,
+ * so they land on an empty account. A failure leaves both the data and the session untouched.
+ */
 export function useResetAccount() {
-  const { logout: logoutAuth } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: () => authApi.resetAccount(),
-    onSuccess: () => {
-      void logoutAuth();
-      queryClient.clear();
-    },
-    onError: () => {
-      void logoutAuth();
-      queryClient.clear();
-    },
+    onSuccess: () => queryClient.invalidateQueries(),
   });
 }
