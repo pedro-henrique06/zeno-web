@@ -213,7 +213,7 @@ export function EntryForm({
       display={Platform.OS === 'ios' ? 'compact' : 'default'}
       minimumDate={min ? asDate(min) : undefined}
       accentColor={brand.blueAction}
-      onChange={(_, selected) => selected && onPick(dayjs(selected).format('YYYY-MM-DD'))}
+      onValueChange={(_, selected) => onPick(dayjs(selected).format('YYYY-MM-DD'))}
     />
   );
 
