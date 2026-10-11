@@ -98,7 +98,7 @@ export function AppleButton({ mode, onError }: { mode: 'signIn' | 'signUp'; onEr
       if (!credential.identityToken) return onError(t('auth.login.genericError'));
       // Apple hands over the name only on the first sign-in, so it travels with the token.
       const fullName = credential.fullName ? AppleAuthentication.formatFullName(credential.fullName) : undefined;
-      const result = await loginWithApple(credential.identityToken, fullName || undefined);
+      const result = await loginWithApple(credential.identityToken, fullName || undefined, credential.authorizationCode);
       await login(result.token, { id: result.userId, name: result.name, email: result.email }, result.refreshToken);
     } catch (err) {
       if ((err as { code?: string })?.code === 'ERR_REQUEST_CANCELED') return;
