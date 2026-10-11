@@ -90,7 +90,14 @@
     "resetAccountConfirm": "Apagar tudo",
     "resetAccountDone": "Conta zerada",
     "resetAccountDoneInfo": "Seus dados foram apagados. Você pode começar do zero.",
-    "resetAccountError": "Não conseguimos zerar sua conta. Nada foi apagado; tente de novo em instantes."
+    "resetAccountError": "Não conseguimos zerar sua conta. Nada foi apagado; tente de novo em instantes.",
+    "deleteAccount": "Excluir conta",
+    "deleteAccountTitle": "Excluir sua conta?",
+    "deleteAccountWarning": "Sua conta e todos os seus dados serão apagados para sempre: lançamentos, tags, previsão de diário, meta, as casas que você criou e as chaves do widget e do Apple Pay.",
+    "deleteAccountInfo": "Você também sai das casas de outras pessoas. Não dá para desfazer.",
+    "deleteAccountConfirm": "Excluir conta",
+    "deleteAccountDone": "Sua conta foi excluída.",
+    "deleteAccountError": "Não conseguimos excluir sua conta. Nada foi apagado; tente de novo em instantes."
   },
   "settings": {
     "title": "Configurações",

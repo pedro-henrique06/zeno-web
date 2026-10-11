@@ -90,7 +90,14 @@
     "resetAccountConfirm": "Delete everything",
     "resetAccountDone": "Account reset",
     "resetAccountDoneInfo": "Your data was deleted. You can start fresh.",
-    "resetAccountError": "We couldn't reset your account. Nothing was deleted; try again in a moment."
+    "resetAccountError": "We couldn't reset your account. Nothing was deleted; try again in a moment.",
+    "deleteAccount": "Delete account",
+    "deleteAccountTitle": "Delete your account?",
+    "deleteAccountWarning": "Your account and all its data will be deleted forever: entries, tags, daily budget, goal, the homes you created, and your widget and Apple Pay keys.",
+    "deleteAccountInfo": "You will also leave other people's homes. This can't be undone.",
+    "deleteAccountConfirm": "Delete account",
+    "deleteAccountDone": "Your account was deleted.",
+    "deleteAccountError": "We couldn't delete your account. Nothing was deleted; try again in a moment."
   },
   "settings": {
     "title": "Settings",

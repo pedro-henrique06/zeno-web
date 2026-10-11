@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import Constants from 'expo-constants';
 import { useTranslation } from 'react-i18next';
 import { Icon, Row, Screen, Section, Txt } from '@/ui';
-import { useLogout, useResetAccount } from '@/hooks/useAuth';
+import { useDeleteAccount, useLogout, useResetAccount } from '@/hooks/useAuth';
 import { useAuth } from '@/contexts/AuthContext';
 import { brand, useTheme } from '@/theme/ThemeContext';
 
@@ -34,6 +34,7 @@ export default function MenuScreen() {
   const { user } = useAuth();
   const logout = useLogout();
   const reset = useResetAccount();
+  const deleteAccount = useDeleteAccount();
 
   const confirmReset = () =>
     Alert.alert(t('menu.resetAccountTitle'), `${t('menu.resetAccountWarning')}\n\n${t('menu.resetAccountInfo')}`, [
@@ -45,6 +46,22 @@ export default function MenuScreen() {
           reset.mutate(undefined, {
             onSuccess: () => Alert.alert(t('menu.resetAccountDone'), t('menu.resetAccountDoneInfo')),
             onError: () => Alert.alert(t('menu.resetAccountError')),
+          }),
+      },
+    ]);
+
+  const confirmDelete = () =>
+    Alert.alert(t('menu.deleteAccountTitle'), `${t('menu.deleteAccountWarning')}
+
+${t('menu.deleteAccountInfo')}`, [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('menu.deleteAccountConfirm'),
+        style: 'destructive',
+        onPress: () =>
+          deleteAccount.mutate(undefined, {
+            onSuccess: () => Alert.alert(t('menu.deleteAccountDone')),
+            onError: () => Alert.alert(t('menu.deleteAccountError')),
           }),
       },
     ]);
@@ -96,7 +113,8 @@ export default function MenuScreen() {
 
       <Section>
         <Row sf="arrow.counterclockwise" icon="refresh" title={t('menu.resetAccount')} danger onPress={confirmReset} />
-        <Row sf="rectangle.portrait.and.arrow.right" icon="log-out" title={t('menu.logout')} danger onPress={() => logout.mutate()} last />
+        <Row sf="rectangle.portrait.and.arrow.right" icon="log-out" title={t('menu.logout')} danger onPress={() => logout.mutate()} />
+        <Row sf="trash" icon="trash" title={t('menu.deleteAccount')} danger onPress={confirmDelete} last />
       </Section>
 
       <View style={{ alignItems: 'center', marginTop: 24 }}>
