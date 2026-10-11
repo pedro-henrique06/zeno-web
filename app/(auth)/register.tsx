@@ -98,6 +98,12 @@ export default function RegisterScreen() {
       />
       <AppleButton mode="signUp" onError={setError} />
       <GoogleButton label={t('auth.register.googleButton')} onError={setError} />
+      <Txt variant="caption" muted style={{ marginTop: 16, textAlign: 'center' }}>
+        {t('auth.register.privacyNotice')}{' '}
+        <Link href="/privacidade" style={{ color: colors.mode === 'dark' ? brand.blue : brand.blueAction, fontWeight: '600' }}>
+          {t('menu.privacy')}
+        </Link>
+      </Txt>
     </AuthShell>
   );
 }

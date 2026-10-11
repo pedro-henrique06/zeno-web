@@ -63,7 +63,8 @@
       "login": "Sign in",
       "passwordMismatch": "The passwords don't match.",
       "genericError": "We couldn't create your account. Try again in a moment.",
-      "welcome": "Let's get started."
+      "welcome": "Let's get started.",
+      "privacyNotice": "By creating an account you agree to the"
     }
   },
   "menu": {
