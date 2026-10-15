@@ -23,6 +23,11 @@ jobs:
         env:
           CI: '1'
           EXPO_OFFLINE: '1'
+      - name: Bundle (Android)
+        run: npx expo export --platform android --output-dir dist-android
+        env:
+          CI: '1'
+          EXPO_OFFLINE: '1'
       - name: Bundle (web)
         run: npx expo export --platform web --output-dir dist-web
         env:

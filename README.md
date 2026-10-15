@@ -28,6 +28,21 @@ Instalar no iPhone ou publicar na App Store exige uma conta Apple Developer (pag
 - `src/api`, `src/hooks`, `src/types`, `src/utils`, `src/i18n`: mesma camada de dados do app web (React Query + axios), com o token guardado no Keychain (`expo-secure-store`).
 - `src/ui`: componentes base (texto, botão, campo, cartão, sheet). `src/theme`: tokens de marca, claro/escuro.
 
+## Android
+
+O mesmo código gera o app Android (pacote `app.zeno.mobile`).
+
+```
+eas build -p android --profile preview      # gera um APK para instalar direto no aparelho
+eas build -p android --profile production   # gera o AAB para a Google Play
+eas submit -p android                       # envia para a faixa interna da Google Play (rascunho)
+```
+
+- O `preview` baixa um `.apk` pelo link do EAS; no Android, abra o link e instale (permita "fontes desconhecidas" na primeira vez).
+- Para publicar na Google Play é preciso uma conta de desenvolvedor Google Play (taxa única de US$ 25) e criar o app no Play Console com o mesmo pacote. O primeiro envio precisa ser feito pelo painel; os seguintes podem ir por `eas submit`. Para o `eas submit` funcionar, cadastre a chave de serviço do Google Play no EAS (`eas credentials`).
+- **Notificações no Android** passam pelo FCM: crie um projeto no Firebase, registre o app Android com o mesmo pacote, e envie a credencial FCM V1 (chave de conta de serviço) ao EAS com `eas credentials`. No iPhone nada disso é necessário.
+- O botão "Entrar com Apple" não aparece no Android. O login com Google volta pelo esquema `zeno://`, que funciona no app instalado.
+
 ## Funcionalidades
 
 Login e cadastro (e-mail ou Google), Saldos, Totais (com horizontes anuais e meta), Lançamentos, Tags, Metas (simulador salvo na conta), Casas (moradores, lançamentos, orçamento 50/30/20 e meta da casa), previsão de diário, notificações push (resumo diário e teste), e a configuração do widget e da captura por Apple Pay (chaves, script do Scriptable e regras por tag).
