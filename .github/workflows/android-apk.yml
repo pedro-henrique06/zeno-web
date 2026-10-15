@@ -1,0 +1,45 @@
+name: Android APK
+
+# Builds an installable APK without EAS and publishes it as a GitHub release asset.
+# Run it from the Actions tab ("Run workflow") or by pushing to claude/android-apk.
+on:
+  workflow_dispatch:
+  push:
+    branches: [claude/android-apk]
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm ci
+      - name: Generate the native Android project
+        run: npx expo prebuild --platform android --no-install
+        env:
+          CI: '1'
+          EXPO_OFFLINE: '1'
+      - name: Build the release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+      - name: Publish the APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk zeno-android.apk
+          gh release delete android-latest --yes --cleanup-tag || true
+          gh release create android-latest zeno-android.apk \
+            --title "Zeno Android (APK de teste)" \
+            --notes "APK de teste, assinado com a chave de debug. Baixe no celular Android e instale. Commit: ${GITHUB_SHA::7}" \
+            --prerelease
