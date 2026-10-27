@@ -30,11 +30,17 @@ export default function EntriesScreen() {
   // Only scroll once per tapped day, so a refetch after editing doesn't yank the list back.
   const scrolledFor = useRef<string | undefined>(undefined);
 
-  // The tab stays mounted, so a tap on a day in Saldos arrives as new params, not a fresh screen.
-  useEffect(() => {
+  // The tab stays mounted, so a tap on a day in Saldos arrives as new params, not a fresh screen:
+  // adjust the state while rendering (React's "adjust state on prop change"), not in an effect.
+  const [seenParams, setSeenParams] = useState({ month: params.month, year: params.year, date: params.date });
+  if (seenParams.month !== params.month || seenParams.year !== params.year || seenParams.date !== params.date) {
+    setSeenParams({ month: params.month, year: params.year, date: params.date });
     if (params.month) setMonth(Number(params.month));
     if (params.year) setYear(Number(params.year));
     setFocusDate(params.date);
+  }
+  // Declared before the scroll effect, so a new tap re-arms the scroll before it runs.
+  useEffect(() => {
     scrolledFor.current = undefined;
   }, [params.month, params.year, params.date]);
 
