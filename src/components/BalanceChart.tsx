@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, Stop, Text as SvgText } from 'react-native-svg';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -61,11 +61,10 @@ export function BalanceChart({
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const [width, setWidth] = useState(0);
+  // The gestures below are rebuilt on every render and GestureDetector swaps in their new JS
+  // callbacks (runOnJS), so reading `active` from the closure stays current.
   const [active, setActiveState] = useState<number | null>(null);
-  // Gesture callbacks can outlive a render, so they read the selection from a ref, never a stale closure.
-  const activeRef = useRef<number | null>(null);
   const setActive = (i: number | null) => {
-    activeRef.current = i;
     setActiveState(i);
     onSelect?.(i === null ? null : days[i]);
   };
@@ -104,7 +103,7 @@ export function BalanceChart({
     if (!geo) return;
     const i = Math.round(((x - GUTTER) / geo.plotW) * (days.length - 1));
     const clamped = Math.max(0, Math.min(days.length - 1, i));
-    if (clamped === activeRef.current) return;
+    if (clamped === active) return;
     Haptics.selectionAsync().catch(() => {});
     setActive(clamped);
   };
@@ -119,7 +118,7 @@ export function BalanceChart({
     .onEnd(() => setActive(null));
   const tap = Gesture.Tap()
     .runOnJS(true)
-    .onEnd((e) => (activeRef.current !== null ? setActive(null) : pick(e.x)));
+    .onEnd((e) => (active !== null ? setActive(null) : pick(e.x)));
   const gesture = Gesture.Exclusive(pan, tap);
 
   if (days.length < 2) return null;

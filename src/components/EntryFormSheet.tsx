@@ -132,29 +132,51 @@ export function EntryForm({
     if (focusSignal !== undefined) amountRef.current?.focus();
   }, [focusSignal]);
 
-  const [title, setTitle] = useState('');
-  const [cents, setCents] = useState(0);
-  const [kind, setKind] = useState<EntryKind>(EntryKind.Diario);
-  const [description, setDescription] = useState('');
-  const [tagId, setTagId] = useState('');
-  const [houseId, setHouseId] = useState('');
-  const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
-  const [isRecurring, setIsRecurring] = useState(false);
-  const [hasEnd, setHasEnd] = useState(false);
-  const [endDate, setEndDate] = useState(dayjs().add(1, 'year').format('YYYY-MM-DD'));
+  const seedFields = () => ({
+    title: entry?.title ?? '',
+    cents: Math.round((entry?.value ?? 0) * 100),
+    kind: entry?.kind ?? defaultKind ?? EntryKind.Diario,
+    description: entry?.description ?? '',
+    tagId: entry?.tagId ?? '',
+    houseId: entry?.houseId ?? '',
+    date: entry?.date ? entry.date.substring(0, 10) : (defaultDate ?? dayjs().format('YYYY-MM-DD')),
+    isRecurring: entry?.isRecurring ?? false,
+    hasEnd: !!entry?.recurrenceEndDate,
+    endDate: entry?.recurrenceEndDate ? entry.recurrenceEndDate.substring(0, 10) : dayjs().add(1, 'year').format('YYYY-MM-DD'),
+  });
+  const [initial] = useState(seedFields);
+  const [title, setTitle] = useState(initial.title);
+  const [cents, setCents] = useState(initial.cents);
+  const [kind, setKind] = useState<EntryKind>(initial.kind);
+  const [description, setDescription] = useState(initial.description);
+  const [tagId, setTagId] = useState(initial.tagId);
+  const [houseId, setHouseId] = useState(initial.houseId);
+  const [date, setDate] = useState(initial.date);
+  const [isRecurring, setIsRecurring] = useState(initial.isRecurring);
+  const [hasEnd, setHasEnd] = useState(initial.hasEnd);
+  const [endDate, setEndDate] = useState(initial.endDate);
 
-  useEffect(() => {
-    setTitle(entry?.title ?? '');
-    setCents(Math.round((entry?.value ?? 0) * 100));
-    setKind(entry?.kind ?? defaultKind ?? EntryKind.Diario);
-    setDescription(entry?.description ?? '');
-    setTagId(entry?.tagId ?? '');
-    setHouseId(entry?.houseId ?? '');
-    setDate(entry?.date ? entry.date.substring(0, 10) : (defaultDate ?? dayjs().format('YYYY-MM-DD')));
-    setIsRecurring(entry?.isRecurring ?? false);
-    setHasEnd(!!entry?.recurrenceEndDate);
-    setEndDate(entry?.recurrenceEndDate ? entry.recurrenceEndDate.substring(0, 10) : dayjs().add(1, 'year').format('YYYY-MM-DD'));
-  }, [resetKey, entry, defaultDate, defaultKind]);
+  // Re-seed while rendering when the inputs change (React's "adjust state on prop change"), not in an effect.
+  const [seededFrom, setSeededFrom] = useState({ resetKey, entry, defaultDate, defaultKind });
+  if (
+    seededFrom.resetKey !== resetKey ||
+    seededFrom.entry !== entry ||
+    seededFrom.defaultDate !== defaultDate ||
+    seededFrom.defaultKind !== defaultKind
+  ) {
+    setSeededFrom({ resetKey, entry, defaultDate, defaultKind });
+    const fields = seedFields();
+    setTitle(fields.title);
+    setCents(fields.cents);
+    setKind(fields.kind);
+    setDescription(fields.description);
+    setTagId(fields.tagId);
+    setHouseId(fields.houseId);
+    setDate(fields.date);
+    setIsRecurring(fields.isRecurring);
+    setHasEnd(fields.hasEnd);
+    setEndDate(fields.endDate);
+  }
 
   const symbol = CURRENCY_SYMBOLS[profile?.currency ?? 'BRL'];
   const display = (cents / 100).toLocaleString(LANGUAGE_LOCALES[profile?.language ?? 'PtBR'], {
