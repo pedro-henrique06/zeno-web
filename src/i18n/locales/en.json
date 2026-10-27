@@ -405,7 +405,16 @@
     "step4": "In Scriptable tap + and paste the script. Name it Zeno. Then on the home screen long-press an empty spot, tap +, pick Scriptable and a widget size, tap the widget and choose Zeno under Script.",
     "secret": "Treat the script like a password: anyone with the key can see the summary. If it leaks, tap Revoke.",
     "error": "Could not complete. Try again.",
-    "close": "Close"
+    "close": "Close",
+    "native": {
+      "today": "AVAILABLE TODAY",
+      "spent": "{{spent}} of {{budget}} spent",
+      "month": "Month balance",
+      "goal": "GOAL",
+      "noGoal": "Create a goal in Zeno to track it here.",
+      "amounts": "{{saved}} of {{target}}",
+      "signedOut": "Open Zeno to see your summary."
+    }
   },
   "capture": {
     "item": "Log spending automatically",

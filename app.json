@@ -3,7 +3,7 @@
     "name": "Zeno",
     "slug": "zeno",
     "scheme": "zeno",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -16,6 +16,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.zeno.mobile",
+      "appleTeamId": "23Z986999V",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -58,7 +59,32 @@
           }
         }
       ],
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      [
+        "expo-widgets",
+        {
+          "bundleIdentifier": "app.zeno.mobile.widgets",
+          "groupIdentifier": "group.app.zeno.mobile",
+          "widgets": [
+            {
+              "name": "ZenoToday",
+              "displayName": "Zeno · Hoje",
+              "description": "Quanto ainda dá para gastar hoje e o saldo do mês.",
+              "ios": {
+                "supportedFamilies": ["systemSmall", "systemMedium"]
+              }
+            },
+            {
+              "name": "ZenoGoal",
+              "displayName": "Zeno · Meta",
+              "description": "O progresso da sua meta.",
+              "ios": {
+                "supportedFamilies": ["systemSmall"]
+              }
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

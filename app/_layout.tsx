@@ -9,6 +9,7 @@ import { Fraunces_700Bold } from '@expo-google-fonts/fraunces';
 import '@/i18n';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ThemeProvider, brand, useTheme } from '@/theme/ThemeContext';
+import { useHomeWidgetsSync } from '@/widgets/sync';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,6 +20,7 @@ const queryClient = new QueryClient({
 function Gate() {
   const { isAuthenticated, ready } = useAuth();
   const { mode, colors } = useTheme();
+  useHomeWidgetsSync();
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
