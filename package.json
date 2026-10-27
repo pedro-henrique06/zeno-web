@@ -5,6 +5,7 @@
   "dependencies": {
     "@expo-google-fonts/dm-sans": "^0.4.2",
     "@expo-google-fonts/fraunces": "^0.4.1",
+    "@expo/ui": "~57.0.26",
     "@expo/vector-icons": "^15.1.1",
     "@react-native-community/datetimepicker": "^9.1.0",
     "@react-native-community/slider": "^5.2.0",
@@ -15,6 +16,7 @@
     "expo-apple-authentication": "~57.0.2",
     "expo-clipboard": "~57.0.2",
     "expo-constants": "~57.0.21",
+    "expo-dev-client": "~57.0.20",
     "expo-device": "~57.0.2",
     "expo-font": "~57.0.4",
     "expo-haptics": "~57.0.3",
@@ -26,6 +28,7 @@
     "expo-splash-screen": "~57.0.9",
     "expo-status-bar": "~57.0.1",
     "expo-web-browser": "~57.0.3",
+    "expo-widgets": "~57.0.27",
     "i18next": "^26.4.2",
     "react": "19.2.3",
     "react-dom": "^19.2.3",
@@ -41,6 +44,8 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.2",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -49,7 +54,8 @@
     "android": "expo start --android",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "export": "expo export --platform web"
+    "export": "expo export --platform web",
+    "lint": "expo lint"
   },
   "private": true
 }

@@ -405,7 +405,16 @@
     "step4": "No Scriptable toque em + e cole o script. Dê o nome Zeno. Depois, na tela inicial, segure em um espaço vazio, toque em + , escolha Scriptable, o tamanho do widget, toque no widget, e em Script escolha Zeno.",
     "secret": "Guarde o script como senha: quem tiver a chave consegue ver o resumo. Se vazar, toque em Revogar.",
     "error": "Não foi possível concluir. Tente novamente.",
-    "close": "Fechar"
+    "close": "Fechar",
+    "native": {
+      "today": "DISPONÍVEL HOJE",
+      "spent": "{{spent}} de {{budget}} gastos",
+      "month": "Saldo do mês",
+      "goal": "META",
+      "noGoal": "Crie uma meta no Zeno para acompanhar aqui.",
+      "amounts": "{{saved}} de {{target}}",
+      "signedOut": "Abra o Zeno para ver seu resumo."
+    }
   },
   "capture": {
     "item": "Registrar gastos automaticamente",
