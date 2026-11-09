@@ -28,6 +28,19 @@ Instalar no iPhone ou publicar na App Store exige uma conta Apple Developer (pag
 - `src/api`, `src/hooks`, `src/types`, `src/utils`, `src/i18n`: mesma camada de dados do app web (React Query + axios), com o token guardado no Keychain (`expo-secure-store`).
 - `src/ui`: componentes base (texto, botão, campo, cartão, sheet). `src/theme`: tokens de marca, claro/escuro.
 
+## Página na App Store (metadata)
+
+Nome, subtítulo, palavras-chave, descrição e texto promocional da loja ficam em `store.config.json` (EAS Metadata), em pt-BR, en-US e es-MX. Para enviar ao App Store Connect:
+
+```
+eas metadata:lint   # confere tamanhos e campos
+eas metadata:push   # envia para a versão em preparação no App Store Connect
+```
+
+Limites da Apple: nome e subtítulo com até 30 caracteres; palavras-chave com até 100 caracteres no total, sem repetir palavras do nome. O texto promocional pode mudar a qualquer hora sem nova revisão; o resto vai junto com a próxima versão.
+
+O pedido de avaliação (`src/lib/storeReview.ts`) aparece depois do 10º lançamento salvo e no máximo uma vez a cada 120 dias; o iOS ainda limita a 3 vezes por ano e não mostra no TestFlight. O site mostra o banner "Abrir na App Store" no Safari do iPhone (`public/index.html`).
+
 ## Android
 
 O mesmo código gera o app Android (pacote `app.zeno.mobile`).

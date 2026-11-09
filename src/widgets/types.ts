@@ -14,6 +14,12 @@ export interface TodayWidgetProps {
   monthLabel: string;
   monthValue: string;
   monthNegative: boolean;
+  /** Lock Screen line, e.g. "Hoje: R$ 70,00". */
+  inlineText: string;
+  /** Lock Screen ring: the amount without the currency, e.g. "70" or "1,2 mil". */
+  todayCompact: string;
+  /** Share of today's budget still available, 0..1 (fills the Lock Screen ring). */
+  todayProgress: number;
 }
 
 export interface GoalWidgetProps {

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import * as entryApi from '@/api/entry';
+import { noteEntrySaved } from '@/lib/storeReview';
 import type { CreateEntryRequest, UpdateEntryRequest } from '@/types';
 
 export function useEntries(month: number, year: number, page = 1, pageSize = 50) {
@@ -20,7 +21,10 @@ export function useCreateEntry() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateEntryRequest) => entryApi.createEntry(data),
-    onSuccess: () => invalidateAll(queryClient),
+    onSuccess: () => {
+      invalidateAll(queryClient);
+      noteEntrySaved();
+    },
   });
 }
 

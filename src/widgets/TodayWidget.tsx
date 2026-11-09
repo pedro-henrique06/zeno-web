@@ -1,9 +1,10 @@
-import { HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { AccessoryWidgetBackground, Gauge, HStack, Spacer, Text, VStack, ZStack } from '@expo/ui/swift-ui';
 import {
   containerBackground,
   font,
   foregroundStyle,
   frame,
+  gaugeStyle,
   lineLimit,
   minimumScaleFactor,
   opacity,
@@ -14,6 +15,8 @@ import type { TodayWidgetProps } from './types';
 
 /**
  * "Hoje" widget: what is still available to spend today; the medium size adds the month balance.
+ * On the Lock Screen it shows the same number as a ring, a short card or a line of text; there the
+ * system tints everything, so those layouts use no brand colours.
  * The body runs in the widget extension (see the 'widget' directive), so colours live inside it.
  */
 const TodayWidget = (props: Partial<TodayWidgetProps>, environment: WidgetEnvironment) => {
@@ -22,7 +25,57 @@ const TodayWidget = (props: Partial<TodayWidgetProps>, environment: WidgetEnviro
   const green = '#2DC579';
   const red = '#E86B52';
   const white = '#FFFFFF';
-  const medium = environment.widgetFamily === 'systemMedium';
+  const family = environment.widgetFamily;
+  const medium = family === 'systemMedium';
+
+  if (family === 'accessoryInline') {
+    return (
+      <Text modifiers={[containerBackground('clear', 'widget'), widgetURL('zeno://')]}>
+        {props.ready ? (props.inlineText ?? '') : 'Zeno'}
+      </Text>
+    );
+  }
+
+  if (family === 'accessoryCircular') {
+    return (
+      <ZStack modifiers={[containerBackground('clear', 'widget'), widgetURL('zeno://')]}>
+        <AccessoryWidgetBackground />
+        {props.ready ? (
+          <Gauge
+            value={props.todayProgress ?? 0}
+            modifiers={[gaugeStyle('circularCapacity')]}
+            currentValueLabel={
+              <Text modifiers={[font({ size: 15, weight: 'bold', design: 'rounded' }), lineLimit(1), minimumScaleFactor(0.5)]}>
+                {props.todayCompact ?? ''}
+              </Text>
+            }
+          />
+        ) : (
+          <Text modifiers={[font({ size: 12, weight: 'bold' })]}>Zeno</Text>
+        )}
+      </ZStack>
+    );
+  }
+
+  if (family === 'accessoryRectangular') {
+    return (
+      <VStack
+        alignment="leading"
+        spacing={1}
+        modifiers={[frame({ maxWidth: 10000, alignment: 'leading' }), containerBackground('clear', 'widget'), widgetURL('zeno://')]}
+      >
+        <Text modifiers={[font({ size: 12, weight: 'semibold' }), opacity(0.7), lineLimit(1)]}>
+          {props.ready ? (props.todayLabel ?? '') : 'Zeno'}
+        </Text>
+        <Text modifiers={[font({ size: 20, weight: 'bold', design: 'rounded' }), lineLimit(1), minimumScaleFactor(0.5)]}>
+          {props.ready ? (props.todayValue ?? '') : ''}
+        </Text>
+        <Text modifiers={[font({ size: 12 }), opacity(0.7), lineLimit(1), minimumScaleFactor(0.7)]}>
+          {props.ready ? (props.spentLine ?? '') : (props.emptyText ?? '')}
+        </Text>
+      </VStack>
+    );
+  }
 
   if (!props.ready) {
     return (

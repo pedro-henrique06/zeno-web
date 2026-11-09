@@ -409,6 +409,7 @@
     "native": {
       "today": "DISPONIBLE HOY",
       "spent": "{{spent}} de {{budget}} gastados",
+      "inline": "Hoy: {{value}}",
       "month": "Saldo del mes",
       "goal": "META",
       "noGoal": "Crea una meta en Zeno para seguirla aquí.",
