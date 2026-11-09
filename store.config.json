@@ -1,0 +1,30 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "copyright": "2026 Pedro Henrique Candido",
+    "categories": ["FINANCE", "PRODUCTIVITY"],
+    "info": {
+      "pt-BR": {
+        "title": "Zeno: Controle de Gastos",
+        "subtitle": "Orçamento 50/30/20 e metas",
+        "keywords": ["finanças", "orçamento", "despesas", "economia", "casal", "república", "dividir contas", "planilha", "cartão", "dinheiro", "mesada"],
+        "promoText": "Saiba quanto ainda dá para gastar hoje, direto na tela bloqueada. Sem anúncios e sem rastreamento.",
+        "description": "O Zeno mostra, todo dia, quanto você ainda pode gastar sem estourar o mês.\n\nDefina sua previsão de gasto diário e o Zeno faz a conta: o que já saiu hoje, o que sobra e como fecha o mês. O número fica sempre à vista no widget da tela inicial e da tela bloqueada.\n\nO QUE VOCÊ ENCONTRA NO ZENO\n\n• Disponível hoje: quanto ainda dá para gastar no dia, atualizado a cada lançamento.\n• Lançamentos e tags: registre entradas e saídas, recorrentes ou não, e organize por categoria.\n• Saldos e totais: veja o mês e os próximos anos, com horizonte de saldo e meta.\n• Metas: simule quanto guardar por mês e acompanhe o progresso no app e no widget.\n• Casas compartilhadas: divida as contas com quem mora com você, com orçamento 50/30/20 e meta da casa.\n• Captura pelo Apple Pay: com o app Atalhos, cada compra no Apple Pay vira um lançamento sozinha, já na categoria certa.\n• Widgets: \"Hoje\" e \"Meta\" na tela inicial e na tela bloqueada.\n• Resumo diário por notificação, no horário que você escolher.\n• Modo escuro, português, inglês e espanhol, real, dólar e euro.\n\nPRIVACIDADE\n\nO Zeno não mostra anúncios, não vende seus dados e não usa ferramentas de rastreamento. Você pode excluir a conta e todos os dados pelo próprio app, a qualquer momento.\n\nEntre com e-mail, com a Apple ou com o Google."
+      },
+      "en-US": {
+        "title": "Zeno: Budget & Expenses",
+        "subtitle": "Daily budget, goals, 50/30/20",
+        "keywords": ["tracker", "allowance", "money", "finance", "spending", "savings", "roommates", "split bills", "planner"],
+        "promoText": "Know how much you can still spend today, right on your Lock Screen. No ads, no tracking.",
+        "description": "Zeno tells you, every day, how much you can still spend without blowing your month.\n\nSet your daily spending forecast and Zeno does the math: what you spent today, what is left and how the month will close. The number is always in sight on your Home Screen and Lock Screen widgets.\n\nWHAT YOU GET\n\n• Available today: how much you can still spend, updated with every entry.\n• Entries and tags: log income and expenses, one-off or recurring, organized by category.\n• Balances and totals: see this month and the years ahead, with a balance horizon and a goal.\n• Goals: simulate how much to save each month and follow your progress in the app and on the widget.\n• Shared houses: split bills with the people you live with, with a 50/30/20 budget and a house goal.\n• Apple Pay capture: with the Shortcuts app, every Apple Pay purchase becomes an entry on its own, already in the right category.\n• Widgets: \"Today\" and \"Goal\" on the Home Screen and Lock Screen.\n• Daily summary notification at the time you choose.\n• Dark mode, English, Portuguese and Spanish, dollar, real and euro.\n\nPRIVACY\n\nZeno shows no ads, never sells your data and uses no tracking tools. You can delete your account and all your data from inside the app at any time.\n\nSign in with email, Apple or Google."
+      },
+      "es-MX": {
+        "title": "Zeno: Control de Gastos",
+        "subtitle": "Presupuesto 50/30/20 y metas",
+        "keywords": ["finanzas", "presupuesto", "gastos", "ahorro", "dinero", "pareja", "dividir cuentas", "tarjeta", "planificador"],
+        "promoText": "Sabe cuánto puedes gastar hoy, directo en la pantalla bloqueada. Sin anuncios ni rastreo.",
+        "description": "Zeno te muestra, cada día, cuánto puedes gastar todavía sin pasarte del mes.\n\nDefine tu previsión de gasto diario y Zeno hace la cuenta: lo que ya gastaste hoy, lo que queda y cómo cierra el mes. El número siempre está a la vista en los widgets de la pantalla de inicio y de la pantalla bloqueada.\n\nQUÉ ENCUENTRAS EN ZENO\n\n• Disponible hoy: cuánto puedes gastar todavía en el día, actualizado con cada movimiento.\n• Movimientos y etiquetas: registra ingresos y gastos, únicos o recurrentes, organizados por categoría.\n• Saldos y totales: mira el mes y los próximos años, con horizonte de saldo y meta.\n• Metas: simula cuánto ahorrar por mes y sigue el progreso en la app y en el widget.\n• Casas compartidas: divide las cuentas con quienes vives, con presupuesto 50/30/20 y meta de la casa.\n• Captura con Apple Pay: con la app Atajos, cada compra con Apple Pay se convierte sola en un movimiento, ya en la categoría correcta.\n• Widgets: \"Hoy\" y \"Meta\" en la pantalla de inicio y en la pantalla bloqueada.\n• Resumen diario por notificación, a la hora que elijas.\n• Modo oscuro, español, portugués e inglés, real, dólar y euro.\n\nPRIVACIDAD\n\nZeno no muestra anuncios, no vende tus datos y no usa herramientas de rastreo. Puedes eliminar tu cuenta y todos tus datos desde la propia app, en cualquier momento.\n\nInicia sesión con correo, con Apple o con Google."
+      }
+    }
+  }
+}

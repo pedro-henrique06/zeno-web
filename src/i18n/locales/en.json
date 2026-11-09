@@ -409,6 +409,7 @@
     "native": {
       "today": "AVAILABLE TODAY",
       "spent": "{{spent}} of {{budget}} spent",
+      "inline": "Today: {{value}}",
       "month": "Month balance",
       "goal": "GOAL",
       "noGoal": "Create a goal in Zeno to track it here.",

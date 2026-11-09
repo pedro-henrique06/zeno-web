@@ -5,13 +5,21 @@ import { getCalendars } from 'expo-localization';
 import { getMyWidgetSummary, type WidgetSummary } from '@/api/widget';
 import { useAuth } from '@/contexts/AuthContext';
 import i18n, { LANGUAGE_TO_I18N } from '@/i18n';
-import { formatCurrency } from '@/utils/currency';
+import { LANGUAGE_LOCALES, formatCurrency } from '@/utils/currency';
 import GoalWidget from './GoalWidget';
 import TodayWidget from './TodayWidget';
 import { WIDGET_SUMMARY_KEY } from './queryKey';
 
 function deviceTimeZone(): string {
   return getCalendars()[0]?.timeZone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+
+/** The Lock Screen ring has room for a few digits only: "70", "-15", "1,2k". */
+function compactAmount(value: number, locale: string): string {
+  const abs = Math.abs(value);
+  if (abs < 1000) return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(Math.round(value) || 0);
+  const thousands = new Intl.NumberFormat(locale, { maximumFractionDigits: abs < 10_000 ? 1 : 0 }).format(value / 1000);
+  return `${thousands}k`;
 }
 
 function pushSignedOut() {
@@ -36,6 +44,10 @@ function pushSummary(summary: WidgetSummary) {
     monthLabel: t('widget.native.month'),
     monthValue: money(summary.monthBalance),
     monthNegative: summary.monthBalance < 0,
+    inlineText: t('widget.native.inline', { value: money(summary.availableToday) }),
+    todayCompact: compactAmount(summary.availableToday, LANGUAGE_LOCALES[summary.language] ?? 'pt-BR'),
+    todayProgress:
+      summary.dailyBudget > 0 ? Math.min(Math.max(summary.availableToday / summary.dailyBudget, 0), 1) : 0,
   });
 
   GoalWidget.updateSnapshot({
